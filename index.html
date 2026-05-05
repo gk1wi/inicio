@@ -2,22 +2,27 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yin Yang</title>
+
+<!-- PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <style>
 body {
+  margin: 0;
+  background: #f5f5f5;
+  font-family: Arial;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  margin: 0;
-  background: #f5f5f5;
-  font-family: Arial;
 }
 
 h2 {
-  margin: 10px 0;
+  margin: 5px 0;
 }
 
 h1 {
@@ -34,29 +39,28 @@ canvas {
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
+/* 🔻 Flecha centrada tipo app */
 .puntero {
   width: 0;
   height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 25px solid black;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-top: 30px solid black;
   position: absolute;
-  top: -20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -180px); /* centrada arriba de la ruleta */
 }
 
 button {
   margin-top: 25px;
-  padding: 15px 30px;
+  padding: 15px 40px;
   font-size: 18px;
   border: none;
   border-radius: 30px;
   background: black;
   color: white;
-  cursor: pointer;
 }
-
 </style>
 </head>
 
@@ -98,8 +102,8 @@ for (let i = 0; i < total; i++) {
   ctx.textAlign = "right";
   ctx.fillStyle = i % 2 === 0 ? "black" : "white";
   ctx.font = "bold 14px Arial";
-
   ctx.fillText(i % 2 === 0 ? "YES" : "NO", 140, 5);
+
   ctx.restore();
 }
 
@@ -121,9 +125,14 @@ function girar() {
   setTimeout(() => {
     const gradosFinal = rotacion % 360;
     const index = Math.floor(((360 - gradosFinal) % 360) / (360 / total));
-
     const resultado = index % 2 === 0 ? "YES" : "NO";
+
     document.getElementById("resultado").innerText = resultado;
+
+    // 📳 Vibración (iPhone compatible básica)
+    if (navigator.vibrate) {
+      navigator.vibrate(200);
+    }
 
     girando = false;
   }, 4000);
