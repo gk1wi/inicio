@@ -38,21 +38,7 @@ canvas {
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* 🔺 flecha arriba (indicador real) */
-.puntero {
-  position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-bottom: 25px solid black;
-  z-index: 10;
-}
-
-/* 🔘 botón centro */
+/* 🔘 centro */
 .centro {
   position: absolute;
   top: 50%;
@@ -65,10 +51,23 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-size: 30px;
   cursor: pointer;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   z-index: 5;
+}
+
+/* 🔺 flecha desde el centro */
+.flecha {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 20px solid black;
 }
 </style>
 </head>
@@ -78,17 +77,19 @@ canvas {
 <h1 id="resultado">...</h1>
 
 <div class="ruleta-container">
-  <div class="puntero"></div>
   <canvas id="canvas"></canvas>
 
-  <!-- 🔘 botón centro -->
-  <div class="centro" onclick="girar()">☯</div>
+  <div class="centro" onclick="girar()">
+    <div class="flecha"></div>
+    ☯
+  </div>
 </div>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+// 🔥 HD para iPhone
 const size = 320;
 const scale = window.devicePixelRatio || 1;
 
