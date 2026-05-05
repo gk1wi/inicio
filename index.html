@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-
 <title>Yin Yang</title>
 
 <style>
@@ -20,65 +18,77 @@ body {
   height: 100vh;
 }
 
-h2 { margin: 5px; }
-h1 { margin: 10px; font-size: 40px; }
-
-.ruleta-container {
-  position: relative;
+h1 {
+  margin-bottom: 20px;
+  font-size: 40px;
 }
 
-/* Canvas limpio */
-canvas {
+/* contenedor */
+.ruleta-container {
+  position: relative;
   width: 320px;
   height: 320px;
+}
+
+/* ruleta */
+canvas {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* 🎯 Flecha en el CENTRO */
+/* 🔺 flecha arriba (indicador real) */
 .puntero {
   position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
-  border-left: 25px solid black;
-  
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(0deg);
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 25px solid black;
   z-index: 10;
 }
 
-button {
-  margin-top: 25px;
-  padding: 15px 40px;
-  font-size: 18px;
-  border: none;
-  border-radius: 30px;
-  background: black;
-  color: white;
+/* 🔘 botón centro */
+.centro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 5;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Yin Yang</h2>
 <h1 id="resultado">...</h1>
 
 <div class="ruleta-container">
-  <canvas id="canvas"></canvas>
   <div class="puntero"></div>
-</div>
+  <canvas id="canvas"></canvas>
 
-<button onclick="girar()">Spin</button>
+  <!-- 🔘 botón centro -->
+  <div class="centro" onclick="girar()">☯</div>
+</div>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-// 🔥 alta resolución retina
 const size = 320;
 const scale = window.devicePixelRatio || 1;
 
@@ -89,7 +99,7 @@ ctx.scale(scale, scale);
 const total = 24;
 const angulo = (2 * Math.PI) / total;
 
-// dibujar ruleta HD
+// dibujar ruleta
 for (let i = 0; i < total; i++) {
   const start = i * angulo;
   const end = start + angulo;
@@ -100,7 +110,6 @@ for (let i = 0; i < total; i++) {
   ctx.fillStyle = i % 2 === 0 ? "white" : "black";
   ctx.fill();
 
-  // texto
   ctx.save();
   ctx.translate(size/2, size/2);
   ctx.rotate(start + angulo / 2);
@@ -134,11 +143,6 @@ function girar() {
 
     const resultado = index % 2 === 0 ? "YES" : "NO";
     document.getElementById("resultado").innerText = resultado;
-
-    // 📳 intento de vibración (limitado en iPhone)
-    try {
-      navigator.vibrate && navigator.vibrate(200);
-    } catch(e) {}
 
     girando = false;
   }, 4000);
