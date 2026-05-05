@@ -1,43 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Ruleta Sí o No</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: Arial;
-      background: #111;
-      color: white;
-    }
-    button {
-      padding: 15px 30px;
-      font-size: 20px;
-      border: none;
-      border-radius: 10px;
-      background: #00ff88;
-      color: black;
-    }
-    h1 {
-      font-size: 50px;
-      margin-top: 20px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Ruleta YES / NO</title>
+<style>
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background: #111;
+  color: white;
+  font-family: Arial;
+}
+
+.ruleta-container {
+  position: relative;
+}
+
+.ruleta {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 5px solid white;
+  background: conic-gradient(
+    #fff 0deg 30deg, #000 30deg 60deg,
+    #fff 60deg 90deg, #000 90deg 120deg,
+    #fff 120deg 150deg, #000 150deg 180deg,
+    #fff 180deg 210deg, #000 210deg 240deg,
+    #fff 240deg 270deg, #000 270deg 300deg,
+    #fff 300deg 330deg, #000 330deg 360deg
+  );
+  transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.puntero {
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 25px solid red;
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+button {
+  margin-top: 30px;
+  padding: 15px 30px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  background: #00ff88;
+  color: black;
+}
+
+h1 {
+  margin-top: 20px;
+  font-size: 40px;
+}
+</style>
 </head>
+
 <body>
+
+<div class="ruleta-container">
+  <div class="puntero"></div>
+  <div id="ruleta" class="ruleta"></div>
+</div>
 
 <button onclick="girar()">Girar</button>
 <h1 id="resultado">...</h1>
 
 <script>
+let girando = false;
+
 function girar() {
-  const opciones = ["Sí", "No"];
-  const resultado = opciones[Math.floor(Math.random() * opciones.length)];
-  document.getElementById("resultado").innerText = resultado;
+  if (girando) return;
+
+  girando = true;
+
+  const ruleta = document.getElementById("ruleta");
+
+  // ángulo aleatorio + vueltas extra
+  const grados = Math.floor(Math.random() * 360) + (360 * 5);
+
+  ruleta.style.transform = `rotate(${grados}deg)`;
+
+  setTimeout(() => {
+    // resultado aleatorio puro
+    const resultado = Math.random() < 0.5 ? "YES" : "NO";
+    document.getElementById("resultado").innerText = resultado;
+    girando = false;
+  }, 4000);
 }
 </script>
 
