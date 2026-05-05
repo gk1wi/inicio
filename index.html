@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ruleta Sí o No</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial;
+      background: #111;
+      color: white;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      background: #00ff88;
+      color: black;
+    }
+    h1 {
+      font-size: 50px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<button onclick="girar()">Girar</button>
+<h1 id="resultado">...</h1>
+
+<script>
+function girar() {
+  const opciones = ["Sí", "No"];
+  const resultado = opciones[Math.floor(Math.random() * opciones.length)];
+  document.getElementById("resultado").innerText = resultado;
+}
+</script>
+
+</body>
+</html>
