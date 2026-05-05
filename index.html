@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Ruleta YES / NO</title>
+
 <style>
 body {
   display: flex;
@@ -21,18 +22,10 @@ body {
 }
 
 .ruleta {
-  width: 300px;
-  height: 300px;
+  width: 320px;
+  height: 320px;
   border-radius: 50%;
-  border: 5px solid white;
-  background: conic-gradient(
-    #fff 0deg 30deg, #000 30deg 60deg,
-    #fff 60deg 90deg, #000 90deg 120deg,
-    #fff 120deg 150deg, #000 150deg 180deg,
-    #fff 180deg 210deg, #000 210deg 240deg,
-    #fff 240deg 270deg, #000 270deg 300deg,
-    #fff 300deg 330deg, #000 330deg 360deg
-  );
+  border: 6px solid white;
   transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -69,31 +62,53 @@ h1 {
 
 <div class="ruleta-container">
   <div class="puntero"></div>
-  <div id="ruleta" class="ruleta"></div>
+  <canvas id="canvas" width="320" height="320"></canvas>
 </div>
 
 <button onclick="girar()">Girar</button>
 <h1 id="resultado">...</h1>
 
 <script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const total = 24;
+const angulo = (2 * Math.PI) / total;
+
+// Dibujar ruleta
+for (let i = 0; i < total; i++) {
+  ctx.beginPath();
+  ctx.moveTo(160, 160);
+  ctx.arc(160, 160, 160, i * angulo, (i + 1) * angulo);
+  ctx.fillStyle = i % 2 === 0 ? "white" : "black";
+  ctx.fill();
+}
+
+// estado
+let rotacion = 0;
 let girando = false;
 
 function girar() {
   if (girando) return;
-
   girando = true;
 
-  const ruleta = document.getElementById("ruleta");
+  const vueltas = Math.floor(Math.random() * 3) + 5; // 5-7 vueltas
+  const extra = Math.random() * 360;
 
-  // ángulo aleatorio + vueltas extra
-  const grados = Math.floor(Math.random() * 360) + (360 * 5);
+  rotacion += (vueltas * 360) + extra;
 
-  ruleta.style.transform = `rotate(${grados}deg)`;
+  canvas.style.transition = "transform 4s cubic-bezier(0.25,1,0.5,1)";
+  canvas.style.transform = `rotate(${rotacion}deg)`;
 
   setTimeout(() => {
-    // resultado aleatorio puro
-    const resultado = Math.random() < 0.5 ? "YES" : "NO";
+    // calcular en qué cayó
+    const gradosFinal = rotacion % 360;
+    const index = Math.floor(((360 - gradosFinal) % 360) / (360 / total));
+
+    const resultado = index % 2 === 0 ? "YES" : "NO";
+
     document.getElementById("resultado").innerText = resultado;
+
     girando = false;
   }, 4000);
 }
