@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yin Yang</title>
 
-<!-- PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<title>Yin Yang</title>
 
 <style>
 body {
@@ -21,35 +20,34 @@ body {
   height: 100vh;
 }
 
-h2 {
-  margin: 5px 0;
-}
-
-h1 {
-  margin: 5px 0 20px;
-  font-size: 40px;
-}
+h2 { margin: 5px; }
+h1 { margin: 10px; font-size: 40px; }
 
 .ruleta-container {
   position: relative;
 }
 
+/* Canvas limpio */
 canvas {
+  width: 320px;
+  height: 320px;
   border-radius: 50%;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
-/* 🔻 Flecha centrada tipo app */
+/* 🎯 Flecha en el CENTRO */
 .puntero {
+  position: absolute;
   width: 0;
   height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-top: 30px solid black;
-  position: absolute;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  border-left: 25px solid black;
+  
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -180px); /* centrada arriba de la ruleta */
+  transform: translate(-50%, -50%) rotate(0deg);
+  z-index: 10;
 }
 
 button {
@@ -70,8 +68,8 @@ button {
 <h1 id="resultado">...</h1>
 
 <div class="ruleta-container">
+  <canvas id="canvas"></canvas>
   <div class="puntero"></div>
-  <canvas id="canvas" width="320" height="320"></canvas>
 </div>
 
 <button onclick="girar()">Spin</button>
@@ -80,29 +78,37 @@ button {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+// 🔥 alta resolución retina
+const size = 320;
+const scale = window.devicePixelRatio || 1;
+
+canvas.width = size * scale;
+canvas.height = size * scale;
+ctx.scale(scale, scale);
+
 const total = 24;
 const angulo = (2 * Math.PI) / total;
 
-// dibujar ruleta
+// dibujar ruleta HD
 for (let i = 0; i < total; i++) {
   const start = i * angulo;
   const end = start + angulo;
 
   ctx.beginPath();
-  ctx.moveTo(160, 160);
-  ctx.arc(160, 160, 160, start, end);
+  ctx.moveTo(size/2, size/2);
+  ctx.arc(size/2, size/2, size/2, start, end);
   ctx.fillStyle = i % 2 === 0 ? "white" : "black";
   ctx.fill();
 
   // texto
   ctx.save();
-  ctx.translate(160, 160);
+  ctx.translate(size/2, size/2);
   ctx.rotate(start + angulo / 2);
 
   ctx.textAlign = "right";
   ctx.fillStyle = i % 2 === 0 ? "black" : "white";
-  ctx.font = "bold 14px Arial";
-  ctx.fillText(i % 2 === 0 ? "YES" : "NO", 140, 5);
+  ctx.font = "bold 13px Arial";
+  ctx.fillText(i % 2 === 0 ? "YES" : "NO", size/2 - 10, 5);
 
   ctx.restore();
 }
@@ -125,14 +131,14 @@ function girar() {
   setTimeout(() => {
     const gradosFinal = rotacion % 360;
     const index = Math.floor(((360 - gradosFinal) % 360) / (360 / total));
-    const resultado = index % 2 === 0 ? "YES" : "NO";
 
+    const resultado = index % 2 === 0 ? "YES" : "NO";
     document.getElementById("resultado").innerText = resultado;
 
-    // 📳 Vibración (iPhone compatible básica)
-    if (navigator.vibrate) {
-      navigator.vibrate(200);
-    }
+    // 📳 intento de vibración (limitado en iPhone)
+    try {
+      navigator.vibrate && navigator.vibrate(200);
+    } catch(e) {}
 
     girando = false;
   }, 4000);
