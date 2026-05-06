@@ -6,6 +6,7 @@
 
 <title>Yin Yang</title>
 <link rel="apple-touch-icon" href="yinyang.png">
+
 <style>
 body {
   margin: 0;
@@ -22,6 +23,7 @@ h1 {
   margin-bottom: 20px;
   font-size: 42px;
 }
+
 .footer {
   position: fixed;
   bottom: 10px;
@@ -31,14 +33,12 @@ h1 {
   color: #666;
 }
 
-/* contenedor */
 .ruleta-container {
   position: relative;
   width: 320px;
   height: 320px;
 }
 
-/* ruleta */
 canvas {
   width: 100%;
   height: 100%;
@@ -47,7 +47,6 @@ canvas {
   will-change: transform;
 }
 
-/* 🔘 centro + flecha integrada */
 .centro {
   position: absolute;
   top: 50%;
@@ -65,14 +64,12 @@ canvas {
   z-index: 10;
 }
 
-/* 🔺 flecha conectada */
 .centro::before {
   content: "";
   position: absolute;
   top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  
   width: 0;
   height: 0;
   border-left: 14px solid transparent;
@@ -80,7 +77,6 @@ canvas {
   border-bottom: 22px solid black;
 }
 
-/* imagen centro */
 .centro img {
   width: 55px;
   height: 55px;
@@ -98,14 +94,13 @@ canvas {
   <canvas id="canvas"></canvas>
 
   <div class="centro" onclick="girar()">
-    <!-- 🖼️ cambia aquí tu imagen -->
     <img src="yinyang.png">
   </div>
 </div>
+
 <footer class="footer">
   Created by K1wi v1.0.0
 </footer>
-
 
 <script>
 const canvas = document.getElementById("canvas");
@@ -121,7 +116,6 @@ ctx.scale(scale, scale);
 const total = 24;
 const angulo = (2 * Math.PI) / total;
 
-// dibujar ruleta (optimizado)
 function drawWheel() {
   for (let i = 0; i < total; i++) {
     const start = i * angulo;
@@ -151,13 +145,23 @@ drawWheel();
 let rotacion = 0;
 let girando = false;
 
+//
+// 🔐 RANDOM CRIPTOGRÁFICO
+//
+function randomCrypto() {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return array[0] / 2**32;
+}
+
 function girar() {
   if (girando) return;
+
   document.getElementById("resultado").innerText = "...";
   girando = true;
 
-  const vueltas = 5 + Math.random() * 2;
-  const extra = Math.random() * 360;
+  const vueltas = 5 + randomCrypto() * 2;
+  const extra = randomCrypto() * 360;
 
   rotacion += (vueltas * 360) + extra;
 
