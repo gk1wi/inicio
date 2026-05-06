@@ -141,6 +141,7 @@ let girando = false;
 
 function girar() {
   if (girando) return;
+  document.getElementById("resultado").innerText = "...";
   girando = true;
 
   const vueltas = 5 + Math.random() * 2;
