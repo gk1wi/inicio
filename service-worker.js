@@ -1,4 +1,4 @@
-const CACHE_NAME = "yin-yang-v1";
+const CACHE_NAME = "yin-yang-v1.0.3";
 
 const FILES_TO_CACHE = [
   "./",
