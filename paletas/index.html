@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Paletas" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Paletas</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <style>
+    :root {
+      --bg:        #F5F2EE;
+      --surface:   #EDEBE6;
+      --border:    #D9D5CE;
+      --text:      #2C2A27;
+      --muted:     #7A7570;
+      --accent:    #C97D4E;
+      --accent-dk: #A8622F;
+      --green:     #5A8A6A;
+      --red:       #C05050;
+      --gold:      #D4A017;
+      --radius:    14px;
+      --shadow:    0 2px 12px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 20px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    header p  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 8px;
+      gap: 2px;
+    }
+    nav button {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 12px 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+    }
+    nav button.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── PAGES ── */
+    .page { display: none; padding: 20px 16px 40px; }
+    .page.active { display: block; }
+
+    /* ── SECTION TITLE ── */
+    .sec-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── FLAVOR GRID ── */
+    .flavor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .flavor-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 12px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .flavor-card:active { transform: scale(.97); }
+    .flavor-card.out { opacity: .4; pointer-events: none; }
+    .flavor-card .emoji { font-size: 38px; display: block; margin-bottom: 8px; }
+    .flavor-card .name { font-size: 14px; font-weight: 700; }
+    .flavor-card .stock-badge {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 20px;
+    }
+    .flavor-card.out .stock-badge { background: #fbe9e9; color: var(--red); }
+    .canje-card {
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 12px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, transform .1s;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .canje-card:active { transform: scale(.97); }
+    .canje-card.out { opacity: .4; pointer-events: none; }
+    .canje-card .emoji { font-size: 38px; display: block; margin-bottom: 8px; }
+    .canje-card .name { font-size: 14px; font-weight: 700; }
+    .canje-card .stock-badge {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 20px;
+    }
+    .canje-card.out .stock-badge { background: #fbe9e9; color: var(--red); }
+
+    /* ── ORDER TABLE ── */
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .order-table th {
+      background: var(--surface);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    .order-table td {
+      padding: 12px 14px;
+      font-size: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .order-table .qty-cell { font-weight: 700; color: var(--accent); }
+    .order-table .del-btn {
+      background: none;
+      border: none;
+      color: var(--red);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .order-summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .order-summary .label { font-size: 13px; color: var(--muted); }
+    .order-summary .total-count { font-size: 22px; font-weight: 800; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      text-align: center;
+    }
+    .btn:active { transform: scale(.98); opacity: .85; }
+    .btn-accent  { background: var(--accent); color: white; }
+    .btn-outline { background: white; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-green   { background: var(--green); color: white; }
+    .btn-red     { background: var(--red); color: white; }
+    .btn-gold    { background: var(--gold); color: white; }
+    .btn + .btn  { margin-top: 10px; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 28px 20px 44px;
+      width: 100%;
+      max-width: 430px;
+      animation: slideUp .25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .modal p  { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .qty-picker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 24px 0;
+    }
+    .qty-picker button {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .qty-picker button:active { background: var(--border); }
+    .qty-picker .qty-num {
+      font-size: 40px;
+      font-weight: 800;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* ── INPUT ── */
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 16px;
+      background: var(--surface);
+      color: var(--text);
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .input-field:focus { border-color: var(--accent); }
+
+    /* ── HISTORIAL ── */
+    .order-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+    .order-card .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .order-card .order-num { font-size: 13px; font-weight: 800; color: var(--accent); }
+    .order-card .order-date { font-size: 12px; color: var(--muted); }
+    .order-card .order-meta { display: flex; gap: 16px; margin-bottom: 12px; }
+    .order-card .meta-item { font-size: 13px; }
+    .order-card .meta-item span { font-weight: 700; }
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .tag-regalo  { background: #e8f5e9; color: #4CAF50; }
+    .tag-familia { background: #fff3e0; color: #E65100; }
+    .tag-venta   { background: #e3f2fd; color: #1565C0; }
+    .order-card .card-actions { display: flex; gap: 8px; }
+    .card-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .card-btn-info { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .card-btn-del  { background: #fbe9e9; color: var(--red); }
+
+    /* ── STOCK ── */
+    .stock-item {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow);
+    }
+    .stock-item .s-emoji { font-size: 30px; }
+    .stock-item .s-info { flex: 1; }
+    .stock-item .s-name { font-size: 15px; font-weight: 700; }
+    .stock-item .s-count { font-size: 13px; color: var(--muted); }
+    .stock-item .s-count b { color: var(--text); }
+    .stock-item .qty-picker { margin: 0; gap: 12px; }
+    .stock-item .qty-picker button { width: 38px; height: 38px; font-size: 18px; }
+    .stock-item .qty-picker .qty-num { font-size: 22px; min-width: 36px; }
+
+    /* ── CLIENTES ── */
+    .cliente-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform .1s;
+    }
+    .cliente-card:active { transform: scale(.98); }
+    .cliente-card .cl-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .cliente-card .cl-nombre { font-size: 17px; font-weight: 800; }
+    .cliente-card .cl-visitas { font-size: 12px; color: var(--muted); }
+    .cliente-card.listo { border-color: var(--gold); }
+    .cliente-card.listo .cl-nombre { color: var(--gold); }
+
+    /* ── CAMINO (progress game) ── */
+    .camino {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 8px 0 4px;
+    }
+    .paso {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      position: relative;
+      flex-shrink: 0;
+      transition: all .3s;
+    }
+    .paso.hecho {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .paso.siguiente {
+      border-color: var(--accent);
+      animation: pulse 1.2s infinite;
+    }
+    .paso.premio {
+      background: var(--gold);
+      border-color: var(--gold);
+      font-size: 20px;
+    }
+    .paso.premio.hecho {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(201,125,78,.4); }
+      50%       { box-shadow: 0 0 0 6px rgba(201,125,78,0); }
+    }
+    .conector {
+      height: 3px;
+      flex: 1;
+      background: var(--border);
+      transition: background .3s;
+    }
+    .conector.hecho { background: var(--accent); }
+
+    /* ── MODAL CLIENTE (pantalla a mostrar) ── */
+    .modal-cliente-inner {
+      text-align: center;
+    }
+    .modal-cliente-inner .cl-avatar {
+      font-size: 52px;
+      margin-bottom: 6px;
+    }
+    .modal-cliente-inner .cl-big-name {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .modal-cliente-inner .cl-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .camino-grande {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 0 auto 24px;
+      max-width: 340px;
+    }
+    .paso-grande {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: all .3s;
+    }
+    .paso-grande.hecho {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .paso-grande.siguiente {
+      border-color: var(--accent);
+      animation: pulse 1.2s infinite;
+    }
+    .paso-grande.premio {
+      background: var(--gold);
+      border-color: var(--gold);
+      font-size: 22px;
+    }
+    .paso-grande.premio.hecho { background: var(--gold); border-color: var(--gold); }
+    .conector-grande {
+      height: 3px;
+      flex: 1;
+      background: var(--border);
+      transition: background .3s;
+      min-width: 8px;
+    }
+    .conector-grande.hecho { background: var(--accent); }
+
+    /* ── GANASTE ── */
+    .ganaste-banner {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 2px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .ganaste-banner .g-emoji { font-size: 48px; }
+    .ganaste-banner h4 { font-size: 20px; font-weight: 800; color: var(--gold); margin: 8px 0 4px; }
+    .ganaste-banner p  { font-size: 13px; color: var(--muted); }
+
+    /* ── CONFETI ── */
+    .confeti-piece {
+      position: fixed;
+      width: 8px; height: 12px;
+      border-radius: 2px;
+      animation: caer 2.5s ease-in forwards;
+      z-index: 999;
+      pointer-events: none;
+    }
+    @keyframes caer {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty .e-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty p { font-size: 15px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 999;
+      transition: transform .3s ease, opacity .3s;
+      opacity: 0;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* search box */
+    .search-box {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 15px;
+      background: white;
+      color: var(--text);
+      margin-bottom: 16px;
+      outline: none;
+    }
+    .search-box:focus { border-color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🧊 Mis Paletas <span style="font-size:13px;font-weight:500;color:var(--muted);">· by K1wi v1.0.8</span></h1>
+  <p id="header-sub">Nueva Orden</p>
+</header>
+
+<nav>
+  <button class="active" data-page="nueva-orden">Nueva Orden</button>
+  <button data-page="historial">Historial</button>
+  <button data-page="clientes">Clientes</button>
+  <button data-page="stock">Stock</button>
+</nav>
+
+<!-- ══════════ NUEVA ORDEN ══════════ -->
+<div id="nueva-orden" class="page active">
+  <div id="step-sabores">
+    <p class="sec-title" style="margin-top:4px;">Selecciona un sabor</p>
+    <div class="flavor-grid" id="flavor-grid"></div>
+  </div>
+  <div id="step-orden" style="display:none;">
+    <p class="sec-title" style="margin-top:4px;">Orden actual</p>
+    <table class="order-table">
+      <thead><tr><th>Sabor</th><th>Cant.</th><th></th></tr></thead>
+      <tbody id="orden-tbody"></tbody>
+    </table>
+    <div class="order-summary">
+      <div>
+        <div class="label">Total paletas</div>
+        <div class="total-count" id="total-count">0</div>
+      </div>
+      <div style="text-align:right;">
+        <button class="btn btn-outline" style="width:auto;padding:10px 18px;font-size:13px;" id="btn-agregar-mas">＋ Más sabores</button>
+      </div>
+    </div>
+    <button class="btn btn-accent" id="btn-finalizar">Finalizar Orden</button>
+  </div>
+</div>
+
+<!-- ══════════ HISTORIAL ══════════ -->
+<div id="historial" class="page">
+  <p class="sec-title" style="margin-top:4px;">Historial de pedidos</p>
+  <div id="historial-list"></div>
+</div>
+
+<!-- ══════════ CLIENTES ══════════ -->
+<div id="clientes" class="page">
+  <p class="sec-title" style="margin-top:4px;">Clientes frecuentes</p>
+  <input type="text" class="search-box" id="search-cliente" placeholder="🔍  Buscar por apodo…" />
+  <div id="clientes-list"></div>
+</div>
+
+<!-- ══════════ STOCK ══════════ -->
+<div id="stock" class="page">
+  <p class="sec-title" style="margin-top:4px;">Actualizar inventario</p>
+  <div id="stock-list"></div>
+  <button class="btn btn-accent" id="btn-save-stock" style="margin-top:8px;">Guardar cambios</button>
+</div>
+
+
+<!-- ══════════ MODALES ══════════ -->
+
+<!-- Modal: Cantidad -->
+<div class="modal-overlay" id="modal-cantidad">
+  <div class="modal">
+    <h3 id="modal-sabor-title">Sandía</h3>
+    <p id="modal-sabor-stock">Disponibles: 5</p>
+    <div class="qty-picker">
+      <button id="qty-minus">−</button>
+      <div class="qty-num" id="qty-display">1</div>
+      <button id="qty-plus">＋</button>
+    </div>
+    <button class="btn btn-accent" id="btn-confirmar-qty">Agregar a la orden</button>
+    <button class="btn btn-outline" id="btn-cancelar-qty" style="margin-top:10px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal: Tipo de venta -->
+<div class="modal-overlay" id="modal-tipo">
+  <div class="modal">
+    <h3>¿Tipo de orden?</h3>
+    <p>Selecciona cómo se registrará esta orden.</p>
+    <button class="btn btn-outline" id="btn-tipo-regalo">🎁 &nbsp;Regalo</button>
+    <button class="btn btn-outline" id="btn-tipo-familia">👨‍👩‍👧 &nbsp;Familia — $2.50 / paleta</button>
+    <button class="btn btn-accent"  id="btn-tipo-venta"> 💰 &nbsp;Venta — $5.00 / paleta</button>
+    <button class="btn btn-outline" id="btn-cancelar-tipo" style="margin-top:14px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal: Confirmación total -->
+<div class="modal-overlay" id="modal-total">
+  <div class="modal">
+    <h3 id="modal-total-title">Total de la venta</h3>
+    <p id="modal-total-sub"></p>
+    <div style="text-align:center;margin:24px 0;">
+      <div style="font-size:44px;font-weight:800;" id="modal-total-monto">$0.00</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="modal-total-desc"></div>
+    </div>
+    <button class="btn btn-green" id="btn-confirmar-orden">✓ Confirmar y guardar</button>
+    <button class="btn btn-outline" id="btn-cancelar-total" style="margin-top:10px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Modal: Registrar cliente (solo en Venta) -->
+<div class="modal-overlay" id="modal-cliente-reg">
+  <div class="modal">
+    <h3>¿Registrar cliente?</h3>
+    <p>Opcional. Si el cliente tiene apodo guardado, selecciónalo o escribe uno nuevo.</p>
+    <input type="text" class="input-field" id="input-apodo" placeholder="Apodo del cliente…" autocomplete="off" />
+    <div id="sugerencias-apodo" style="margin-bottom:12px;"></div>
+    <button class="btn btn-accent" id="btn-confirmar-cliente">Guardar y continuar</button>
+    <button class="btn btn-outline" id="btn-skip-cliente" style="margin-top:10px;">Sin cliente</button>
+  </div>
+</div>
+
+<!-- Modal: Detalle de orden -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal">
+    <h3 id="modal-detalle-title">Detalle orden #1</h3>
+    <p id="modal-detalle-meta"></p>
+    <div id="modal-detalle-items" style="margin-bottom:20px;"></div>
+    <button class="btn btn-outline" id="btn-cerrar-detalle">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal: Pantalla del cliente (para mostrarle) -->
+<div class="modal-overlay" id="modal-ver-cliente">
+  <div class="modal modal-cliente-inner">
+    <div class="cl-avatar">🧊</div>
+    <div class="cl-big-name" id="vcl-nombre"></div>
+    <div class="cl-sub" id="vcl-sub"></div>
+    <div class="camino-grande" id="vcl-camino"></div>
+    <div id="vcl-ganaste" style="display:none;">
+      <div class="ganaste-banner">
+        <div class="g-emoji">🎉</div>
+        <h4>¡Paleta gratis!</h4>
+        <p>Completaste 6 visitas. ¡Ya puedes canjear tu recompensa!</p>
+      </div>
+      <button class="btn btn-gold" id="btn-canjear">🧊 Canjear paleta gratis</button>
+      <button class="btn btn-outline" id="btn-cerrar-vcl" style="margin-top:10px;">Cerrar</button>
+    </div>
+    <div id="vcl-normal">
+      <button class="btn btn-outline" id="btn-cerrar-vcl2">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Elegir sabor para canje -->
+<div class="modal-overlay" id="modal-canje-sabor">
+  <div class="modal">
+    <h3>🎁 ¿Qué sabor quiere?</h3>
+    <p id="canje-cliente-nombre" style="margin-bottom:16px;"></p>
+    <div class="flavor-grid" id="canje-flavor-grid"></div>
+    <button class="btn btn-outline" id="btn-cancelar-canje" style="margin-top:4px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+//  DATOS BASE
+// ════════════════════════════════════════
+const SABORES = [
+  { id:'sandia',      nombre:'Sandía',       emoji:'🍉' },
+  { id:'mango_chile', nombre:'Mango c/Chile', emoji:'🥭' },
+  { id:'melon',       nombre:'Melón',         emoji:'🍈' },
+  { id:'uva',         nombre:'Uva',           emoji:'🍇' },
+  { id:'pina',        nombre:'Piña',          emoji:'🍍' },
+  { id:'limon',       nombre:'Limón',         emoji:'🍋' },
+];
+
+const PRECIO_FAMILIA = 2.5;
+const PRECIO_VENTA   = 5.0;
+const META_VISITAS   = 6;
+
+// ════════════════════════════════════════
+//  STORAGE HELPERS
+// ════════════════════════════════════════
+function getStock() {
+  const s = localStorage.getItem('paletas_stock');
+  if (s) return JSON.parse(s);
+  const def = {};
+  SABORES.forEach(f => def[f.id] = 5);
+  localStorage.setItem('paletas_stock', JSON.stringify(def));
+  return def;
+}
+function saveStock(s) { localStorage.setItem('paletas_stock', JSON.stringify(s)); }
+
+function getHistorial() {
+  const h = localStorage.getItem('paletas_historial');
+  return h ? JSON.parse(h) : [];
+}
+function saveHistorial(h) { localStorage.setItem('paletas_historial', JSON.stringify(h)); }
+
+function getClientes() {
+  const c = localStorage.getItem('paletas_clientes');
+  return c ? JSON.parse(c) : {};
+}
+function saveClientes(c) { localStorage.setItem('paletas_clientes', JSON.stringify(c)); }
+
+// ════════════════════════════════════════
+//  ESTADO
+// ════════════════════════════════════════
+let ordenActual       = {};
+let saborSeleccionado = null;
+let cantidadModal     = 1;
+let tipoOrden         = null;
+let clienteActual     = null; // apodo string o null
+let clienteViendoId   = null;
+
+// ════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════
+function toast(msg) {
+  $('#toast').text(msg).addClass('show');
+  setTimeout(() => $('#toast').removeClass('show'), 2200);
+}
+
+// ════════════════════════════════════════
+//  NAV
+// ════════════════════════════════════════
+$('nav button').on('click', function() {
+  const page = $(this).data('page');
+  $('nav button').removeClass('active');
+  $(this).addClass('active');
+  $('.page').removeClass('active');
+  $('#' + page).addClass('active');
+  $('#header-sub').text($(this).text());
+  if (page === 'nueva-orden') actualizarBadges();
+  if (page === 'historial')   renderHistorial();
+  if (page === 'clientes')    renderClientes();
+  if (page === 'stock')       renderStock();
+});
+
+// ════════════════════════════════════════
+//  RENDER SABORES
+// ════════════════════════════════════════
+function renderSabores() {
+  const stock = getStock();
+  const $grid = $('#flavor-grid').empty();
+  SABORES.forEach(f => {
+    const enOrden    = ordenActual[f.id] || 0;
+    const disponibles = (stock[f.id] || 0) - enOrden;
+    $grid.append(`
+      <div class="flavor-card ${disponibles <= 0 ? 'out':''}" data-id="${f.id}">
+        <span class="stock-badge">${disponibles <= 0 ? 'Agotado' : disponibles}</span>
+        <span class="emoji">${f.emoji}</span>
+        <div class="name">${f.nombre}</div>
+      </div>
+    `);
+  });
+}
+
+function actualizarBadges() {
+  const stock = getStock();
+  SABORES.forEach(f => {
+    const enOrden = ordenActual[f.id] || 0;
+    const disp    = (stock[f.id] || 0) - enOrden;
+    const $card   = $(`.flavor-card[data-id="${f.id}"]`);
+    $card.find('.stock-badge').text(disp <= 0 ? 'Agotado' : disp);
+    if (disp <= 0) $card.addClass('out');
+    else $card.removeClass('out');
+  });
+}
+
+// Click en sabor
+$(document).on('click', '.flavor-card:not(.out)', function() {
+  saborSeleccionado = $(this).data('id');
+  const stock    = getStock();
+  const enOrden  = ordenActual[saborSeleccionado] || 0;
+  const maxDisp  = (stock[saborSeleccionado] || 0) - enOrden;
+  const sabor    = SABORES.find(f => f.id === saborSeleccionado);
+  cantidadModal  = 1;
+  $('#modal-sabor-title').text(sabor.emoji + '  ' + sabor.nombre);
+  $('#modal-sabor-stock').text(`Disponibles: ${maxDisp}`);
+  $('#qty-display').text(cantidadModal);
+  abrirModal('#modal-cantidad');
+});
+
+$('#qty-minus').on('click', () => {
+  if (cantidadModal > 1) { cantidadModal--; $('#qty-display').text(cantidadModal); }
+});
+$('#qty-plus').on('click', () => {
+  const stock   = getStock();
+  const enOrden = ordenActual[saborSeleccionado] || 0;
+  const max     = (stock[saborSeleccionado] || 0) - enOrden;
+  if (cantidadModal < max) { cantidadModal++; $('#qty-display').text(cantidadModal); }
+  else toast(`Máximo disponible: ${max}`);
+});
+
+$('#btn-confirmar-qty').on('click', () => {
+  const stock   = getStock();
+  const enOrden = ordenActual[saborSeleccionado] || 0;
+  const max     = (stock[saborSeleccionado] || 0) - enOrden;
+  if (cantidadModal > max) { toast('No hay suficiente stock'); return; }
+  ordenActual[saborSeleccionado] = (ordenActual[saborSeleccionado] || 0) + cantidadModal;
+  cerrarModal('#modal-cantidad');
+  mostrarTablaOrden();
+});
+$('#btn-cancelar-qty').on('click', () => cerrarModal('#modal-cantidad'));
+
+// ════════════════════════════════════════
+//  TABLA ORDEN
+// ════════════════════════════════════════
+function mostrarTablaOrden() {
+  const ids = Object.keys(ordenActual).filter(k => ordenActual[k] > 0);
+  if (ids.length === 0) { mostrarSabores(); return; }
+  $('#step-sabores').hide();
+  $('#step-orden').show();
+  const $tbody = $('#orden-tbody').empty();
+  let total = 0;
+  ids.forEach(id => {
+    const sabor = SABORES.find(f => f.id === id);
+    const qty   = ordenActual[id];
+    total += qty;
+    $tbody.append(`
+      <tr>
+        <td>${sabor.emoji} ${sabor.nombre}</td>
+        <td class="qty-cell">${qty}</td>
+        <td><button class="del-btn" data-id="${id}">✕</button></td>
+      </tr>
+    `);
+  });
+  $('#total-count').text(total);
+}
+
+$(document).on('click', '.del-btn', function() {
+  delete ordenActual[$(this).data('id')];
+  mostrarTablaOrden();
+});
+
+$('#btn-agregar-mas').on('click', () => {
+  $('#step-orden').hide();
+  $('#step-sabores').show();
+  renderSabores();
+});
+
+// ════════════════════════════════════════
+//  FINALIZAR ORDEN
+// ════════════════════════════════════════
+$('#btn-finalizar').on('click', () => {
+  const total = Object.values(ordenActual).reduce((a,b)=>a+b, 0);
+  if (total === 0) { toast('Agrega al menos una paleta'); return; }
+  abrirModal('#modal-tipo');
+});
+
+$('#btn-tipo-regalo').on('click', () => {
+  cerrarModal('#modal-tipo');
+  guardarOrden('Regalo', 0, null);
+});
+$('#btn-tipo-familia').on('click', () => {
+  cerrarModal('#modal-tipo');
+  tipoOrden = 'Familia';
+  mostrarTotal(PRECIO_FAMILIA);
+});
+$('#btn-tipo-venta').on('click', () => {
+  cerrarModal('#modal-tipo');
+  tipoOrden = 'Venta';
+  mostrarTotal(PRECIO_VENTA);
+});
+$('#btn-cancelar-tipo').on('click', () => cerrarModal('#modal-tipo'));
+
+function mostrarTotal(precio) {
+  const totalPaletas = Object.values(ordenActual).reduce((a,b)=>a+b,0);
+  const totalDinero  = totalPaletas * precio;
+  $('#modal-total-title').text(tipoOrden === 'Familia' ? '👨‍👩‍👧 Venta Familia' : '💰 Venta');
+  $('#modal-total-sub').text(`${totalPaletas} paleta${totalPaletas>1?'s':''} × $${precio.toFixed(2)}`);
+  $('#modal-total-monto').text(`$${totalDinero.toFixed(2)}`);
+  $('#modal-total-desc').text('MXN');
+  abrirModal('#modal-total');
+}
+
+$('#btn-confirmar-orden').on('click', () => {
+  const precio       = tipoOrden === 'Familia' ? PRECIO_FAMILIA : PRECIO_VENTA;
+  const totalPaletas = Object.values(ordenActual).reduce((a,b)=>a+b,0);
+  cerrarModal('#modal-total');
+
+  if (tipoOrden === 'Venta') {
+    // Preguntar cliente
+    clienteActual = null;
+    $('#input-apodo').val('');
+    $('#sugerencias-apodo').empty();
+    abrirModal('#modal-cliente-reg');
+    // Guardar el total para usarlo después
+    $('#modal-cliente-reg').data('total', totalPaletas * precio);
+  } else {
+    guardarOrden(tipoOrden, totalPaletas * precio, null);
+  }
+});
+
+$('#btn-cancelar-total').on('click', () => {
+  cerrarModal('#modal-total');
+  abrirModal('#modal-tipo');
+});
+
+// ── Sugerencias de apodo al escribir
+$('#input-apodo').on('input', function() {
+  const val      = $(this).val().trim().toLowerCase();
+  const clientes = getClientes();
+  const $sug     = $('#sugerencias-apodo').empty();
+  if (!val) return;
+  Object.keys(clientes).filter(k => k.toLowerCase().includes(val)).slice(0,4).forEach(k => {
+    const c = clientes[k];
+    $sug.append(`
+      <div style="padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;cursor:pointer;font-weight:600;" class="sug-item" data-apodo="${k}">
+        ${k} <span style="font-weight:400;color:var(--muted);font-size:12px;">· ${c.visitas} visita${c.visitas!==1?'s':''}</span>
+      </div>
+    `);
+  });
+});
+
+$(document).on('click', '.sug-item', function() {
+  $('#input-apodo').val($(this).data('apodo'));
+  $('#sugerencias-apodo').empty();
+});
+
+$('#btn-confirmar-cliente').on('click', () => {
+  const apodo = $('#input-apodo').val().trim();
+  cerrarModal('#modal-cliente-reg');
+  const total = $('#modal-cliente-reg').data('total');
+  guardarOrden('Venta', total, apodo || null);
+});
+$('#btn-skip-cliente').on('click', () => {
+  cerrarModal('#modal-cliente-reg');
+  const total = $('#modal-cliente-reg').data('total');
+  guardarOrden('Venta', total, null);
+});
+
+// ════════════════════════════════════════
+//  GUARDAR ORDEN
+// ════════════════════════════════════════
+function guardarOrden(tipo, totalDinero, apodo) {
+  // Descontar stock
+  const stock = getStock();
+  Object.entries(ordenActual).forEach(([id, qty]) => {
+    stock[id] = Math.max(0, (stock[id] || 0) - qty);
+  });
+  saveStock(stock);
+
+  // Historial
+  const historial = getHistorial();
+  const num       = historial.length > 0 ? historial[historial.length-1].num + 1 : 1;
+  const paletas   = JSON.parse(JSON.stringify(ordenActual));
+  historial.push({
+    num,
+    fecha: new Date().toLocaleString('es-MX'),
+    tipo,
+    paletas,
+    totalPaletas: Object.values(paletas).reduce((a,b)=>a+b,0),
+    totalDinero,
+    cliente: apodo || null
+  });
+  saveHistorial(historial);
+
+  // Sumar visita al cliente (solo Venta con apodo)
+  if (tipo === 'Venta' && apodo) {
+    sumarVisita(apodo);
+  }
+
+  ordenActual = {};
+  toast(`Orden #${num} guardada ✓`);
+  // Reset visual completo
+  tipoOrden     = null;
+  clienteActual = null;
+  $('#step-orden').hide();
+  $('#step-sabores').show();
+  $('nav button').removeClass('active');
+  $('nav button[data-page="nueva-orden"]').addClass('active');
+  $('.page').removeClass('active');
+  $('#nueva-orden').addClass('active');
+  $('#header-sub').text('Nueva Orden');
+  actualizarBadges();
+}
+
+// ════════════════════════════════════════
+//  SISTEMA DE LEALTAD
+// ════════════════════════════════════════
+function sumarVisita(apodo) {
+  const clientes  = getClientes();
+  const hoy       = new Date().toDateString();
+  if (!clientes[apodo]) {
+    clientes[apodo] = { visitas: 0, ultimoDia: null, canjeables: 0 };
+  }
+  const c = clientes[apodo];
+  // Solo 1 visita por día
+  if (c.ultimoDia !== hoy) {
+    c.visitas++;
+    c.ultimoDia = hoy;
+    // Cada 6 visitas gana una paleta
+    if (c.visitas % META_VISITAS === 0) {
+      c.canjeables = (c.canjeables || 0) + 1;
+    }
+  }
+  saveClientes(clientes);
+}
+
+// ════════════════════════════════════════
+//  RENDER CLIENTES
+// ════════════════════════════════════════
+function renderClientes(filtro) {
+  const clientes = getClientes();
+  const $list    = $('#clientes-list').empty();
+  let keys       = Object.keys(clientes);
+  if (filtro) keys = keys.filter(k => k.toLowerCase().includes(filtro.toLowerCase()));
+  if (keys.length === 0) {
+    $list.html('<div class="empty"><div class="e-icon">👤</div><p>No hay clientes registrados todavía.</p></div>');
+    return;
+  }
+  // Ordenar: con canjeables primero
+  keys.sort((a,b) => (clientes[b].canjeables||0) - (clientes[a].canjeables||0));
+  keys.forEach(apodo => {
+    const c          = clientes[apodo];
+    const visitas    = c.visitas || 0;
+    const enCamino   = visitas % META_VISITAS;
+    const canjeables = c.canjeables || 0;
+    const listo      = canjeables > 0;
+    $list.append(`
+      <div class="cliente-card ${listo?'listo':''}" data-apodo="${apodo}">
+        <div class="cl-header">
+          <div class="cl-nombre">${apodo} ${listo ? '🏆' : ''}</div>
+          <div class="cl-visitas">${visitas} visita${visitas!==1?'s':''} totales</div>
+        </div>
+        ${buildCamino(enCamino, listo)}
+        ${listo ? `<div style="font-size:12px;color:var(--gold);font-weight:700;margin-top:10px;">🎁 ${canjeables} paleta${canjeables>1?'s':''} por canjear</div>` : ''}
+      </div>
+    `);
+  });
+}
+
+$('#search-cliente').on('input', function() {
+  renderClientes($(this).val().trim());
+});
+
+function buildCamino(enCamino, listo) {
+  let html = '<div class="camino">';
+  for (let i = 1; i <= META_VISITAS; i++) {
+    const hecho     = listo ? true : i <= enCamino;
+    const siguiente = !listo && i === enCamino + 1;
+    const esPremio  = i === META_VISITAS;
+    let clases = 'paso';
+    if (hecho)     clases += ' hecho';
+    if (siguiente) clases += ' siguiente';
+    if (esPremio)  clases += ' premio';
+    const icon = esPremio ? '🎁' : (hecho ? '✓' : i);
+    if (i > 1) html += `<div class="conector ${hecho ? 'hecho':''}"></div>`;
+    html += `<div class="${clases}">${icon}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function buildCaminoGrande(enCamino, listo) {
+  let html = '<div class="camino-grande">';
+  for (let i = 1; i <= META_VISITAS; i++) {
+    const hecho     = listo ? true : i <= enCamino;
+    const siguiente = !listo && i === enCamino + 1;
+    const esPremio  = i === META_VISITAS;
+    let clases = 'paso-grande';
+    if (hecho)     clases += ' hecho';
+    if (siguiente) clases += ' siguiente';
+    if (esPremio)  clases += ' premio';
+    const icon = esPremio ? '🎁' : (hecho ? '✓' : i);
+    if (i > 1) html += `<div class="conector-grande ${hecho ? 'hecho':''}"></div>`;
+    html += `<div class="${clases}">${icon}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+// Click en cliente card → pantalla para mostrarle
+$(document).on('click', '.cliente-card', function() {
+  const apodo    = $(this).data('apodo');
+  clienteViendoId = apodo;
+  const clientes = getClientes();
+  const c        = clientes[apodo];
+  const visitas  = c.visitas || 0;
+  const enCamino = visitas % META_VISITAS;
+  const listo    = (c.canjeables || 0) > 0;
+
+  $('#vcl-nombre').text(apodo);
+  $('#vcl-sub').text(`${visitas} visita${visitas!==1?'s':''} totales`);
+  $('#vcl-camino').replaceWith(buildCaminoGrande(enCamino, listo).replace('class="camino-grande"', 'class="camino-grande" id="vcl-camino"'));
+
+  if (listo) {
+    $('#vcl-ganaste').show();
+    $('#vcl-normal').hide();
+    lanzarConfeti();
+  } else {
+    $('#vcl-ganaste').hide();
+    $('#vcl-normal').show();
+  }
+  abrirModal('#modal-ver-cliente');
+});
+
+$('#btn-cerrar-vcl').on('click',  () => cerrarModal('#modal-ver-cliente'));
+$('#btn-cerrar-vcl2').on('click', () => cerrarModal('#modal-ver-cliente'));
+
+// Canjear paleta gratis → primero elegir sabor
+$('#btn-canjear').on('click', () => {
+  const clientes = getClientes();
+  const c        = clientes[clienteViendoId];
+  if (!c || (c.canjeables || 0) <= 0) return;
+  // Mostrar grid de sabores disponibles
+  const stock = getStock();
+  const $grid = $('#canje-flavor-grid').empty();
+  SABORES.forEach(f => {
+    const disp = stock[f.id] || 0;
+    $grid.append(`
+      <div class="canje-card ${disp <= 0 ? 'out':''}" data-canje-id="${f.id}">
+        <span class="stock-badge">${disp <= 0 ? 'Agotado' : disp}</span>
+        <span class="emoji">${f.emoji}</span>
+        <div class="name">${f.nombre}</div>
+      </div>
+    `);
+  });
+  $('#canje-cliente-nombre').text('Para: ' + clienteViendoId);
+  cerrarModal('#modal-ver-cliente');
+  abrirModal('#modal-canje-sabor');
+});
+
+// Al elegir sabor del canje
+$(document).on('click', '.canje-card:not(.out)', function() {
+  const saborId = $(this).data('canje-id');
+  const sabor   = SABORES.find(f => f.id === saborId);
+  cerrarModal('#modal-canje-sabor');
+
+  // Descontar stock
+  const stock = getStock();
+  stock[saborId] = Math.max(0, (stock[saborId] || 0) - 1);
+  saveStock(stock);
+
+  // Descontar canjeable
+  const clientes = getClientes();
+  const c        = clientes[clienteViendoId];
+  c.canjeables--;
+  saveClientes(clientes);
+
+  // Registrar en historial
+  const historial = getHistorial();
+  const num       = historial.length > 0 ? historial[historial.length-1].num + 1 : 1;
+  const paletas   = {};
+  paletas[saborId] = 1;
+  historial.push({
+    num,
+    fecha: new Date().toLocaleString('es-MX'),
+    tipo: 'Regalo',
+    paletas,
+    totalPaletas: 1,
+    totalDinero: 0,
+    cliente: clienteViendoId,
+    esCanje: true
+  });
+  saveHistorial(historial);
+
+  actualizarBadges();
+  toast(`🎁 ${sabor.emoji} ${sabor.nombre} canjeada para ${clienteViendoId} ✓`);
+  renderClientes();
+});
+
+$('#btn-cancelar-canje').on('click', () => {
+  cerrarModal('#modal-canje-sabor');
+  abrirModal('#modal-ver-cliente');
+});
+
+// ════════════════════════════════════════
+//  CONFETI
+// ════════════════════════════════════════
+function lanzarConfeti() {
+  const colores = ['#C97D4E','#D4A017','#5A8A6A','#C05050','#7A7570','#2C2A27'];
+  for (let i = 0; i < 40; i++) {
+    setTimeout(() => {
+      const $p = $('<div class="confeti-piece"></div>').css({
+        left:             Math.random() * 100 + 'vw',
+        top:              '-20px',
+        background:       colores[Math.floor(Math.random() * colores.length)],
+        animationDelay:   (Math.random() * .6) + 's',
+        animationDuration:(1.8 + Math.random()) + 's',
+        transform:        `rotate(${Math.random()*360}deg)`
+      });
+      $('body').append($p);
+      setTimeout(() => $p.remove(), 3000);
+    }, i * 30);
+  }
+}
+
+// ════════════════════════════════════════
+//  HISTORIAL
+// ════════════════════════════════════════
+function renderHistorial() {
+  const historial = getHistorial();
+  const $list     = $('#historial-list').empty();
+  if (historial.length === 0) {
+    $list.html('<div class="empty"><div class="e-icon">📋</div><p>No hay órdenes todavía.</p></div>');
+    return;
+  }
+  [...historial].reverse().forEach(orden => {
+    const tagClass  = orden.tipo === 'Regalo' ? 'tag-regalo' : orden.tipo === 'Familia' ? 'tag-familia' : 'tag-venta';
+    const dineroStr = orden.totalDinero > 0 ? `$${orden.totalDinero.toFixed(2)}` : '—';
+    const clienteStr = orden.cliente ? `👤 ${orden.cliente}` : '';
+    $list.append(`
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <div class="order-num">Orden #${orden.num} ${clienteStr ? `<span style="font-size:11px;font-weight:400;color:var(--muted);">${clienteStr}</span>` : ''}</div>
+            <div class="order-date">${orden.fecha}</div>
+          </div>
+          <span class="tag ${tagClass}">${orden.tipo}</span>
+        </div>
+        <div class="order-meta">
+          <div class="meta-item">🧊 <span>${orden.totalPaletas}</span> paletas</div>
+          <div class="meta-item">💵 <span>${dineroStr}</span></div>
+        </div>
+        <div class="card-actions">
+          <button class="card-btn card-btn-info" data-num="${orden.num}">Ver detalle</button>
+          <button class="card-btn card-btn-del"  data-num="${orden.num}">Borrar</button>
+        </div>
+      </div>
+    `);
+  });
+}
+
+$(document).on('click', '.card-btn-info', function() {
+  const num     = parseInt($(this).data('num'));
+  const historial = getHistorial();
+  const orden   = historial.find(o => o.num === num);
+  if (!orden) return;
+  $('#modal-detalle-title').text(`Detalle orden #${orden.num}`);
+  $('#modal-detalle-meta').text(`${orden.fecha} · ${orden.tipo}${orden.cliente ? ' · 👤 '+orden.cliente : ''}`);
+  const $items = $('#modal-detalle-items').empty();
+  if (orden.esCanje) {
+    const saborCanje = Object.keys(orden.paletas || {})[0];
+    const sabor = saborCanje ? SABORES.find(f => f.id === saborCanje) : null;
+    const saborStr = sabor ? `${sabor.emoji} ${sabor.nombre}` : 'Paleta';
+    $items.append(`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:15px;">🎁 Canje gratis</span>
+        <span style="font-weight:800;font-size:15px;color:var(--accent);">${saborStr}</span>
+      </div>
+    `);
+  } else {
+    Object.entries(orden.paletas).forEach(([id, qty]) => {
+      const sabor = SABORES.find(f => f.id === id);
+      if (!sabor) return;
+      $items.append(`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:15px;">${sabor.emoji} ${sabor.nombre}</span>
+          <span style="font-weight:800;font-size:16px;color:var(--accent);">${qty}</span>
+        </div>
+      `);
+    });
+    if (orden.totalDinero > 0) {
+      $items.append(`<div style="text-align:right;margin-top:12px;font-size:18px;font-weight:800;">Total: $${orden.totalDinero.toFixed(2)}</div>`);
+    }
+  }
+  abrirModal('#modal-detalle');
+});
+
+$('#btn-cerrar-detalle').on('click', () => cerrarModal('#modal-detalle'));
+
+$(document).on('click', '.card-btn-del', function() {
+  const num = parseInt($(this).data('num'));
+  if (!confirm(`¿Borrar la orden #${num}? Esta acción no se puede deshacer.`)) return;
+  let historial = getHistorial();
+  historial     = historial.filter(o => o.num !== num);
+  saveHistorial(historial);
+  toast(`Orden #${num} eliminada`);
+  renderHistorial();
+});
+
+// ════════════════════════════════════════
+//  STOCK
+// ════════════════════════════════════════
+let stockEdit = {};
+
+function renderStock() {
+  const stock = getStock();
+  stockEdit   = JSON.parse(JSON.stringify(stock));
+  const $list = $('#stock-list').empty();
+  SABORES.forEach(f => {
+    const qty = stockEdit[f.id] || 0;
+    $list.append(`
+      <div class="stock-item" data-id="${f.id}">
+        <span class="s-emoji">${f.emoji}</span>
+        <div class="s-info">
+          <div class="s-name">${f.nombre}</div>
+          <div class="s-count">En stock: <b class="s-count-val">${qty}</b></div>
+        </div>
+        <div class="qty-picker">
+          <button class="s-minus">−</button>
+          <div class="qty-num s-num">${qty}</div>
+          <button class="s-plus">＋</button>
+        </div>
+      </div>
+    `);
+  });
+}
+
+$(document).on('click', '.s-minus', function() {
+  const $item = $(this).closest('.stock-item');
+  const id    = $item.data('id');
+  if (stockEdit[id] > 0) {
+    stockEdit[id]--;
+    $item.find('.s-num').text(stockEdit[id]);
+    $item.find('.s-count-val').text(stockEdit[id]);
+  }
+});
+$(document).on('click', '.s-plus', function() {
+  const $item = $(this).closest('.stock-item');
+  const id    = $item.data('id');
+  stockEdit[id]++;
+  $item.find('.s-num').text(stockEdit[id]);
+  $item.find('.s-count-val').text(stockEdit[id]);
+});
+
+$('#btn-save-stock').on('click', () => {
+  saveStock(stockEdit);
+  toast('Stock actualizado ✓');
+  renderStock();
+});
+
+// ════════════════════════════════════════
+//  MODAL HELPERS
+// ════════════════════════════════════════
+function abrirModal(sel)  { $(sel).addClass('open'); }
+function cerrarModal(sel) { $(sel).removeClass('open'); }
+
+$('.modal-overlay').on('click', function(e) {
+  if ($(e.target).hasClass('modal-overlay')) cerrarModal('#' + $(this).attr('id'));
+});
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+$(function() {
+  $('#header-sub').text('Nueva Orden');
+  renderSabores();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+});
+</script>
+
+</body>
+</html>
