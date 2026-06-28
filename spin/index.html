@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Yin Yang</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="yinyang.png">
+
+<style>
+body {
+  margin: 0;
+  background: #f5f5f5;
+  font-family: Arial;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 42px;
+}
+
+.footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+}
+
+.ruleta-container {
+  position: relative;
+  width: 320px;
+  height: 320px;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  will-change: transform;
+}
+
+.centro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  z-index: 10;
+}
+
+.centro::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 22px solid black;
+}
+
+.centro img {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="resultado">...</h1>
+
+<div class="ruleta-container">
+  <canvas id="canvas"></canvas>
+
+  <div class="centro" onclick="girar()">
+    <img src="yinyang.png">
+  </div>
+</div>
+
+<footer class="footer">
+  Created by K1wi v1.0.4
+</footer>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const size = 320;
+const scale = window.devicePixelRatio || 1;
+
+canvas.width = size * scale;
+canvas.height = size * scale;
+ctx.scale(scale, scale);
+
+const total = 24;
+const angulo = (2 * Math.PI) / total;
+
+function drawWheel() {
+  for (let i = 0; i < total; i++) {
+    const start = i * angulo;
+    const end = start + angulo;
+
+    ctx.beginPath();
+    ctx.moveTo(size/2, size/2);
+    ctx.arc(size/2, size/2, size/2, start, end);
+    ctx.fillStyle = i % 2 === 0 ? "#ffffff" : "#000000";
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(size/2, size/2);
+    ctx.rotate(start + angulo / 2);
+
+    ctx.textAlign = "right";
+    ctx.fillStyle = i % 2 === 0 ? "#000" : "#fff";
+    ctx.font = "bold 13px Arial";
+    ctx.fillText(i % 2 === 0 ? "YES" : "NO", size/2 - 12, 5);
+
+    ctx.restore();
+  }
+}
+
+drawWheel();
+
+let rotacion = 0;
+let girando = false;
+
+//
+// 🔐 RANDOM CRIPTOGRÁFICO
+//
+function randomCrypto() {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return array[0] / 2**32;
+}
+
+function girar() {
+  if (girando) return;
+
+  document.getElementById("resultado").innerText = "...";
+  girando = true;
+
+  const vueltas = 5 + randomCrypto() * 2;
+  const extra = randomCrypto() * 360;
+
+  rotacion += (vueltas * 360) + extra;
+
+  canvas.style.transition = "transform 4.2s cubic-bezier(0.22, 1, 0.36, 1)";
+  canvas.style.transform = `rotate(${rotacion}deg)`;
+
+  setTimeout(() => {
+    const gradosFinal = rotacion % 360;
+    const index = Math.floor(((360 - gradosFinal) % 360) / (360 / total));
+
+    const resultado = index % 2 === 0 ? "YES" : "NO";
+    document.getElementById("resultado").innerText = resultado;
+
+    girando = false;
+  }, 4200);
+}
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js");
+}
+</script>
+
+</body>
+</html>
