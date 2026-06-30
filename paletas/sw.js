@@ -1,4 +1,4 @@
-const CACHE_NAME = 'paletas-v1';
+const CACHE_NAME = 'paletas-v1.1.2';
 const ASSETS = [
   './',
   './index.html',
