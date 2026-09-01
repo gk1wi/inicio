@@ -163,10 +163,14 @@
     transition:all .15s ease;
   }
   .pill.active{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
-  .pill.done{ color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
-  .pill.locked{ color:#565c62; cursor:default; }
-  .pill.locked::after{ content:' 🔒'; font-size:10px; }
-  .diff-note{ font-size:11px; color:var(--text-dim); margin:-14px 0 22px; min-height:14px; }
+
+  .diff-meter{ margin:18px 0 24px; }
+  .diff-meter-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .diff-meter-head span{ font-size:12px; color:var(--text-dim); }
+  .diff-meter-head b{ font-family:var(--font-display); font-size:15px; color:var(--accent); }
+  .diff-bar{ height:6px; background:var(--bg-alt); border:1px solid var(--line); overflow:hidden; }
+  .diff-bar-fill{ height:100%; width:0%; background:var(--accent); transition:width .3s ease; }
+  .diff-note{ font-size:11px; color:var(--text-dim); margin-top:8px; min-height:14px; line-height:1.5; }
 
   .start-btn{
     width:100%;
@@ -279,7 +283,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.1.0</div>
+          <div class="version-badge" id="versionBadge">v1.2.0</div>
         </div>
         <h1>Entrena tu aim, medido en frío.</h1>
         <p>Tres ejercicios de puntería. Cada sesión guarda tu récord localmente en este navegador — la única meta es superarlo la próxima vez.</p>
@@ -324,13 +328,13 @@
             <div class="pill active" data-dur="60">60s</div>
             <div class="pill" data-dur="90">90s</div>
           </div>
-          <div class="pill-group" id="diffGroup">
-            <div class="pill" data-tier="0">Fácil</div>
-            <div class="pill" data-tier="1">Normal</div>
-            <div class="pill" data-tier="2">Difícil</div>
-          </div>
         </div>
-        <div class="diff-note" id="diffNote"></div>
+
+        <div class="diff-meter">
+          <div class="diff-meter-head"><span>Dificultad automática</span><b id="diffPct">0%</b></div>
+          <div class="diff-bar"><div class="diff-bar-fill" id="diffBarFill"></div></div>
+          <div class="diff-note" id="diffNote"></div>
+        </div>
 
         <button class="start-btn" id="startBtn">Empezar sesión</button>
         <div class="hint">Tus datos se guardan solo en este navegador (localStorage) — no se suben a ningún servidor.</div>
@@ -388,7 +392,7 @@
   "use strict";
 
   /* ============ persistence ============ */
-  const STORAGE_KEY = "reticle_aimtrainer_v1";
+  const STORAGE_KEY = "reticle_aimtrainer_v2";
   function loadData(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -404,13 +408,13 @@
   }
   let store = loadData();
 
-  function modeKey(mode, dur, diff){ return mode + "_" + dur + "_" + diff; }
-  function getBest(mode, dur, diff){
-    const k = modeKey(mode,dur,diff);
+  function modeKey(mode, dur){ return mode + "_" + dur; }
+  function getBest(mode, dur){
+    const k = modeKey(mode,dur);
     return store.modes[k] ? store.modes[k].best : null;
   }
-  function recordSession(mode, dur, diff, score){
-    const k = modeKey(mode,dur,diff);
+  function recordSession(mode, dur, score){
+    const k = modeKey(mode,dur);
     if(!store.modes[k]) store.modes[k] = { best:0, plays:0 };
     store.modes[k].plays += 1;
     const isRecord = score > store.modes[k].best;
@@ -418,15 +422,6 @@
     store.totalSessions += 1;
     saveData(store);
     return isRecord;
-  }
-  function bestAcrossDurations(mode){
-    let best = null;
-    for(const k in store.modes){
-      if(k.indexOf(mode+"_") === 0){
-        if(best === null || store.modes[k].best > best) best = store.modes[k].best;
-      }
-    }
-    return best;
   }
   function overallBest(){
     let best = null;
@@ -436,21 +431,33 @@
     return best;
   }
 
+  /* ============ continuous difficulty ============ */
+  // Difficulty is no longer a fixed tier — it's derived straight from your best
+  // score in that mode/duration, and climbs smoothly (asymptotically) forever
+  // as your record grows. No jumps, no picking, no going back.
+  const MODE_K = { flick: 9000, tracking: 11000, switch: 9000 }; // higher K = more score needed to ramp up
+  function lerp(a, b, t){ return a + (b-a) * t; }
+  function difficultyT(mode, duration){
+    const best = getBest(mode, duration) || 0;
+    const k = MODE_K[mode] * (duration/60);
+    return best / (best + k); // 0 -> asymptotically approaches 1, never resets, never capped hard
+  }
+  function getPreset(mode, duration){
+    const t = difficultyT(mode, duration);
+    const e = DIFF_PRESETS.easy, h = DIFF_PRESETS.hard;
+    return {
+      radius: lerp(e.radius, h.radius, t),
+      flickLifetime: lerp(e.flickLifetime, h.flickLifetime, t),
+      switchCount: Math.round(lerp(e.switchCount, h.switchCount, t)),
+      switchLifetime: lerp(e.switchLifetime, h.switchLifetime, t),
+      trackSpeed: lerp(e.trackSpeed, h.trackSpeed, t),
+      t
+    };
+  }
+
   /* ============ menu state ============ */
   let selectedMode = "flick";
   let selectedDuration = 60;
-
-  const TIER_NAMES = ["easy", "normal", "hard"];
-  const TIER_LABELS = ["Fácil", "Normal", "Difícil"];
-  const TIER_UNLOCK_SCORE = [2200, 4200]; // score needed at 60s baseline to unlock the next tier
-  if(typeof store.tier !== "number") store.tier = 0;
-
-  function currentTierIndex(){ return store.tier; }
-  function currentDiffName(){ return TIER_NAMES[store.tier]; }
-  function unlockThreshold(tier, duration){
-    if(tier >= TIER_UNLOCK_SCORE.length) return null;
-    return Math.round(TIER_UNLOCK_SCORE[tier] * (duration/60));
-  }
 
   const modeList = document.getElementById("modeList");
   modeList.addEventListener("click", (e) => {
@@ -459,6 +466,7 @@
     document.querySelectorAll(".mode-card").forEach(c => c.classList.remove("selected"));
     card.classList.add("selected");
     selectedMode = card.dataset.mode;
+    refreshMenuStats();
   });
 
   document.getElementById("durationGroup").addEventListener("click", (e) => {
@@ -470,34 +478,26 @@
     refreshMenuStats();
   });
 
-  function renderDiffPills(){
-    const tier = currentTierIndex();
-    document.querySelectorAll("#diffGroup .pill").forEach(p => {
-      const t = parseInt(p.dataset.tier, 10);
-      p.classList.remove("active","done","locked");
-      if(t < tier) p.classList.add("done");
-      else if(t === tier) p.classList.add("active");
-      else p.classList.add("locked");
-    });
-    const note = document.getElementById("diffNote");
-    const need = unlockThreshold(tier, selectedDuration);
-    if(need === null){
-      note.textContent = "Estás en la dificultad máxima — sigue subiendo tu récord.";
-    } else {
-      note.textContent = "Jugando en " + TIER_LABELS[tier] + " · consigue " + need + " pts en una sesión para desbloquear " + TIER_LABELS[tier+1] + " permanentemente.";
-    }
+  function renderDiffMeter(){
+    const t = difficultyT(selectedMode, selectedDuration);
+    const pct = Math.round(t*100);
+    document.getElementById("diffPct").textContent = pct + "%";
+    document.getElementById("diffBarFill").style.width = pct + "%";
+    const best = getBest(selectedMode, selectedDuration);
+    document.getElementById("diffNote").textContent = best === null
+      ? "Empiezas suave — se pone más difícil sola conforme subes tu récord."
+      : "Sube según tu récord (" + best + " pts) en este modo. Nunca baja.";
   }
 
   function refreshMenuStats(){
-    const diff = currentDiffName();
     ["flick","tracking","switch"].forEach(m => {
-      const b = getBest(m, selectedDuration, diff);
+      const b = getBest(m, selectedDuration);
       document.getElementById("best-"+m).textContent = b === null ? "—" : b;
     });
     document.getElementById("statTotalSessions").textContent = store.totalSessions;
     const ob = overallBest();
     document.getElementById("statBestOverall").textContent = ob === null ? "—" : ob;
-    renderDiffPills();
+    renderDiffMeter();
   }
   refreshMenuStats();
 
@@ -505,7 +505,7 @@
   const DIFF_PRESETS = {
     easy:   { radius: 34, flickLifetime: 1300, switchCount: 3, switchLifetime: 2200, trackSpeed: 90 },
     normal: { radius: 26, flickLifetime: 950,  switchCount: 4, switchLifetime: 1700, trackSpeed: 140 },
-    hard:   { radius: 19, flickLifetime: 700,  switchCount: 5, switchLifetime: 1300, trackSpeed: 210 },
+    hard:   { radius: 21, flickLifetime: 760,  switchCount: 5, switchLifetime: 1400, trackSpeed: 190 },
   };
 
   /* ============ screens ============ */
@@ -545,12 +545,11 @@
   }
 
   function startSession(){
-    const diff = currentDiffName();
-    const preset = DIFF_PRESETS[diff];
+    const preset = getPreset(selectedMode, selectedDuration);
     session = {
       mode: selectedMode,
       duration: selectedDuration,
-      diff: diff,
+      diffPct: Math.round(preset.t*100),
       preset,
       timeLeft: selectedDuration,
       startTs: 0,
@@ -872,8 +871,9 @@
     if(rafId) cancelAnimationFrame(rafId);
 
     const finalScore = Math.round(session.score);
-    const isRecord = recordSession(session.mode, session.duration, session.diff, finalScore);
-    const best = getBest(session.mode, session.duration, session.diff);
+    const prevBest = getBest(session.mode, session.duration) || 0;
+    const isRecord = recordSession(session.mode, session.duration, finalScore);
+    const best = getBest(session.mode, session.duration);
 
     let hits, misses, acc, avgReact;
     if(session.mode === "tracking"){
@@ -888,7 +888,7 @@
       avgReact = session.reactions.length ? Math.round(session.reactions.reduce((a,b)=>a+b,0)/session.reactions.length)+" ms" : "—";
     }
 
-    document.getElementById("resultsMode").textContent = session.mode.toUpperCase() + " · " + session.duration + "s · " + session.diff;
+    document.getElementById("resultsMode").textContent = session.mode.toUpperCase() + " · " + session.duration + "s · dificultad " + session.diffPct + "%";
     document.getElementById("resHits").textContent = hits + " / " + misses;
     document.getElementById("resAcc").textContent = Math.round(acc) + "%";
     document.getElementById("resReact").textContent = avgReact;
@@ -897,18 +897,12 @@
     document.getElementById("resBest").textContent = best;
     document.getElementById("recordBanner").classList.toggle("show", isRecord);
 
-    // difficulty progression: only ever moves forward, never back
-    let unlocked = false;
-    const tier = store.tier;
-    const need = unlockThreshold(tier, session.duration);
-    if(need !== null && finalScore >= need){
-      store.tier = tier + 1;
-      saveData(store);
-      unlocked = true;
-    }
+    // difficulty is derived from the record itself — beating it is what makes next time harder
+    const newT = difficultyT(session.mode, session.duration);
+    const oldT = prevBest ? prevBest/(prevBest + MODE_K[session.mode]*(session.duration/60)) : 0;
     const unlockBanner = document.getElementById("unlockBanner");
-    if(unlocked){
-      unlockBanner.textContent = "🔓 Desbloqueaste " + TIER_LABELS[store.tier];
+    if(isRecord && Math.round(newT*100) > Math.round(oldT*100)){
+      unlockBanner.textContent = "🔓 Nuevo récord — la dificultad sube a " + Math.round(newT*100) + "%";
       unlockBanner.classList.add("show");
     } else {
       unlockBanner.classList.remove("show");

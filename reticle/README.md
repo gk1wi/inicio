@@ -1,12 +1,12 @@
-# Reticle v1.1.0 — Entrenador de Aim
+# Reticle v1.2.0 — Entrenador de Aim
 _created by gK1wi_
 
 5 archivos: `index.html`, `manifest.json`, `service-worker.js`, `icon-192.png`, `icon-512.png`. Súbelos juntos, en la misma carpeta/raíz del repo — no muevas ni renombres ninguno, el service worker y el manifest los referencian por nombre.
 
 ## Novedades de esta versión
 
-- **Progresión de dificultad automática**: empiezas en Fácil. Al superar el puntaje objetivo en una sesión, se desbloquea Normal para siempre; luego Difícil. No puedes bajar de nivel ni elegirlo manualmente — el menú te muestra el nivel actual y cuánto puntaje te falta para el siguiente.
-- **Instalable y funciona offline** (PWA con service worker).
+- **Dificultad continua, no por niveles**: ya no hay Fácil/Normal/Difícil como botones. Cada modo tiene su propio nivel de dificultad (0–100%, mostrado en el menú) que sube solo, suavemente, en función de tu récord en ese modo — cuanto mejor tu marca, más chicos y rápidos son los blancos. Nunca baja, y como es una curva continua no hay saltos bruscos como en la versión anterior.
+- Como el sistema de dificultad cambió por completo, **esta versión reinicia el progreso guardado** (récords y sesiones de la v1.1.0 no se migran). A partir de aquí todo lo que juegues se acumula sin volver a resetear.
 
 ## Publicar en GitHub Pages
 
