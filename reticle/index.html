@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Reticle — Entrenador de Aim</title>
+<title>Reticle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,7 +23,6 @@
     --accent:#3ecfc2;
     --accent-soft:#1f3a38;
     --amber:#ffb84d;
-    --danger:#ff5a5a;
     --font-display:'JetBrains Mono', monospace;
     --font-body:'Inter', system-ui, -apple-system, sans-serif;
   }
@@ -247,6 +246,7 @@
     margin-bottom:20px;
   }
   .record-banner.show{display:flex;}
+  .record-banner.warn{ border-color:var(--amber); color:var(--amber); background:rgba(255,184,77,0.08); }
   .results-grid{
     display:grid; grid-template-columns:1fr 1fr; gap:16px;
     margin-bottom:26px;
@@ -367,7 +367,7 @@
       <div class="tag" id="resultsMode">FLICK</div>
       <h2>Sesión terminada</h2>
       <div class="record-banner" id="recordBanner">★ Nuevo récord en este modo</div>
-      <div class="record-banner" id="unlockBanner" style="border-color:var(--amber); color:var(--amber); background:rgba(255,184,77,0.08);">🔓 Nivel desbloqueado</div>
+      <div class="record-banner warn" id="unlockBanner">🔓 Nivel desbloqueado</div>
       <div class="results-grid">
         <div class="result-stat"><span>aciertos / fallos</span><b id="resHits">0 / 0</b></div>
         <div class="result-stat"><span>precisión</span><b id="resAcc">0%</b></div>
@@ -503,9 +503,8 @@
 
   /* ============ difficulty presets ============ */
   const DIFF_PRESETS = {
-    easy:   { radius: 34, flickLifetime: 1300, switchCount: 3, switchLifetime: 2200, trackSpeed: 90 },
-    normal: { radius: 26, flickLifetime: 950,  switchCount: 4, switchLifetime: 1700, trackSpeed: 140 },
-    hard:   { radius: 21, flickLifetime: 760,  switchCount: 5, switchLifetime: 1400, trackSpeed: 190 },
+    easy: { radius: 34, flickLifetime: 1300, switchCount: 3, switchLifetime: 2200, trackSpeed: 90 },
+    hard: { radius: 21, flickLifetime: 760,  switchCount: 5, switchLifetime: 1400, trackSpeed: 190 },
   };
 
   /* ============ screens ============ */
@@ -565,7 +564,6 @@
       trackTimeOnTarget: 0,
       trackTimeTotal: 0,
       mouse: { x: -9999, y: -9999 },
-      nextSpawnGuard: 0,
     };
     updateHud();
     showScreen("game");
@@ -770,9 +768,6 @@
       if(onTarget){
         session.trackTimeOnTarget += dt;
         session.score += Math.round(dt * 260);
-        session.hits += dt; // fractional, used only for display rounding at end
-      } else {
-        session.misses += dt;
       }
     }
   }
