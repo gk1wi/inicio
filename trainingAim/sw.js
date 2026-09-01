@@ -1,4 +1,4 @@
-const CACHE = "k1wiaim-v1.1.0";
+const CACHE = "k1wiaim-v1.2.0";
 const ASSETS = [
   "./",
   "./index.html",

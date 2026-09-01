@@ -404,7 +404,7 @@
 (function(){
   "use strict";
 
-  var APP_VERSION = "1.1.0";
+  var APP_VERSION = "1.2.0";
 
   var els = {
     hud: document.getElementById('hud'),
@@ -449,6 +449,8 @@
      ========================================================= */
   var STORAGE_KEY = 'k1wiaim_history_v1';
   var ADAPTIVE_KEY = 'k1wiaim_adaptive_size_v1';
+  // Récords absolutos: nunca se recortan, aunque el historial sí.
+  var MILESTONES_KEY = 'k1wiaim_milestones_v1';
   var MAX_HISTORY = 100;
 
   var Store = {
@@ -460,6 +462,9 @@
     },
     save: function(history){
       try{
+        // El historial se recorta a las últimas MAX_HISTORY sesiones
+        // (solo para la gráfica de tendencia); esto NO borra tus récords,
+        // que viven aparte en getMilestones/setMilestones.
         localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-MAX_HISTORY)));
       }catch(e){ /* almacenamiento no disponible, se ignora */ }
     },
@@ -475,6 +480,30 @@
     },
     setAdaptiveSize: function(v){
       try{ localStorage.setItem(ADAPTIVE_KEY, String(v)); }catch(e){}
+    },
+    getMilestones: function(){
+      try{
+        var raw = localStorage.getItem(MILESTONES_KEY);
+        return raw ? JSON.parse(raw) : { bestScore: 0, bestScoreDate: null, bestReactionMs: null };
+      }catch(e){ return { bestScore: 0, bestScoreDate: null, bestReactionMs: null }; }
+    },
+    setMilestones: function(m){
+      try{ localStorage.setItem(MILESTONES_KEY, JSON.stringify(m)); }catch(e){}
+    },
+    // Actualiza los récords absolutos con una sesión nueva; devuelve
+    // { milestones, isScoreRecord } para que la UI sepa qué mostrar.
+    updateMilestones: function(session){
+      var m = Store.getMilestones();
+      var isScoreRecord = session.score > 0 && session.score > m.bestScore;
+      if(isScoreRecord){
+        m.bestScore = session.score;
+        m.bestScoreDate = session.date;
+      }
+      if(session.bestMs && (m.bestReactionMs === null || session.bestMs < m.bestReactionMs)){
+        m.bestReactionMs = session.bestMs;
+      }
+      Store.setMilestones(m);
+      return { milestones: m, isScoreRecord: isScoreRecord };
     }
   };
 
@@ -696,8 +725,6 @@
     var score = computeScore(acc, avgMs);
 
     var historyBefore = Store.load();
-    var prevBest = getBestScore(historyBefore);
-    var isRecord = score > 0 && score > prevBest;
 
     var session = {
       date: new Date().toISOString(),
@@ -711,7 +738,9 @@
       misses: state.misses,
       score: score
     };
+    var prevBest = Store.getMilestones().bestScore;
     var history = Store.addSession(session);
+    var milestoneResult = Store.updateMilestones(session);
 
     // Ajustar el tamaño adaptativo para la próxima sesión: si el
     // modo auto-ajuste está activo, la dificultad sube cuando mejoras
@@ -722,7 +751,7 @@
       Store.setAdaptiveSize(next);
     }
 
-    renderResults(session, historyBefore, isRecord, prevBest);
+    renderResults(session, historyBefore, milestoneResult.isScoreRecord, prevBest);
     state = null;
     showScreen('results');
   }
@@ -788,15 +817,14 @@
       return;
     }
 
-    var best = history.reduce(function(m, s){ return s.score > m.score ? s : m; }, history[0]);
-    var bestReaction = history.reduce(function(m, s){ return (s.bestMs && s.bestMs < m) ? s.bestMs : m; }, Infinity);
+    var milestones = Store.getMilestones();
 
     var grid = document.createElement('div');
     grid.className = 'progress-grid';
     grid.innerHTML =
-      '<div class="result-cell"><div class="num">' + history.length + '</div><div class="lbl">SESIONES JUGADAS</div></div>' +
-      '<div class="result-cell"><div class="num">' + best.score + '</div><div class="lbl">MEJOR PUNTUACIÓN</div></div>' +
-      '<div class="result-cell wide"><div class="num">' + (isFinite(bestReaction) ? bestReaction + 'ms' : '—') + '</div><div class="lbl">REACCIÓN MÁS RÁPIDA REGISTRADA</div></div>';
+      '<div class="result-cell"><div class="num">' + history.length + (history.length >= MAX_HISTORY ? '+' : '') + '</div><div class="lbl">SESIONES EN HISTORIAL</div></div>' +
+      '<div class="result-cell"><div class="num">' + milestones.bestScore + '</div><div class="lbl">RÉCORD DE PUNTUACIÓN</div></div>' +
+      '<div class="result-cell wide"><div class="num">' + (milestones.bestReactionMs !== null ? milestones.bestReactionMs + 'ms' : '—') + '</div><div class="lbl">REACCIÓN MÁS RÁPIDA DE SIEMPRE</div></div>';
     body.appendChild(grid);
 
     var last10 = history.slice(-10).map(function(s){ return s.score; });
