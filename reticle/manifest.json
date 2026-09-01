@@ -1,5 +1,5 @@
 {
-  "name": "Reticle — Entrenador de Aim",
+  "name": "Reticle",
   "short_name": "Reticle",
   "description": "Entrenador de aim local. Flick, Tracking y Switch, con progresión de dificultad y récords guardados en tu navegador.",
   "start_url": "./index.html",
