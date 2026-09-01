@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>K1WI AIM</title>
-<meta name="description" content="Entrena tu puntería. Rápido, preciso, offline.">
+<meta name="description" content="Entrena tu puntería. Se adapta para que siempre mejores.">
 <meta name="theme-color" content="#12161C">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -20,6 +20,7 @@
     --signal-dim:#8A7318;
     --miss:#E5484D;
     --hit:#4FD1C5;
+    --good:#4FD1C5;
     --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   }
@@ -52,10 +53,7 @@
   #hud-left, #hud-right{display:flex; gap:22px;}
 
   /* ---------- Play field ---------- */
-  #field{
-    position:absolute; inset:0;
-    cursor:none;
-  }
+  #field{ position:absolute; inset:0; cursor:none; }
   .target{
     position:absolute;
     border-radius:50%;
@@ -106,9 +104,7 @@
     pointer-events:none;
     z-index:6;
   }
-  #crosshair::before, #crosshair::after{
-    content:""; position:absolute; background:var(--text);
-  }
+  #crosshair::before, #crosshair::after{ content:""; position:absolute; background:var(--text); }
   #crosshair::before{ left:50%; top:0; width:2px; height:100%; margin-left:-1px; opacity:0.7;}
   #crosshair::after{ top:50%; left:0; height:2px; width:100%; margin-top:-1px; opacity:0.7;}
 
@@ -119,35 +115,25 @@
     background:var(--bg);
     z-index:10;
     cursor:default;
+    overflow-y:auto;
+    padding:24px 0;
   }
   .hidden{ display:none !important; }
 
   .panel{
     width:min(420px, 88vw);
     display:flex; flex-direction:column; align-items:center;
-    gap:28px;
+    gap:22px;
     text-align:center;
+    margin:auto;
   }
-  .brand{
-    display:flex; flex-direction:column; align-items:center; gap:10px;
-  }
-  .brand .mark{
-    width:56px; height:56px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .brand h1{
-    font-size:28px;
-    letter-spacing:-0.01em;
-    font-weight:700;
-  }
+  .brand{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .brand .mark{ width:56px; height:56px; display:flex; align-items:center; justify-content:center; }
+  .brand h1{ font-size:28px; letter-spacing:-0.01em; font-weight:700; }
   .brand h1 span{ color:var(--signal); }
   .brand p{ color:var(--text-dim); font-size:14px; }
 
-  .field-group{
-    width:100%;
-    display:flex; flex-direction:column; gap:14px;
-    text-align:left;
-  }
+  .field-group{ width:100%; display:flex; flex-direction:column; gap:14px; text-align:left; }
   .field-row{
     display:flex; align-items:center; justify-content:space-between;
     gap:12px;
@@ -157,9 +143,8 @@
     padding:12px 14px;
   }
   .field-row label{ font-size:13px; color:var(--text-dim); }
-  .seg{
-    display:flex; gap:6px;
-  }
+  .field-row .sub{ font-size:11px; color:var(--text-dim); margin-top:2px; }
+  .seg{ display:flex; gap:6px; }
   .seg button{
     font-family:var(--font-mono);
     font-size:13px;
@@ -170,12 +155,28 @@
     padding:6px 10px;
     cursor:pointer;
   }
-  .seg button.active{
-    color:var(--bg);
-    background:var(--signal);
-    border-color:var(--signal);
-    font-weight:700;
+  .seg button.active{ color:var(--bg); background:var(--signal); border-color:var(--signal); font-weight:700; }
+  .seg button:disabled{ opacity:0.35; cursor:not-allowed; }
+
+  .switch{
+    position:relative;
+    width:42px; height:24px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:999px;
+    cursor:pointer;
+    flex-shrink:0;
   }
+  .switch::after{
+    content:"";
+    position:absolute; top:2px; left:2px;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:var(--text-dim);
+    transition:transform 140ms ease, background 140ms ease;
+  }
+  .switch.on{ border-color:var(--signal); }
+  .switch.on::after{ transform:translateX(18px); background:var(--signal); }
 
   button.primary{
     width:100%;
@@ -206,12 +207,28 @@
   .hint{ font-size:12px; color:var(--text-dim); }
 
   /* results */
-  .results-grid{
+  .record-banner{
     width:100%;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    background:rgba(245,197,24,0.12);
+    border:1px solid var(--signal-dim);
+    color:var(--signal);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:13px;
+    font-weight:700;
   }
+  .trend-banner{
+    width:100%;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:13px;
+    color:var(--text-dim);
+  }
+  .trend-banner b{ color:var(--text); }
+  .results-grid{ width:100%; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .result-cell{
     background:var(--bg-raised);
     border:1px solid var(--line);
@@ -219,23 +236,35 @@
     padding:14px;
     text-align:left;
   }
-  .result-cell .num{
-    font-family:var(--font-mono);
-    font-size:24px;
-    font-weight:700;
+  .result-cell .num{ font-family:var(--font-mono); font-size:24px; font-weight:700; }
+  .result-cell .lbl{ font-size:11px; color:var(--text-dim); margin-top:2px; }
+  .result-cell.wide{ grid-column:1 / -1; }
+  .result-cell .num.up{ color:var(--good); }
+
+  #countdown-num{ font-family:var(--font-mono); font-size:96px; font-weight:700; color:var(--signal); }
+
+  /* progress screen */
+  .progress-grid{ width:100%; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .sparkline-box{
+    width:100%;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    text-align:left;
   }
-  .result-cell .lbl{
+  .sparkline-box .lbl{ font-size:11px; color:var(--text-dim); margin-bottom:8px; }
+  .empty-state{ color:var(--text-dim); font-size:13px; padding:20px 0; }
+
+  .version-tag{
+    position:absolute;
+    bottom:10px; right:14px;
+    font-family:var(--font-mono);
     font-size:11px;
     color:var(--text-dim);
-    margin-top:2px;
-  }
-  .result-cell.wide{ grid-column:1 / -1; }
-
-  #countdown-num{
-    font-family:var(--font-mono);
-    font-size:96px;
-    font-weight:700;
-    color:var(--signal);
+    opacity:0.5;
+    z-index:1;
+    pointer-events:none;
   }
 
   @media (max-width:420px){
@@ -280,10 +309,17 @@
           </svg>
         </div>
         <h1>K1WI<span>AIM</span></h1>
-        <p>Entrena tu puntería. Modo Desafío.</p>
+        <p id="start-subtitle">Entrena tu puntería. Modo Desafío.</p>
       </div>
 
       <div class="field-group">
+        <div class="field-row">
+          <div>
+            <label>Auto-ajuste</label>
+            <div class="sub" id="adaptive-sub">El tamaño se adapta a tu progreso</div>
+          </div>
+          <div class="switch on" id="switch-adaptive"></div>
+        </div>
         <div class="field-row">
           <label>Objetivos</label>
           <div class="seg" id="seg-count">
@@ -292,7 +328,7 @@
             <button data-val="60">60</button>
           </div>
         </div>
-        <div class="field-row">
+        <div class="field-row" id="row-size">
           <label>Tamaño</label>
           <div class="seg" id="seg-size">
             <button data-val="30">S</button>
@@ -303,6 +339,7 @@
       </div>
 
       <button class="primary" id="btn-start">Jugar</button>
+      <button class="ghost" id="btn-progress">Ver progreso</button>
       <p class="hint">Haz clic o toca los objetivos. Falla lo menos posible.</p>
     </div>
   </div>
@@ -315,10 +352,16 @@
   <!-- Results -->
   <div id="screen-results" class="overlay hidden">
     <div class="panel">
-      <div class="brand">
-        <h1>Resultados</h1>
-      </div>
+      <div class="brand"><h1>Resultados</h1></div>
+
+      <div class="record-banner hidden" id="record-banner">Nuevo récord personal</div>
+      <div class="trend-banner hidden" id="trend-banner"></div>
+
       <div class="results-grid">
+        <div class="result-cell wide">
+          <div class="num" id="res-score">0</div>
+          <div class="lbl">PUNTUACIÓN <span id="res-score-best"></span></div>
+        </div>
         <div class="result-cell">
           <div class="num" id="res-time">0.00s</div>
           <div class="lbl">TIEMPO TOTAL</div>
@@ -345,11 +388,23 @@
     </div>
   </div>
 
+  <!-- Progress -->
+  <div id="screen-progress" class="overlay hidden">
+    <div class="panel">
+      <div class="brand"><h1>Progreso</h1></div>
+      <div id="progress-body" style="width:100%; display:flex; flex-direction:column; gap:14px;"></div>
+      <button class="ghost" id="btn-progress-back">Volver</button>
+    </div>
+  </div>
+
+  <div class="version-tag" id="version-tag"></div>
 </div>
 
 <script>
 (function(){
   "use strict";
+
+  var APP_VERSION = "1.1.0";
 
   var els = {
     hud: document.getElementById('hud'),
@@ -363,24 +418,109 @@
     screenCountdown: document.getElementById('screen-countdown'),
     countdownNum: document.getElementById('countdown-num'),
     screenResults: document.getElementById('screen-results'),
+    screenProgress: document.getElementById('screen-progress'),
+    progressBody: document.getElementById('progress-body'),
     btnStart: document.getElementById('btn-start'),
     btnRetry: document.getElementById('btn-retry'),
     btnMenu: document.getElementById('btn-menu'),
+    btnProgress: document.getElementById('btn-progress'),
+    btnProgressBack: document.getElementById('btn-progress-back'),
     segCount: document.getElementById('seg-count'),
     segSize: document.getElementById('seg-size'),
+    rowSize: document.getElementById('row-size'),
+    switchAdaptive: document.getElementById('switch-adaptive'),
+    adaptiveSub: document.getElementById('adaptive-sub'),
+    recordBanner: document.getElementById('record-banner'),
+    trendBanner: document.getElementById('trend-banner'),
+    resScore: document.getElementById('res-score'),
+    resScoreBest: document.getElementById('res-score-best'),
     resTime: document.getElementById('res-time'),
     resAcc: document.getElementById('res-acc'),
     resAvg: document.getElementById('res-avg'),
     resMiss: document.getElementById('res-miss'),
-    resBest: document.getElementById('res-best')
+    resBest: document.getElementById('res-best'),
+    versionTag: document.getElementById('version-tag')
   };
 
-  var settings = { count: 30, size: 42 };
+  els.versionTag.textContent = 'v' + APP_VERSION;
+
+  /* =========================================================
+     STORAGE — historial local de sesiones y tamaño adaptativo
+     ========================================================= */
+  var STORAGE_KEY = 'k1wiaim_history_v1';
+  var ADAPTIVE_KEY = 'k1wiaim_adaptive_size_v1';
+  var MAX_HISTORY = 100;
+
+  var Store = {
+    load: function(){
+      try{
+        var raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      }catch(e){ return []; }
+    },
+    save: function(history){
+      try{
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-MAX_HISTORY)));
+      }catch(e){ /* almacenamiento no disponible, se ignora */ }
+    },
+    addSession: function(session){
+      var history = Store.load();
+      history.push(session);
+      Store.save(history);
+      return history;
+    },
+    getAdaptiveSize: function(){
+      var v = parseInt(localStorage.getItem(ADAPTIVE_KEY), 10);
+      return isNaN(v) ? 42 : v;
+    },
+    setAdaptiveSize: function(v){
+      try{ localStorage.setItem(ADAPTIVE_KEY, String(v)); }catch(e){}
+    }
+  };
+
+  /* =========================================================
+     SCORING — una métrica combinando velocidad y precisión
+     ========================================================= */
+  function computeScore(accuracyPct, avgMs){
+    if(!avgMs) return 0;
+    return Math.round((accuracyPct / 100) * (1000 / avgMs) * 100);
+  }
+
+  function getBestScore(history){
+    return history.reduce(function(max, s){ return Math.max(max, s.score); }, 0);
+  }
+
+  /* =========================================================
+     DIFICULTAD ADAPTATIVA — el tamaño del objetivo evoluciona
+     con tu rendimiento para que la práctica siga exigiendo mejora
+     ========================================================= */
+  var ADAPTIVE_MIN = 22;
+  var ADAPTIVE_MAX = 60;
+  var ADAPTIVE_STEP = 2;
+
+  function nextAdaptiveSize(currentSize, history){
+    if(history.length < 2) return currentSize;
+    var last = history[history.length - 1];
+    var prev = history[history.length - 2];
+    var delta = last.score - prev.score;
+    if(delta > prev.score * 0.03){
+      return Math.max(ADAPTIVE_MIN, currentSize - ADAPTIVE_STEP);
+    }
+    if(delta < -prev.score * 0.03){
+      return Math.min(ADAPTIVE_MAX, currentSize + ADAPTIVE_STEP);
+    }
+    return currentSize;
+  }
+
+  /* =========================================================
+     UI: selección de modo (auto-ajuste manual/adaptativo)
+     ========================================================= */
+  var settings = { count: 30, size: 42, adaptive: true };
 
   function bindSeg(container, key){
     container.addEventListener('click', function(e){
       var btn = e.target.closest('button');
-      if(!btn) return;
+      if(!btn || btn.disabled) return;
       Array.prototype.forEach.call(container.children, function(b){ b.classList.remove('active'); });
       btn.classList.add('active');
       settings[key] = parseInt(btn.dataset.val, 10);
@@ -389,12 +529,28 @@
   bindSeg(els.segCount, 'count');
   bindSeg(els.segSize, 'size');
 
+  function setAdaptive(on){
+    settings.adaptive = on;
+    els.switchAdaptive.classList.toggle('on', on);
+    els.rowSize.style.opacity = on ? '0.45' : '1';
+    Array.prototype.forEach.call(els.segSize.children, function(b){ b.disabled = on; });
+    els.adaptiveSub.textContent = on
+      ? 'El tamaño se adapta a tu progreso'
+      : 'Ajusta el tamaño manualmente';
+  }
+  els.switchAdaptive.addEventListener('click', function(){ setAdaptive(!settings.adaptive); });
+  setAdaptive(true);
+
+  /* =========================================================
+     ESTADO DEL JUEGO
+     ========================================================= */
   var state = null;
 
   function showScreen(name){
     els.screenStart.classList.toggle('hidden', name !== 'start');
     els.screenCountdown.classList.toggle('hidden', name !== 'countdown');
     els.screenResults.classList.toggle('hidden', name !== 'results');
+    els.screenProgress.classList.toggle('hidden', name !== 'progress');
     var playing = (name === 'playing');
     els.hud.classList.toggle('hidden', !playing);
     els.field.classList.toggle('hidden', !playing);
@@ -416,10 +572,14 @@
     }, 550);
   }
 
+  function activeSize(){
+    return settings.adaptive ? Store.getAdaptiveSize() : settings.size;
+  }
+
   function beginGame(){
     state = {
       total: settings.count,
-      size: settings.size,
+      size: activeSize(),
       spawned: 0,
       hits: 0,
       misses: 0,
@@ -504,9 +664,8 @@
   els.field.addEventListener('pointerdown', onFieldMiss);
 
   els.field.addEventListener('pointermove', function(e){
-    var rect = els.field.getBoundingClientRect();
-    els.crosshair.style.left = (e.clientX) + 'px';
-    els.crosshair.style.top = (e.clientY) + 'px';
+    els.crosshair.style.left = e.clientX + 'px';
+    els.crosshair.style.top = e.clientY + 'px';
   });
 
   function updateHud(){
@@ -534,20 +693,127 @@
       ? Math.round(state.reactions.reduce(function(a,b){return a+b;},0) / state.reactions.length)
       : 0;
     var bestMs = state.reactions.length ? Math.round(Math.min.apply(null, state.reactions)) : 0;
+    var score = computeScore(acc, avgMs);
 
-    els.resTime.textContent = totalTime.toFixed(2) + 's';
-    els.resAcc.textContent = acc + '%';
-    els.resAvg.textContent = avgMs + 'ms';
-    els.resMiss.textContent = state.misses;
-    els.resBest.textContent = bestMs + 'ms';
+    var historyBefore = Store.load();
+    var prevBest = getBestScore(historyBefore);
+    var isRecord = score > 0 && score > prevBest;
 
+    var session = {
+      date: new Date().toISOString(),
+      count: state.total,
+      size: state.size,
+      adaptive: settings.adaptive,
+      time: totalTime,
+      accuracy: acc,
+      avgMs: avgMs,
+      bestMs: bestMs,
+      misses: state.misses,
+      score: score
+    };
+    var history = Store.addSession(session);
+
+    // Ajustar el tamaño adaptativo para la próxima sesión: si el
+    // modo auto-ajuste está activo, la dificultad sube cuando mejoras
+    // y baja un poco cuando empeoras, para entrenar siempre al límite.
+    if(settings.adaptive){
+      var adaptiveHistory = history.filter(function(s){ return s.adaptive; });
+      var next = nextAdaptiveSize(state.size, adaptiveHistory);
+      Store.setAdaptiveSize(next);
+    }
+
+    renderResults(session, historyBefore, isRecord, prevBest);
     state = null;
     showScreen('results');
   }
 
+  function renderResults(session, historyBefore, isRecord, prevBest){
+    els.resScore.textContent = session.score;
+    els.resScore.classList.toggle('up', isRecord);
+    els.resScoreBest.textContent = prevBest ? ('· récord ' + prevBest) : '';
+    els.resTime.textContent = session.time.toFixed(2) + 's';
+    els.resAcc.textContent = session.accuracy + '%';
+    els.resAvg.textContent = session.avgMs + 'ms';
+    els.resMiss.textContent = session.misses;
+    els.resBest.textContent = session.bestMs + 'ms';
+
+    els.recordBanner.classList.toggle('hidden', !isRecord);
+
+    var recent = historyBefore.slice(-5);
+    if(recent.length >= 3){
+      var avgRecent = recent.reduce(function(a,s){return a+s.score;},0) / recent.length;
+      var diff = session.score - avgRecent;
+      var pct = avgRecent ? Math.round((diff / avgRecent) * 100) : 0;
+      els.trendBanner.classList.remove('hidden');
+      if(pct > 2){
+        els.trendBanner.innerHTML = 'Vas mejorando: <b>+' + pct + '%</b> vs tus últimas sesiones';
+      } else if(pct < -2){
+        els.trendBanner.innerHTML = 'Un poco por debajo de tu ritmo reciente (<b>' + pct + '%</b>). Sigue practicando';
+      } else {
+        els.trendBanner.innerHTML = 'Ritmo <b>estable</b> respecto a tus últimas sesiones';
+      }
+    } else {
+      els.trendBanner.classList.add('hidden');
+    }
+  }
+
+  /* =========================================================
+     PANTALLA DE PROGRESO
+     ========================================================= */
+  function sparkline(values, width, height){
+    if(values.length < 2){
+      return '<div class="empty-state">Juega un par de sesiones más para ver tu tendencia</div>';
+    }
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    var range = (max - min) || 1;
+    var stepX = width / (values.length - 1);
+    var pts = values.map(function(v, i){
+      var x = i * stepX;
+      var y = height - ((v - min) / range) * height;
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+    return '<svg width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+      '<polyline points="' + pts + '" fill="none" stroke="#F5C518" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '</svg>';
+  }
+
+  function renderProgress(){
+    var history = Store.load();
+    var body = els.progressBody;
+    body.innerHTML = '';
+
+    if(history.length === 0){
+      body.innerHTML = '<div class="empty-state">Aún no hay sesiones. Juega tu primera ronda para empezar tu historial.</div>';
+      return;
+    }
+
+    var best = history.reduce(function(m, s){ return s.score > m.score ? s : m; }, history[0]);
+    var bestReaction = history.reduce(function(m, s){ return (s.bestMs && s.bestMs < m) ? s.bestMs : m; }, Infinity);
+
+    var grid = document.createElement('div');
+    grid.className = 'progress-grid';
+    grid.innerHTML =
+      '<div class="result-cell"><div class="num">' + history.length + '</div><div class="lbl">SESIONES JUGADAS</div></div>' +
+      '<div class="result-cell"><div class="num">' + best.score + '</div><div class="lbl">MEJOR PUNTUACIÓN</div></div>' +
+      '<div class="result-cell wide"><div class="num">' + (isFinite(bestReaction) ? bestReaction + 'ms' : '—') + '</div><div class="lbl">REACCIÓN MÁS RÁPIDA REGISTRADA</div></div>';
+    body.appendChild(grid);
+
+    var last10 = history.slice(-10).map(function(s){ return s.score; });
+    var box = document.createElement('div');
+    box.className = 'sparkline-box';
+    box.innerHTML = '<div class="lbl">PUNTUACIÓN · ÚLTIMAS ' + last10.length + ' SESIONES</div>' + sparkline(last10, 340, 70);
+    body.appendChild(box);
+  }
+
+  /* =========================================================
+     NAVEGACIÓN
+     ========================================================= */
   els.btnStart.addEventListener('click', startCountdown);
   els.btnRetry.addEventListener('click', startCountdown);
   els.btnMenu.addEventListener('click', function(){ showScreen('start'); });
+  els.btnProgress.addEventListener('click', function(){ renderProgress(); showScreen('progress'); });
+  els.btnProgressBack.addEventListener('click', function(){ showScreen('start'); });
 
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape' && state){
@@ -557,7 +823,7 @@
     }
   });
 
-  // Register service worker for offline/installable support
+  // Registro del service worker para uso offline e instalación
   if('serviceWorker' in navigator){
     window.addEventListener('load', function(){
       navigator.serviceWorker.register('sw.js').catch(function(){});
