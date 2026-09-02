@@ -187,6 +187,8 @@
   .start-btn:hover{ background:#4fe0d2; }
   .start-btn:active{ transform:scale(0.99); }
   .hint{margin-top:12px; font-size:11.5px; color:var(--text-dim); text-align:center;}
+  .reset-link{ color:var(--text-dim); text-decoration:underline; cursor:pointer; }
+  .reset-link:hover{ color:var(--danger, #ff5a5a); }
 
   /* ---------- GAME SCREEN ---------- */
   #game{
@@ -283,7 +285,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.3.0</div>
+          <div class="version-badge" id="versionBadge">v1.3.1</div>
         </div>
         <h1>Entrena tu aim, medido en frío.</h1>
         <p>Tres ejercicios de puntería. Cada sesión guarda tu récord localmente en este navegador — la única meta es superarlo la próxima vez.</p>
@@ -337,7 +339,7 @@
         </div>
 
         <button class="start-btn" id="startBtn">Empezar sesión</button>
-        <div class="hint">Tus datos se guardan solo en este navegador (localStorage) — no se suben a ningún servidor.</div>
+        <div class="hint">Tus datos se guardan solo en este navegador (localStorage) — no se suben a ningún servidor. <span id="resetLink" class="reset-link">Borrar mi progreso</span></div>
       </div>
     </div>
   </section>
@@ -557,6 +559,7 @@
   /* ============ game state ============ */
   let session = null; // holds all per-session state
   let rafId = null;
+  let countdownIv = null;
 
   function rand(min, max){ return Math.random() * (max-min) + min; }
 
@@ -567,6 +570,8 @@
   }
 
   function startSession(){
+    if(countdownIv){ clearInterval(countdownIv); countdownIv = null; }
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
     const preset = getPreset(selectedMode, selectedDuration);
     session = {
       mode: selectedMode,
@@ -599,10 +604,11 @@
     el.classList.remove("hidden");
     let n = 3;
     el.textContent = n;
-    const iv = setInterval(() => {
+    countdownIv = setInterval(() => {
       n -= 1;
       if(n <= 0){
-        clearInterval(iv);
+        clearInterval(countdownIv);
+        countdownIv = null;
         el.classList.add("hidden");
         beginPlay();
       } else {
@@ -878,8 +884,10 @@
   }
 
   document.getElementById("exitBtn").addEventListener("click", () => {
+    if(countdownIv){ clearInterval(countdownIv); countdownIv = null; }
     if(rafId) cancelAnimationFrame(rafId);
     session = null;
+    document.getElementById("countdown").classList.add("hidden");
     showScreen("menu");
     refreshMenuStats();
   });
@@ -932,6 +940,14 @@
   document.getElementById("retryBtn").addEventListener("click", startSession);
   document.getElementById("menuBtn").addEventListener("click", () => { showScreen("menu"); refreshMenuStats(); });
   document.getElementById("startBtn").addEventListener("click", startSession);
+
+  document.getElementById("resetLink").addEventListener("click", () => {
+    const ok = window.confirm("Esto borra todos tus récords y la dificultad ganada en los 3 modos, en este navegador. No se puede deshacer. ¿Seguro?");
+    if(!ok) return;
+    store = { modes:{}, totalSessions:0 };
+    saveData(store);
+    refreshMenuStats();
+  });
 
 })();
 </script>
