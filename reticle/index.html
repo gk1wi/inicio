@@ -285,7 +285,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.4.0</div>
+          <div class="version-badge" id="versionBadge">v1.4.1</div>
         </div>
         <h1>Entrena tu aim, medido en frío.</h1>
         <p>Tres ejercicios de puntería. Cada sesión guarda tu récord localmente en este navegador — la única meta es superarlo la próxima vez.</p>
@@ -409,11 +409,6 @@
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){ /* storage unavailable */ }
   }
   let store = loadData();
-  if(!store.trackingRateFixApplied){
-    Object.keys(store.modes).forEach(k => { if(k.indexOf("tracking_") === 0) delete store.modes[k]; });
-    store.trackingRateFixApplied = true;
-    saveData(store);
-  }
 
   function modeKey(mode, dur){ return mode + "_" + dur; }
   function getBest(mode, dur){
