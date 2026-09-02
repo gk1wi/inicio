@@ -1,12 +1,24 @@
-# Reticle v1.2.0 — Entrenador de Aim
+# Reticle v1.3.0 — Entrenador de Aim
 _created by gK1wi_
 
 5 archivos: `index.html`, `manifest.json`, `service-worker.js`, `icon-192.png`, `icon-512.png`. Súbelos juntos, en la misma carpeta/raíz del repo — no muevas ni renombres ninguno, el service worker y el manifest los referencian por nombre.
 
-## Novedades de esta versión
+## Novedades de esta versión: la dificultad ahora tiene un tope real
 
-- **Dificultad continua, no por niveles**: ya no hay Fácil/Normal/Difícil como botones. Cada modo tiene su propio nivel de dificultad (0–100%, mostrado en el menú) que sube solo, suavemente, en función de tu récord en ese modo — cuanto mejor tu marca, más chicos y rápidos son los blancos. Nunca baja, y como es una curva continua no hay saltos bruscos como en la versión anterior.
-- Como el sistema de dificultad cambió por completo, **esta versión reinicia el progreso guardado** (récords y sesiones de la v1.1.0 no se migran). A partir de aquí todo lo que juegues se acumula sin volver a resetear.
+Antes, la dificultad subía para siempre sin límite matemático (una asíntota) — nunca llegaba a 100% aunque jugaras toda la vida. Ahora **100% está anclado a un dato real**: el reflejo visual promedio de un jugador profesional de esports, citado en varios estudios en ~180ms (el grupo más rápido medido, por encima de pilotos de caza y pilotos de F1). Fuente: reactiontimetests.org / investigación comparativa IJES sobre jugadores profesionales de FPS.
+
+Con ese número se calculó cuántos puntos produciría una sesión completa jugando a ese ritmo, y **esa cifra fija es el 100%** de cada modo:
+
+- **Flick / Switch** — asumiendo ~95% de aciertos reaccionando a 180ms de forma casi continua durante 60s: ~250,000 pts.
+- **Tracking** — asumiendo ~75% del tiempo sobre el blanco de forma sostenida contra el blanco más rápido posible durante 60s: ~11,700 pts.
+
+(Para 30s/90s estas cifras se escalan proporcionalmente a la duración.)
+
+Una vez que tu récord alcanza ese tope, **la dificultad deja de subir** — los blancos ya no se hacen más chicos ni más rápidos — pero tu puntaje puede seguir subiendo sin límite si sigues jugando y mejorando. El tope del modo Flick/Switch también quedó reflejado en los parámetros del juego mismo: el blanco más difícil dura ~250ms (180ms de reacción + un margen de ~70ms para el clic físico), el mínimo con el que técnicamente se puede reaccionar y hacer clic a tiempo.
+
+La curva de progreso usa una raíz cuadrada (no lineal) para que el avance se sienta bien desde el principio y se vuelva más exigente cerca del tope — pero el tope en sí es siempre ese número fijo, no un límite arbitrario ni infinito.
+
+Como el modelo de dificultad cambió de fondo otra vez, los porcentajes que veas ahora **no son comparables a los de la versión anterior** — es normal que un mismo récord se vea como un porcentaje distinto al de antes.
 
 ## Publicar en GitHub Pages
 

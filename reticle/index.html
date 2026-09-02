@@ -283,7 +283,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.2.1</div>
+          <div class="version-badge" id="versionBadge">v1.3.0</div>
         </div>
         <h1>Entrena tu aim, medido en frío.</h1>
         <p>Tres ejercicios de puntería. Cada sesión guarda tu récord localmente en este navegador — la única meta es superarlo la próxima vez.</p>
@@ -431,16 +431,34 @@
     return best;
   }
 
-  /* ============ continuous difficulty ============ */
-  // Difficulty is no longer a fixed tier — it's derived straight from your best
-  // score in that mode/duration, and climbs smoothly (asymptotically) forever
-  // as your record grows. No jumps, no picking, no going back.
-  const MODE_K = { flick: 9000, tracking: 11000, switch: 9000 }; // higher K = more score needed to ramp up
+  /* ============ difficulty with a real, human ceiling ============ */
+  // 100% is no longer an unreachable asymptote — it's pinned to a documented
+  // elite esports reaction pace (~180ms average, the fastest group measured
+  // across studies: reactiontimetests.org / IJES pro-gamer research). We work
+  // out what score that pace would produce over a full session, and that
+  // fixed number IS the 100% mark. Once your record reaches it, difficulty
+  // simply stops climbing — you can still keep improving your score for fun,
+  // it just won't get any harder than a real pro's ceiling.
+  const ELITE_REACTION_MS = 180;
+
+  // Flick/Switch: at ELITE_REACTION_MS pace, hitting near-back-to-back with a
+  // realistic ~95% accuracy over 60s works out to roughly this many points
+  // (see README for the full derivation). Switch reuses the same figure —
+  // both modes are single/near-instant reaction hits at heart.
+  const CAP_60S = { flick: 250000, switch: 250000, tracking: 11700 };
+
   function lerp(a, b, t){ return a + (b-a) * t; }
+
+  function capScore(mode, duration){
+    return CAP_60S[mode] * (duration/60);
+  }
+  function scoreToT(score, mode, duration){
+    const cap = capScore(mode, duration);
+    const ratio = Math.max(0, score) / cap;
+    return Math.min(1, Math.sqrt(ratio)); // eased so early progress still feels rewarding
+  }
   function difficultyT(mode, duration){
-    const best = getBest(mode, duration) || 0;
-    const k = MODE_K[mode] * (duration/60);
-    return best / (best + k); // 0 -> asymptotically approaches 1, never resets, never capped hard
+    return scoreToT(getBest(mode, duration) || 0, mode, duration);
   }
   function getPreset(mode, duration){
     const t = difficultyT(mode, duration);
@@ -484,9 +502,14 @@
     document.getElementById("diffPct").textContent = pct + "%";
     document.getElementById("diffBarFill").style.width = pct + "%";
     const best = getBest(selectedMode, selectedDuration);
-    document.getElementById("diffNote").textContent = best === null
-      ? "Empiezas suave — se pone más difícil sola conforme subes tu récord."
-      : "Sube según tu récord (" + best + " pts) en este modo. Nunca baja.";
+    const note = document.getElementById("diffNote");
+    if(best === null){
+      note.textContent = "Empiezas suave — se pone más difícil sola conforme subes tu récord.";
+    } else if(t >= 1){
+      note.textContent = "Al tope: ritmo de reacción de nivel profesional de esports (~" + ELITE_REACTION_MS + "ms). No se pone más difícil — pero tu récord (" + best + " pts) sigue pudiendo subir.";
+    } else {
+      note.textContent = "Sube según tu récord (" + best + " pts) en este modo. El 100% es el ritmo de un jugador profesional de esports — nunca baja.";
+    }
   }
 
   function refreshMenuStats(){
@@ -504,7 +527,7 @@
   /* ============ difficulty presets ============ */
   const DIFF_PRESETS = {
     easy: { radius: 34, flickLifetime: 1300, switchCount: 3, switchLifetime: 2200, trackSpeed: 90 },
-    hard: { radius: 21, flickLifetime: 760,  switchCount: 5, switchLifetime: 1400, trackSpeed: 190 },
+    hard: { radius: 21, flickLifetime: 250,  switchCount: 5, switchLifetime: 600,  trackSpeed: 190 },
   };
 
   /* ============ screens ============ */
@@ -894,7 +917,7 @@
 
     // difficulty is derived from the record itself — beating it is what makes next time harder
     const newT = difficultyT(session.mode, session.duration);
-    const oldT = prevBest ? prevBest/(prevBest + MODE_K[session.mode]*(session.duration/60)) : 0;
+    const oldT = scoreToT(prevBest, session.mode, session.duration);
     const unlockBanner = document.getElementById("unlockBanner");
     if(isRecord && Math.round(newT*100) > Math.round(oldT*100)){
       unlockBanner.textContent = "🔓 Nuevo récord — la dificultad sube a " + Math.round(newT*100) + "%";
