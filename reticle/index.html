@@ -285,7 +285,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.3.2</div>
+          <div class="version-badge" id="versionBadge">v1.4.0</div>
         </div>
         <h1>Entrena tu aim, medido en frío.</h1>
         <p>Tres ejercicios de puntería. Cada sesión guarda tu récord localmente en este navegador — la única meta es superarlo la próxima vez.</p>
@@ -409,6 +409,11 @@
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){ /* storage unavailable */ }
   }
   let store = loadData();
+  if(!store.trackingRateFixApplied){
+    Object.keys(store.modes).forEach(k => { if(k.indexOf("tracking_") === 0) delete store.modes[k]; });
+    store.trackingRateFixApplied = true;
+    saveData(store);
+  }
 
   function modeKey(mode, dur){ return mode + "_" + dur; }
   function getBest(mode, dur){
@@ -447,7 +452,14 @@
   // realistic ~95% accuracy over 60s works out to roughly this many points
   // (see README for the full derivation). Switch reuses the same figure —
   // both modes are single/near-instant reaction hits at heart.
+  //
+  // Tracking: 11700 = 75% on-target time sustained for 60s AGAINST THE HARDEST
+  // (fastest) target — i.e. only reachable at session.preset.t = 1. Points/sec
+  // scale with how hard the current session's target actually is (see
+  // TRACKING_MIN_RATE below), so easy/slow targets can no longer coast this
+  // close to the elite cap just by being trivially easy to stay on.
   const CAP_60S = { flick: 250000, switch: 250000, tracking: 11700 };
+  const TRACKING_MIN_RATE = 0.3; // fraction of the 260pts/sec rate paid at the easiest possible target (t=0); full rate only at t=1
 
   function lerp(a, b, t){ return a + (b-a) * t; }
 
@@ -796,7 +808,8 @@
       session.trackTimeTotal += dt;
       if(onTarget){
         session.trackTimeOnTarget += dt;
-        session.score += dt * 260; // accumulate exact value — rounding happens only when displayed/recorded
+        const rateMult = TRACKING_MIN_RATE + (1 - TRACKING_MIN_RATE) * session.preset.t;
+        session.score += dt * 260 * rateMult; // exact value — rounding happens only when displayed/recorded
       }
     }
   }
