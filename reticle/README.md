@@ -1,14 +1,15 @@
-# Reticle v1.4.1 — Entrenador de Aim
+# Reticle v1.5.0 — Entrenador de Aim
 _created by gK1wi_
 
 5 archivos: `index.html`, `manifest.json`, `service-worker.js`, `icon-192.png`, `icon-512.png`. Súbelos juntos, en la misma carpeta/raíz del repo — no muevas ni renombres ninguno, el service worker y el manifest los referencian por nombre.
 
 ## Changelog
 
-- **v1.4.1** — Se quitó una migración automática de una sola vez que quedó de la v1.4.0. Debía correr solo una vez, pero si alguna vez usabas "Borrar mi progreso" (que reconstruye el store desde cero), la migración volvía a activarse y borraba de nuevo los récords de Tracking en la siguiente carga — dando la sensación de que un simple refresh (`Ctrl+Shift+R`) borraba el progreso. Ya no existe ese código: nada se borra automáticamente nunca más, solo con el botón "Borrar mi progreso" o limpiando `localStorage` a mano.
+- **v1.5.0** — Se quitó el botón "Borrar mi progreso" y el aviso de localStorage del menú (ya no son necesarios). Título y descripción del menú renovados. Se agregaron íconos de redes sociales (Twitch, YouTube, Threads) debajo del crédito, cada uno abre en pestaña nueva.
+- **v1.4.1** — Se quitó una migración automática de una sola vez que quedó de la v1.4.0. Debía correr solo una vez, pero si alguna vez usabas "Borrar mi progreso" (que reconstruía el store desde cero), la migración volvía a activarse y borraba de nuevo los récords de Tracking en la siguiente carga — dando la sensación de que un simple refresh (`Ctrl+Shift+R`) borraba el progreso.
 - **v1.4.0** — El puntaje de Tracking ahora escala según qué tan difícil es el blanco en esa sesión (30% del ritmo en el blanco más fácil, hasta 100% en el más difícil). Antes pagaba lo mismo sin importar la dificultad, lo que permitía llegar cerca del tope "de nivel élite" jugando en modo fácil. Flick y Switch no se tocaron — nunca tuvieron ese problema.
 - **v1.3.2** — Arreglado un sesgo de redondeo en Tracking que inflaba el puntaje en monitores de alto refresh rate (144Hz+), porque se redondeaba la ganancia de puntos en cada fotograma en vez de una sola vez al final.
-- **v1.3.1** — Arreglado un bug donde iniciar una sesión no cancelaba un bucle de juego anterior (posible con doble clic en "Empezar"), lo que podía duplicar la velocidad de acumulación de puntos. Se agregó el enlace **"Borrar mi progreso"** en el menú para limpiar `localStorage` sin usar herramientas de desarrollador.
+- **v1.3.1** — Arreglado un bug donde iniciar una sesión no cancelaba un bucle de juego anterior (posible con doble clic en "Empezar"), lo que podía duplicar la velocidad de acumulación de puntos.
 - **v1.3.0** — La dificultad dejó de subir para siempre sin límite (asíntota) y pasó a tener un tope real: 100% está anclado al reflejo visual promedio de un jugador profesional de esports, citado en varios estudios en ~180ms (el grupo más rápido medido, por encima de pilotos de caza y de F1). Fuente: reactiontimetests.org / investigación comparativa IJES sobre jugadores profesionales de FPS.
 
 Con ese número se calculó cuántos puntos produciría una sesión completa jugando a ese ritmo, y **esa cifra fija es el 100%** de cada modo:
@@ -21,6 +22,10 @@ Con ese número se calculó cuántos puntos produciría una sesión completa jug
 Una vez que tu récord alcanza ese tope, **la dificultad deja de subir** — los blancos ya no se hacen más chicos ni más rápidos — pero tu puntaje puede seguir subiendo sin límite si sigues jugando y mejorando. El tope del modo Flick/Switch también quedó reflejado en los parámetros del juego mismo: el blanco más difícil dura ~250ms (180ms de reacción + un margen de ~70ms para el clic físico), el mínimo con el que técnicamente se puede reaccionar y hacer clic a tiempo.
 
 La curva de progreso usa una raíz cuadrada (no lineal) para que el avance se sienta bien desde el principio y se vuelva más exigente cerca del tope — pero el tope en sí es siempre ese número fijo, no un límite arbitrario ni infinito.
+
+## Cómo borrar tu progreso ahora
+
+Ya no hay botón en el menú para esto. Si lo necesitas: abre las herramientas de desarrollador (F12) → pestaña **Console** → escribe `localStorage.clear()` → Enter → recarga la página.
 
 ## Publicar en GitHub Pages
 
