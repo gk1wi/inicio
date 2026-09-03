@@ -1,10 +1,12 @@
-# Reticle v1.6.0 — Entrenador de Aim
+# Reticle v1.8.0 — Entrenador de Aim
 _created by gK1wi_
 
 5 archivos: `index.html`, `manifest.json`, `service-worker.js`, `icon-192.png`, `icon-512.png`. Súbelos juntos, en la misma carpeta/raíz del repo — no muevas ni renombres ninguno, el service worker y el manifest los referencian por nombre.
 
 ## Changelog
 
+- **v1.8.0** — El número de "fallos" en el HUD ahora hace un pulso visual (parpadeo rojo + escala) cada vez que sube, para que el salto se note como un evento claro en vez de un cambio seco. Es una animación CSS pura disparada solo en el cambio de valor — corre en el compositor del navegador, no en el loop de juego, así que no cuesta rendimiento en los frames donde el número no cambia.
+- **v1.7.0** — Se deshabilitó el click derecho en toda la app (ya no abre el menú contextual del navegador, y tampoco cuenta como disparo dentro del juego — solo el click izquierdo registra hits/fallos). Limpieza de código: se quitó una llamada redundante que recalculaba dos veces el mismo valor al iniciar sesión.
 - **v1.6.0** — Optimización de fluidez para pantallas de alto refresh rate (144Hz+):
   - Se dejó de leer `getBoundingClientRect()` en cada movimiento del mouse (forzaba layout síncrono en el hilo principal en cada evento); ahora se cachea una sola vez al iniciar sesión y al hacer resize.
   - El grid de fondo del canvas ya no se redibuja línea por línea en cada frame; se prerenderiza una sola vez a un canvas offscreen y se pega con un solo `drawImage()` por frame.
