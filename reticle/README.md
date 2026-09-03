@@ -1,10 +1,15 @@
-# Reticle v1.5.0 — Entrenador de Aim
+# Reticle v1.6.0 — Entrenador de Aim
 _created by gK1wi_
 
 5 archivos: `index.html`, `manifest.json`, `service-worker.js`, `icon-192.png`, `icon-512.png`. Súbelos juntos, en la misma carpeta/raíz del repo — no muevas ni renombres ninguno, el service worker y el manifest los referencian por nombre.
 
 ## Changelog
 
+- **v1.6.0** — Optimización de fluidez para pantallas de alto refresh rate (144Hz+):
+  - Se dejó de leer `getBoundingClientRect()` en cada movimiento del mouse (forzaba layout síncrono en el hilo principal en cada evento); ahora se cachea una sola vez al iniciar sesión y al hacer resize.
+  - El grid de fondo del canvas ya no se redibuja línea por línea en cada frame; se prerenderiza una sola vez a un canvas offscreen y se pega con un solo `drawImage()` por frame.
+  - Los nodos del HUD (tiempo, puntaje, aciertos, fallos, precisión) se cachean una sola vez en vez de re-buscarse con `querySelector`/`getElementById` en cada frame, y solo se escriben al DOM cuando su valor realmente cambió.
+  - Nada de esto cambia el timing ni el puntaje — el juego sigue corriendo en base a `dt`, frame-rate independiente. El único cambio es menos trabajo de layout/DOM compitiendo con el render, que es lo que se sentía como microstutters en 144Hz+.
 - **v1.5.0** — Se quitó el botón "Borrar mi progreso" y el aviso de localStorage del menú (ya no son necesarios). Título y descripción del menú renovados. Se agregaron íconos de redes sociales (Twitch, YouTube, Threads) debajo del crédito, cada uno abre en pestaña nueva.
 - **v1.4.1** — Se quitó una migración automática de una sola vez que quedó de la v1.4.0. Debía correr solo una vez, pero si alguna vez usabas "Borrar mi progreso" (que reconstruía el store desde cero), la migración volvía a activarse y borraba de nuevo los récords de Tracking en la siguiente carga — dando la sensación de que un simple refresh (`Ctrl+Shift+R`) borraba el progreso.
 - **v1.4.0** — El puntaje de Tracking ahora escala según qué tan difícil es el blanco en esa sesión (30% del ritmo en el blanco más fácil, hasta 100% en el más difícil). Antes pagaba lo mismo sin importar la dificultad, lo que permitía llegar cerca del tope "de nivel élite" jugando en modo fácil. Flick y Switch no se tocaron — nunca tuvieron ese problema.

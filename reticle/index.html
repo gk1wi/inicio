@@ -292,7 +292,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.5.0</div>
+          <div class="version-badge" id="versionBadge">v1.6.0</div>
         </div>
         <h1>Entrena tu aim</h1>
         <p>Reacciona. Sigue. Cambia de blanco. Cada sesión queda medida al milisegundo — la única meta es la marca que dejaste la última vez.</p>
@@ -569,6 +569,16 @@
   const ctx = canvas.getContext("2d", { alpha:false });
   let dpr = Math.max(1, window.devicePixelRatio || 1);
 
+  // Cached bounding rect of the canvas wrapper — recomputed only on
+  // resize/session start, never inside a pointer event handler. Calling
+  // getBoundingClientRect() on every pointermove forces a synchronous
+  // layout read on the main thread, which is the single biggest source
+  // of frame drops on high-refresh (144Hz+) displays.
+  let wrapRect = { left: 0, top: 0 };
+  function updateWrapRect(){
+    wrapRect = wrap.getBoundingClientRect();
+  }
+
   function resizeCanvas(){
     dpr = Math.max(1, window.devicePixelRatio || 1);
     const w = wrap.clientWidth, h = wrap.clientHeight;
@@ -577,8 +587,30 @@
     canvas.style.width = w + "px";
     canvas.style.height = h + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    updateWrapRect();
+    buildGridBitmap(w, h);
   }
   window.addEventListener("resize", resizeCanvas);
+
+  /* ============ background grid (prerendered) ============ */
+  // The grid never changes between frames, so it's drawn once into an
+  // offscreen canvas on resize and blitted with a single drawImage() per
+  // frame instead of ~20-30 separate beginPath/stroke calls every frame.
+  const gridCanvas = document.createElement("canvas");
+  const gridCtx = gridCanvas.getContext("2d");
+  function buildGridBitmap(w, h){
+    gridCanvas.width = Math.round(w * dpr);
+    gridCanvas.height = Math.round(h * dpr);
+    gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    gridCtx.clearRect(0, 0, w, h);
+    gridCtx.strokeStyle = "rgba(255,255,255,0.028)";
+    gridCtx.lineWidth = 1;
+    const grid = 40;
+    gridCtx.beginPath();
+    for(let x=0;x<w;x+=grid){ gridCtx.moveTo(x,0); gridCtx.lineTo(x,h); }
+    for(let y=0;y<h;y+=grid){ gridCtx.moveTo(0,y); gridCtx.lineTo(w,y); }
+    gridCtx.stroke();
+  }
 
   /* ============ game state ============ */
   let session = null; // holds all per-session state
@@ -617,9 +649,11 @@
       trackTimeTotal: 0,
       mouse: { x: -9999, y: -9999 },
     };
+    hudLast.timer = hudLast.score = hudLast.hits = hudLast.miss = hudLast.acc = null;
     updateHud();
     showScreen("game");
     resizeCanvas();
+    updateWrapRect();
     runCountdown();
   }
 
@@ -696,16 +730,14 @@
   /* ---------- pointer handling ---------- */
   wrap.addEventListener("pointermove", (e) => {
     if(!session) return;
-    const rect = wrap.getBoundingClientRect();
-    session.mouse.x = e.clientX - rect.left;
-    session.mouse.y = e.clientY - rect.top;
-  });
+    session.mouse.x = e.clientX - wrapRect.left;
+    session.mouse.y = e.clientY - wrapRect.top;
+  }, { passive:true });
 
   wrap.addEventListener("pointerdown", (e) => {
     if(!session || !session.running) return;
     if(session.mode === "tracking") return; // tracking mode: no click needed
-    const rect = wrap.getBoundingClientRect();
-    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const x = e.clientX - wrapRect.left, y = e.clientY - wrapRect.top;
     handleClick(x, y);
   });
 
@@ -831,12 +863,8 @@
     ctx.fillStyle = "#14171a";
     ctx.fillRect(0,0,w,h);
 
-    // subtle grid
-    ctx.strokeStyle = "rgba(255,255,255,0.028)";
-    ctx.lineWidth = 1;
-    const grid = 40;
-    for(let x=0;x<w;x+=grid){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-    for(let y=0;y<h;y+=grid){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+    // prerendered grid — one drawImage instead of ~20-30 stroke() calls/frame
+    ctx.drawImage(gridCanvas, 0, 0, w, h);
 
     // targets
     for(const t of session.targets){
@@ -891,13 +919,31 @@
   }
 
   /* ---------- HUD ---------- */
+  // DOM nodes cached once — re-querying them every frame (144x/sec) was
+  // wasted work competing with the render for main-thread time. Each node
+  // also tracks the last value it was set to, so a frame that produces the
+  // same number never touches the DOM (avoids needless style/layout work).
+  const hudNodes = {
+    timer: document.querySelector("#hud-timer b"),
+    score: document.querySelector("#hud-score b"),
+    hits: document.getElementById("hud-hits"),
+    miss: document.getElementById("hud-miss"),
+    acc: document.getElementById("hud-acc"),
+  };
+  const hudLast = { timer: null, score: null, hits: null, miss: null, acc: null };
+  function setHud(key, value){
+    if(hudLast[key] === value) return;
+    hudLast[key] = value;
+    hudNodes[key].textContent = value;
+  }
+
   function updateHud(){
-    document.querySelector("#hud-timer b").textContent = session.timeLeft.toFixed(1);
+    setHud("timer", session.timeLeft.toFixed(1));
     const hits = session.mode === "tracking" ? Math.round(session.trackTimeOnTarget) : session.hits;
     const misses = session.mode === "tracking" ? Math.round(session.trackTimeTotal - session.trackTimeOnTarget) : session.misses;
-    document.querySelector("#hud-score b").textContent = Math.round(session.score);
-    document.getElementById("hud-hits").textContent = hits;
-    document.getElementById("hud-miss").textContent = misses;
+    setHud("score", Math.round(session.score));
+    setHud("hits", hits);
+    setHud("miss", misses);
     let acc;
     if(session.mode === "tracking"){
       acc = session.trackTimeTotal > 0 ? (session.trackTimeOnTarget/session.trackTimeTotal*100) : 100;
@@ -905,7 +951,7 @@
       const total = session.hits + session.misses;
       acc = total > 0 ? (session.hits/total*100) : 100;
     }
-    document.getElementById("hud-acc").textContent = Math.round(acc) + "%";
+    setHud("acc", Math.round(acc) + "%");
   }
 
   document.getElementById("exitBtn").addEventListener("click", () => {
