@@ -34,6 +34,14 @@
     font-family:var(--font-body);
     overflow:hidden;
     -webkit-font-smoothing:antialiased;
+    /* No text selection anywhere in the app — this only affects the
+       browser's selection/highlight behavior, not click/pointer events,
+       so every button keeps working exactly as before. */
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
   }
   #app{position:relative; width:100vw; height:100vh; height:100dvh;}
   .screen{
@@ -300,7 +308,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.8.0</div>
+          <div class="version-badge" id="versionBadge">v1.9.0</div>
         </div>
         <h1>Entrena tu aim</h1>
         <p>Reacciona. Sigue. Cambia de blanco. Cada sesión queda medida al milisegundo — la única meta es la marca que dejaste la última vez.</p>
