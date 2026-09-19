@@ -256,6 +256,10 @@
     width:min(520px, 90vw);
     padding:36px 38px;
   }
+  #locked{
+    align-items:center; justify-content:center;
+    background:var(--bg);
+  }
   .results-panel .tag{
     font-family:var(--font-display); font-size:11px; color:var(--accent); letter-spacing:.06em; margin-bottom:6px;
   }
@@ -308,13 +312,14 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.9.0</div>
+          <div class="version-badge" id="versionBadge">v1.10.0</div>
         </div>
         <h1>Entrena tu aim</h1>
         <p>Reacciona. Sigue. Cambia de blanco. Cada sesión queda medida al milisegundo — la única meta es la marca que dejaste la última vez.</p>
         <div class="stat-row">
           <div class="stat"><b id="statTotalSessions">0</b><span>sesiones jugadas</span></div>
           <div class="stat"><b id="statBestOverall">—</b><span>mejor puntaje global</span></div>
+          <div class="stat"><b id="statSessionsLeft">60</b><span>antes de bloqueo</span></div>
         </div>
         <div class="credit">created by <b>gK1wi</b></div>
         <div class="social-row">
@@ -420,6 +425,24 @@
     </div>
   </section>
 
+  <!-- LOCKED -->
+  <section id="locked" class="screen">
+    <div class="results-panel bracket" style="text-align:center; margin:auto;">
+      <span class="bl"></span><span class="br"></span>
+      <div class="tag">LÍMITE ALCANZADO</div>
+      <h2>Sesiones bloqueadas</h2>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.6; margin-bottom:24px;">
+        Llegaste a 60 sesiones. Se bloquea el inicio de nuevas sesiones por 8 horas, sin importar el modo.
+      </p>
+      <div class="result-stat full">
+        <div style="width:100%; text-align:center;">
+          <span>se desbloquea en</span>
+          <b id="lockTimer" style="font-size:34px; color:var(--accent);">08:00:00</b>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <script>
@@ -431,17 +454,68 @@
   function loadData(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return { modes:{}, totalSessions:0 };
+      if(!raw) return { modes:{}, totalSessions:0, lockCount:0, lockUntil:0 };
       const parsed = JSON.parse(raw);
       if(!parsed.modes) parsed.modes = {};
       if(typeof parsed.totalSessions !== "number") parsed.totalSessions = 0;
+      if(typeof parsed.lockCount !== "number") parsed.lockCount = 0;
+      if(typeof parsed.lockUntil !== "number") parsed.lockUntil = 0;
       return parsed;
-    }catch(e){ return { modes:{}, totalSessions:0 }; }
+    }catch(e){ return { modes:{}, totalSessions:0, lockCount:0, lockUntil:0 }; }
   }
   function saveData(data){
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){ /* storage unavailable */ }
   }
   let store = loadData();
+
+  /* ============ 60-session lock ============ */
+  // Every click on "Empezar sesión" (or "Repetir") counts toward this,
+  // regardless of mode (flick/tracking/switch) or duration. On the 60th
+  // start, the app locks new sessions for 8 hours — enforced client-side
+  // via a timestamp in localStorage, so it survives reloads and holds even
+  // if the tab is closed and reopened later.
+  const SESSION_LIMIT = 60;
+  const LOCK_DURATION_MS = 8 * 60 * 60 * 1000; // 8 hours
+  let lockIv = null;
+
+  function isLocked(){ return store.lockUntil > Date.now(); }
+  function lockRemainingMs(){ return Math.max(0, store.lockUntil - Date.now()); }
+
+  // Resets the counter once a previously-set lock has expired. Safe to call
+  // often — it's a no-op unless store.lockUntil is in the past.
+  function checkLockExpiry(){
+    if(store.lockUntil && Date.now() >= store.lockUntil){
+      store.lockUntil = 0;
+      store.lockCount = 0;
+      saveData(store);
+    }
+  }
+
+  function formatDuration(ms){
+    const totalSec = Math.max(0, Math.ceil(ms/1000));
+    const h = Math.floor(totalSec/3600);
+    const m = Math.floor((totalSec%3600)/60);
+    const s = totalSec%60;
+    return [h,m,s].map(n => String(n).padStart(2,"0")).join(":");
+  }
+
+  function updateLockTimer(){
+    checkLockExpiry();
+    if(!isLocked()){
+      if(lockIv){ clearInterval(lockIv); lockIv = null; }
+      showScreen("menu");
+      refreshMenuStats();
+      return;
+    }
+    document.getElementById("lockTimer").textContent = formatDuration(lockRemainingMs());
+  }
+
+  function showLockScreen(){
+    showScreen("locked");
+    updateLockTimer();
+    if(lockIv) clearInterval(lockIv);
+    lockIv = setInterval(updateLockTimer, 1000);
+  }
 
   function modeKey(mode, dur){ return mode + "_" + dur; }
   function getBest(mode, dur){
@@ -562,6 +636,7 @@
     document.getElementById("statTotalSessions").textContent = store.totalSessions;
     const ob = overallBest();
     document.getElementById("statBestOverall").textContent = ob === null ? "—" : ob;
+    document.getElementById("statSessionsLeft").textContent = Math.max(0, SESSION_LIMIT - store.lockCount);
     renderDiffMeter();
   }
   refreshMenuStats();
@@ -573,7 +648,7 @@
   };
 
   /* ============ screens ============ */
-  const screens = { menu: document.getElementById("menu"), game: document.getElementById("game"), results: document.getElementById("results") };
+  const screens = { menu: document.getElementById("menu"), game: document.getElementById("game"), results: document.getElementById("results"), locked: document.getElementById("locked") };
   function showScreen(name){
     Object.values(screens).forEach(s => s.classList.remove("active"));
     screens[name].classList.add("active");
@@ -642,6 +717,17 @@
   }
 
   function startSession(){
+    checkLockExpiry();
+    if(isLocked()){
+      showLockScreen();
+      return;
+    }
+    store.lockCount += 1;
+    if(store.lockCount >= SESSION_LIMIT){
+      store.lockUntil = Date.now() + LOCK_DURATION_MS;
+    }
+    saveData(store);
+
     if(countdownIv){ clearInterval(countdownIv); countdownIv = null; }
     if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
     const preset = getPreset(selectedMode, selectedDuration);
@@ -1038,6 +1124,11 @@
   document.getElementById("retryBtn").addEventListener("click", startSession);
   document.getElementById("menuBtn").addEventListener("click", () => { showScreen("menu"); refreshMenuStats(); });
   document.getElementById("startBtn").addEventListener("click", startSession);
+
+  // If a lock from a previous visit is still active (e.g. page was reloaded
+  // or reopened), show the lock screen immediately instead of the menu.
+  checkLockExpiry();
+  if(isLocked()) showLockScreen();
 
 })();
 </script>

@@ -1,10 +1,11 @@
-# Reticle v1.9.0 — Entrenador de Aim
+# Reticle v1.10.0 — Entrenador de Aim
 _created by gK1wi_
 
 5 archivos: `index.html`, `manifest.json`, `service-worker.js`, `icon-192.png`, `icon-512.png`. Súbelos juntos, en la misma carpeta/raíz del repo — no muevas ni renombres ninguno, el service worker y el manifest los referencian por nombre.
 
 ## Changelog
 
+- **v1.10.0** — Límite de 60 sesiones: cada clic en "Empezar sesión" (o "Repetir") suma al contador, sin importar el modo o la duración. Al llegar a 60, la app se bloquea y no deja iniciar más sesiones por 8 horas — se muestra una pantalla de bloqueo con cuenta regresiva. El bloqueo se guarda con una marca de tiempo en `localStorage`, así que sobrevive a recargar la página o cerrar y volver a abrir la pestaña; al cumplirse las 8 horas el contador se reinicia solo. En el menú se agregó un contador "antes de bloqueo" junto a las estadísticas existentes. Como todo en la app, esto vive solo en el navegador — no hay servidor ni cuenta, así que es por dispositivo/navegador, y borrar los datos del sitio (o abrir en otro navegador) también reinicia el contador.
 - **v1.9.0** — Se desactivó la selección de texto en toda la app (ya no aparece el resaltado azul al arrastrar sobre botones/HUD/texto) y se quitó el flash azul de "tap highlight" en móvil. Es puro CSS (`user-select:none` + `-webkit-tap-highlight-color:transparent`), no afecta clicks ni el funcionamiento de ningún botón. Auditoría de código: se revisaron todas las funciones JS y clases CSS — no había código muerto que quitar.
 - **v1.8.0** — El número de "fallos" en el HUD ahora hace un pulso visual (parpadeo rojo + escala) cada vez que sube, para que el salto se note como un evento claro en vez de un cambio seco. Es una animación CSS pura disparada solo en el cambio de valor — corre en el compositor del navegador, no en el loop de juego, así que no cuesta rendimiento en los frames donde el número no cambia.
 - **v1.7.0** — Se deshabilitó el click derecho en toda la app (ya no abre el menú contextual del navegador, y tampoco cuenta como disparo dentro del juego — solo el click izquierdo registra hits/fallos). Limpieza de código: se quitó una llamada redundante que recalculaba dos veces el mismo valor al iniciar sesión.
