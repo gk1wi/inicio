@@ -56,6 +56,7 @@ nav button:disabled{opacity:.4}
 @keyframes dash{to{stroke-dashoffset:-34}}
 @media (prefers-reduced-motion:reduce){.route,.me{animation:none}}
 .leaflet-container{font:inherit}
+.leaflet-tile-pane{filter:invert(1) hue-rotate(195deg) saturate(.7) brightness(.85) contrast(.95)}
 .empty{color:var(--dim);text-align:center;margin-top:40px}
 </style>
 </head>
@@ -107,7 +108,7 @@ async function route(pts,prof){
  const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}
 async function startQuest(){
  if(!map){map=L.map('map',{zoomControl:false,attributionControl:true});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap © CARTO'}).addTo(map)}
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map)}
  layers.forEach(l=>map.removeLayer(l));layers=[];visited.clear();
  $('#quest').innerHTML='<h3>Scouting the map…</h3>';
  const me=await getPos();
