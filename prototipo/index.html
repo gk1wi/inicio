@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Package Quest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quest">
+<meta name="theme-color" content="#0e1b2b">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1b2b;--panel:#16293f;--line:#27425f;--ink:#eaf2fb;--dim:#8fa7bf;--gold:#ffc83d;--teal:#3de0c1;--red:#ff5d6c;
+--px:'Silkscreen',ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,system-ui,sans-serif}
+body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+header{padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+h1{font:700 18px var(--px);margin:0;color:var(--gold);letter-spacing:.5px}
+#coins{font:400 14px var(--px);color:var(--teal)}
+main{flex:1;position:relative;overflow:hidden}
+.view{position:absolute;inset:0;overflow:auto;padding:4px 16px 120px;display:none}
+.view.on{display:block}
+#mapview{padding:0}
+#map{position:absolute;inset:0;background:#0b1522}
+.co{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px}
+.co h2{font:700 15px var(--px);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.co h2 span.ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:15px}
+.pk{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#0f2034;color:var(--ink);border:2px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;font:inherit}
+.pk .n{flex:1}.pk small{display:block;color:var(--dim)}
+.pk .chk{width:24px;height:24px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;font-size:14px}
+.pk.sel{border-color:var(--gold);background:#2a2a1a}
+.pk.sel .chk{background:var(--gold);color:#222;border-color:var(--gold)}
+.shuffle{background:none;border:2px dashed var(--line);color:var(--dim);border-radius:10px;padding:8px 12px;font:inherit;margin-bottom:14px}
+nav{position:fixed;left:0;right:0;bottom:0;background:#0a1421;border-top:2px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom));display:flex;gap:8px;z-index:1000}
+nav button{flex:1;padding:12px;border-radius:10px;border:2px solid var(--line);background:var(--panel);color:var(--ink);font:700 13px var(--px)}
+nav button.on{border-color:var(--teal);color:var(--teal)}
+nav button.go{background:var(--gold);color:#241a00;border-color:var(--gold)}
+nav button:disabled{opacity:.4}
+#quest{position:absolute;left:10px;right:10px;bottom:84px;z-index:900;background:rgba(10,20,33,.94);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-height:38%;overflow:auto}
+#quest h3{font:700 13px var(--px);margin:0 0 6px;color:var(--gold)}
+.st{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.st .b{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px var(--px);color:#111}
+.st.done{opacity:.5;text-decoration:line-through}
+.st small{color:var(--dim);display:block}
+.pin{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;border:3px solid #fff;box-shadow:0 0 14px currentColor}
+.pin i{transform:rotate(45deg);font-style:normal;font-size:16px}
+.me{width:18px;height:18px;border-radius:50%;background:var(--teal);border:3px solid #fff;box-shadow:0 0 0 0 var(--teal);animation:pulse 1.8s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 22px rgba(61,224,193,0)}100%{box-shadow:0 0 0 0 rgba(61,224,193,0)}}
+.route{stroke-dasharray:3 14;stroke-linecap:round;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-34}}
+@media (prefers-reduced-motion:reduce){.route,.me{animation:none}}
+.leaflet-container{font:inherit}
+.empty{color:var(--dim);text-align:center;margin-top:40px}
+</style>
+</head>
+<body>
+<header><h1>PACKAGE QUEST</h1><div id="coins">0 picked</div></header>
+<main>
+  <section id="pk" class="view on"><button class="shuffle" id="shuffle">Shuffle packages</button><div id="list"></div></section>
+  <section id="mapview" class="view"><div id="map"></div><div id="quest"></div></section>
+</main>
+<nav>
+  <button id="tPk" class="on">Packages</button>
+  <button id="tGo" class="go" disabled>Start quest</button>
+</nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ===== CONFIG: replace the coordinates with the real ones ===== */
+const COMPANIES=[
+ {id:'vicke',name:'Vicke',icon:'🏰',color:'#ffc83d',lat:20.10110,lng:-98.75910},   // <- Vicke's real location
+ {id:'yesi',name:'Yesi',icon:'🗡️',color:'#3de0c1',lat:20.10480,lng:-98.75300},
+ {id:'c1',name:'Company 1',icon:'🧪',color:'#ff5d6c',lat:20.09700,lng:-98.76500},
+ {id:'c2',name:'Company 2',icon:'💎',color:'#9b8cff',lat:20.10900,lng:-98.76300}
+];
+const POOL=['Mystery box','Fresh bakery pack','Handmade gift set','Care package','Local snacks bundle','Tool kit','Plant & pot combo','Coffee starter kit','Artisan candles','Sweet treats box','Explorer kit','Weekend surprise'];
+/* ============================================================== */
+const $=s=>document.querySelector(s);
+let packs={},sel=new Set(),map,layers=[],visited=new Set();
+function shuffleAll(){packs={};sel.clear();COMPANIES.forEach(c=>{
+  const p=[...POOL].sort(()=>Math.random()-.5).slice(0,3);
+  packs[c.id]=p.map((n,i)=>({key:c.id+i,name:n,price:(Math.floor(Math.random()*18)+5)*10}));});render()}
+function render(){
+ $('#list').innerHTML=COMPANIES.map(c=>`<div class="co"><h2><span class="ic" style="background:${c.color}">${c.icon}</span>${c.name}</h2>`+
+  packs[c.id].map(p=>`<button class="pk ${sel.has(p.key)?'sel':''}" data-k="${p.key}"><span class="n">${p.name}<small>$${p.price} MXN</small></span><span class="chk">${sel.has(p.key)?'✓':''}</span></button>`).join('')+`</div>`).join('');
+ document.querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const k=b.dataset.k;sel.has(k)?sel.delete(k):sel.add(k);render()});
+ const cs=chosen().length;$('#coins').textContent=sel.size+' picked';$('#tGo').disabled=!cs;
+}
+const chosen=()=>COMPANIES.filter(c=>packs[c.id]&&packs[c.id].some(p=>sel.has(p.key)));
+function show(v){$('#pk').classList.toggle('on',v=='pk');$('#mapview').classList.toggle('on',v=='map');
+ $('#tPk').classList.toggle('on',v=='pk');$('#tGo').classList.toggle('on',v=='map');if(v=='map'&&map)setTimeout(()=>map.invalidateSize(),50)}
+$('#tPk').onclick=()=>show('pk');
+$('#shuffle').onclick=shuffleAll;
+$('#tGo').onclick=()=>{show('map');startQuest()};
+const pin=(c)=>L.divIcon({className:'',iconSize:[34,34],iconAnchor:[17,34],html:`<div class="pin" style="background:${c.color};color:${c.color}"><i>${c.icon}</i></div>`});
+function getPos(){return new Promise(res=>{const v=COMPANIES[0],fb={lat:v.lat-.012,lng:v.lng-.009,fake:true};
+ if(!navigator.geolocation)return res(fb);
+ navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res(fb),{enableHighAccuracy:true,timeout:8000})})}
+async function route(pts,prof){
+ const base=prof=='foot'?'https://routing.openstreetmap.de/routed-foot/route/v1/foot/':'https://router.project-osrm.org/route/v1/driving/';
+ const r=await fetch(base+pts.map(p=>p.lng+','+p.lat).join(';')+'?overview=full&geometries=geojson');
+ const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}
+async function startQuest(){
+ if(!map){map=L.map('map',{zoomControl:false,attributionControl:true});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap © CARTO'}).addTo(map)}
+ layers.forEach(l=>map.removeLayer(l));layers=[];visited.clear();
+ $('#quest').innerHTML='<h3>Scouting the map…</h3>';
+ const me=await getPos();
+ const stops=[...chosen()].sort((a,b)=>(a.id=='vicke'?-1:b.id=='vicke'?1:0)); // Vicke is always the first stop
+ const pts=[me,...stops];
+ layers.push(L.marker([me.lat,me.lng],{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map));
+ stops.forEach(c=>layers.push(L.marker([c.lat,c.lng],{icon:pin(c)}).addTo(map).bindPopup(c.icon+' '+c.name)));
+ let line,dist=0,dur=0,note='';
+ try{let r;try{r=await route(pts,'foot');note='on foot'}catch(e){r=await route(pts,'car');note='by car'}
+  line=r.geometry.coordinates.map(c=>[c[1],c[0]]);dist=r.distance;dur=r.duration;
+ }catch(e){line=pts.map(p=>[p.lat,p.lng]);note='straight line (routing offline)'}
+ layers.push(L.polyline(line,{color:'#000',weight:9,opacity:.5}).addTo(map));
+ layers.push(L.polyline(line,{color:'#ffc83d',weight:5,className:'route'}).addTo(map));
+ map.fitBounds(L.latLngBounds(pts.map(p=>[p.lat,p.lng])).pad(.25));
+ const km=(dist/1000).toFixed(1),min=Math.round(dur/60);
+ $('#quest').innerHTML=`<h3>QUEST · ${stops.length} stop${stops.length>1?'s':''}${dist?` · ${km} km · ~${min} min ${note}`:' · '+note}</h3>`+
+  (me.fake?'<small style="color:var(--dim)">Location blocked — using a demo start point.</small>':'')+
+  stops.map((c,i)=>{const n=packs[c.id].filter(p=>sel.has(p.key)).map(p=>p.name).join(', ');
+   return `<div class="st" data-i="${i}"><div class="b" style="background:${c.color}">${i+1}</div><div><b>${c.name}</b><small>Pick up: ${n}</small></div></div>`}).join('');
+ document.querySelectorAll('.st').forEach(e=>e.onclick=()=>{e.classList.toggle('done')});
+}
+shuffleAll();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
