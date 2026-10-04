@@ -73,11 +73,24 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,#ffd25e 62%)}
 .leaflet-container{background:#ece8de;font:inherit}
 .leaflet-control-attribution{font-size:9px!important;margin-bottom:2px}
 .leaflet-top{top:60px}
+.startbtn{width:100%;background:var(--ink);color:#fff;border:0;border-radius:18px;padding:16px;font:800 18px var(--d);margin:12px 0 8px}
+.row{display:flex;gap:8px;margin-bottom:8px}
+.row .ghost{flex:1;text-align:center;text-decoration:none;font-size:12.5px;padding:10px 6px}
+#nav{position:absolute;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 10px);z-index:950;background:var(--ink);color:#fff;border-radius:26px;padding:14px 16px;display:none;gap:14px;align-items:center;box-shadow:0 12px 36px rgba(0,0,0,.35)}
+#nav.on{display:flex}
+#nav .ar{flex:none;width:62px;height:62px;border-radius:20px;background:#ffd25e;color:var(--ink);display:grid;place-items:center;font:800 36px var(--d)}
+#nav .d{font:800 32px/1 var(--d);letter-spacing:-.02em}#nav .i{opacity:.9;margin-top:3px;line-height:1.25}
+#navbar{position:absolute;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:950;background:#fff;border-radius:28px;padding:14px 14px 14px 20px;display:none;align-items:center;gap:10px;box-shadow:0 -6px 40px rgba(0,0,0,.2)}
+#navbar.on{display:flex}
+#navbar .e{flex:1}#navbar .e b{display:block;font:800 28px/1 var(--d);letter-spacing:-.02em}#navbar .e span{color:var(--dim);font-size:13px}
+.rb{width:46px;height:46px;border-radius:50%;border:0;background:var(--bg);font-size:20px}
+.end{background:#e5393d;color:#fff;border:0;border-radius:16px;padding:14px 20px;font:800 16px var(--d)}
+body.navmode #back,body.navmode #fit,body.navmode #sheet{display:none}
 </style>
 </head>
 <body>
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>Waypoint</div><div class="count" id="coins">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gK1wi App Test</div><div class="count" id="coins">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
@@ -85,7 +98,9 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,#ffd25e 62%)}
 </section>
 <section id="mapview" class="view"><div id="map"></div>
   <button class="fab" id="back">← Packages</button><button class="fab" id="fit">Fit route</button>
-  <div id="sheet"></div></section>
+  <div id="sheet"></div>
+  <div id="nav"><div class="ar" id="nar">↑</div><div><div class="d" id="nd"></div><div class="i" id="ni"></div></div></div>
+  <div id="navbar"><div class="e"><b id="eta"></b><span id="rem"></span></div><button class="rb" id="vbtn">🔊</button><button class="end" id="endb">End</button></div></section>
 <button id="bar"><span class="t" id="barT"></span><span class="go">Start route →</span></button>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -116,41 +131,94 @@ function render(){
 function show(v){$('#pk').classList.toggle('on',v=='pk');$('#mapview').classList.toggle('on',v=='map');
  $('#bar').style.display=v=='map'?'none':'';if(v=='map'&&map)setTimeout(()=>map.invalidateSize(),50)}
 $('#shuffle').onclick=shuffleAll;
-$('#back').onclick=()=>show('pk');
-$('#fit').onclick=()=>bounds&&map.fitBounds(bounds,{paddingBottomRight:[0,200]});
+$('#back').onclick=()=>{endNav(true);show('pk')};
+$('#fit').onclick=()=>bounds&&map.fitBounds(bounds,{paddingBottomRight:[0,260]});
 $('#bar').onclick=()=>{show('map');startRoute()};
 const pin=c=>L.divIcon({className:'',iconSize:[40,40],iconAnchor:[8,38],html:`<div class="pin" style="${sty(c)}"><i>${c.mono}</i></div>`});
 function getPos(){return new Promise(res=>{const v=COMPANIES[0],fb={lat:v.lat-.012,lng:v.lng-.009,fake:true};
  if(!navigator.geolocation)return res(fb);
  navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res(fb),{enableHighAccuracy:true,timeout:8000})})}
+let R=null,me=null,meM=null,N=null;
+const fmt=m=>m<1000?Math.max(10,Math.round(m/10)*10)+' m':(m/1000).toFixed(1)+' km';
+const hav=(a,b)=>{const t=Math.PI/180,x=(b.lng-a.lng)*t*Math.cos((a.lat+b.lat)/2*t),y=(b.lat-a.lat)*t;return Math.sqrt(x*x+y*y)*6371000};
+const GL={left:'↰',right:'↱','slight left':'↖','slight right':'↗','sharp left':'↲','sharp right':'↳',straight:'↑',uturn:'↶'};
+const glyph=s=>{const t=s.maneuver.type;return t=='arrive'?'⚑':(t=='roundabout'||t=='rotary')?'⟳':GL[s.maneuver.modifier]||'↑'};
+function instr(s,stop){const t=s.maneuver.type,m=s.maneuver.modifier||'',on=s.name?' onto '+s.name:'';
+ if(t=='arrive')return 'Arrive at '+stop;
+ if(t=='roundabout'||t=='rotary')return 'Take the roundabout'+on;
+ if(m=='uturn')return 'Make a U-turn'+on;
+ if(!m||m=='straight')return 'Continue straight'+(s.name?' on '+s.name:'');
+ const [a,b]=m.split(' ');return (b?(a=='slight'?'Bear ':'Sharp '):'Turn ')+(b||a)+on}
 async function route(pts,prof){
  const base=prof=='foot'?'https://routing.openstreetmap.de/routed-foot/route/v1/foot/':'https://router.project-osrm.org/route/v1/driving/';
- const r=await fetch(base+pts.map(p=>p.lng+','+p.lat).join(';')+'?overview=full&geometries=geojson');
+ const r=await fetch(base+pts.map(p=>p.lng+','+p.lat).join(';')+'?overview=full&geometries=geojson&steps=true');
  const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}
 async function startRoute(){
+ endNav(true);
  if(!map){map=L.map('map',{zoomControl:false});
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map)}
  layers.forEach(l=>map.removeLayer(l));layers=[];
  $('#sheet').innerHTML='<b style="font:800 20px var(--d)">Finding the best way…</b>';
- const me=await getPos();
+ me=await getPos();
  const stops=[...chosen()].sort((a,b)=>(a.id=='vicke'?-1:b.id=='vicke'?1:0)); // Vicke is always the first stop
  const pts=[me,...stops];
- layers.push(L.marker([me.lat,me.lng],{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map));
+ meM=L.marker([me.lat,me.lng],{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[18,18],iconAnchor:[9,9]}),zIndexOffset:1000}).addTo(map);layers.push(meM);
  stops.forEach(c=>layers.push(L.marker([c.lat,c.lng],{icon:pin(c)}).addTo(map)));
- let line,dist=0,dur=0,note='Walking';
+ let line,dist=0,dur=0,note='Walking',steps=[];
  try{let r;try{r=await route(pts,'foot')}catch(e){r=await route(pts,'car');note='Driving'}
   line=r.geometry.coordinates.map(c=>[c[1],c[0]]);dist=r.distance;dur=r.duration;
+  r.legs.forEach((l,i)=>l.steps.forEach(s=>steps.push({...s,leg:i})));
  }catch(e){line=pts.map(p=>[p.lat,p.lng]);note='Direct line'}
+ const remD=[0],remT=[0];for(let i=steps.length-1;i>=0;i--){remD[i]=(remD[i+1]||0)+steps[i].distance;remT[i]=(remT[i+1]||0)+steps[i].duration}
+ R={steps,stops,line,dist,dur,note,remD,remT};
  layers.push(L.polyline(line,{color:'#fff',weight:11,opacity:.95}).addTo(map));
  layers.push(L.polyline(line,{color:'#15171c',weight:4,className:'route'}).addTo(map));
  bounds=L.latLngBounds(pts.map(p=>[p.lat,p.lng])).pad(.25);
- map.fitBounds(bounds,{paddingBottomRight:[0,200]});
- $('#sheet').innerHTML=`<div class="stats"><div class="stat"><b>${dist?(dist/1000).toFixed(1):'–'}</b><span>km</span></div><div class="stat"><b>${dur?Math.round(dur/60):'–'}</b><span>min</span></div><div class="stat"><b>${stops.length}</b><span>stop${stops.length>1?'s':''}</span></div></div>`+
-  `<p class="note">${note}${me.fake?' · Location unavailable, using a demo start point':''} · Tap a stop to mark it done</p><div class="tl">`+
+ map.fitBounds(bounds,{paddingBottomRight:[0,260]});
+ const eta=new Date(Date.now()+dur*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ $('#sheet').innerHTML=`<div class="stats"><div class="stat"><b>${dur?Math.round(dur/60):'–'}</b><span>min · ${dur?'arrive '+eta:''}</span></div><div class="stat"><b>${dist?(dist/1000).toFixed(1):'–'}</b><span>km · ${note}</span></div></div>`+
+  (steps.length?`<button class="startbtn" id="go">▶ Start navigation</button><div class="row"><button class="ghost" id="sim">Simulate trip (demo)</button><a class="ghost" target="_blank" rel="noopener" href="${gmaps()}">Open in Google Maps</a></div>`:'<p class="note">Turn-by-turn is unavailable right now (routing offline).</p>')+
+  `<p class="note">${stops.length} stop${stops.length>1?'s':''}${me.fake?' · Location unavailable, using a demo start point':''} · Tap a stop to mark it done</p><div class="tl">`+
   stops.map((c,i)=>{const n=packs[c.id].filter(p=>sel.has(p.key)).map(p=>p.name).join(', ');
    return `<div class="st" style="${sty(c)}"><div class="b">${i+1}</div><div><b>${c.name}</b><small>${n}</small></div></div>`}).join('')+'</div>';
  document.querySelectorAll('.st').forEach(e=>e.onclick=()=>e.classList.toggle('done'));
+ if(steps.length){$('#go').onclick=()=>startNav(false);$('#sim').onclick=()=>startNav(true)}
 }
+function gmaps(){const s=R.stops,d=s[s.length-1],w=s.slice(0,-1).map(c=>c.lat+','+c.lng).join('|');
+ return 'https://www.google.com/maps/dir/?api=1'+(me.fake?'':'&origin='+me.lat+','+me.lng)+'&destination='+d.lat+','+d.lng+(w?'&waypoints='+encodeURIComponent(w):'')+'&travelmode='+(R.note=='Driving'?'driving':'walking')}
+function dens(l,st){const o=[];for(let i=0;i<l.length-1;i++){const a={lat:l[i][0],lng:l[i][1]},b={lat:l[i+1][0],lng:l[i+1][1]},n=Math.max(1,Math.round(hav(a,b)/st));for(let j=0;j<n;j++)o.push({lat:a.lat+(b.lat-a.lat)*j/n,lng:a.lng+(b.lng-a.lng)*j/n})}const e=l[l.length-1];o.push({lat:e[0],lng:e[1]});return o}
+function say(t){if(N&&N.voice&&window.speechSynthesis){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}}
+function startNav(sim){
+ document.body.classList.add('navmode');$('#nav').classList.add('on');$('#navbar').classList.add('on');
+ N={k:0,voice:true,last:-1,watch:null,tm:null};$('#vbtn').textContent='🔊';
+ if(sim){const pts=dens(R.line,6);let i=0;N.tm=setInterval(()=>{if(i>=pts.length){clearInterval(N.tm);return}update(pts[i++])},400)}
+ else{update({lat:me.lat,lng:me.lng});N.watch=navigator.geolocation.watchPosition(p=>update({lat:p.coords.latitude,lng:p.coords.longitude}),()=>{},{enableHighAccuracy:true})}
+}
+function update(p){
+ if(!N)return;const S=R.steps;
+ meM.setLatLng([p.lat,p.lng]);map.setView([p.lat,p.lng],17,{animate:true});
+ for(;;){const t=S[N.k+1];if(!t)return;
+  if(hav(p,{lat:t.maneuver.location[1],lng:t.maneuver.location[0]})>25)break;
+  N.k++;
+  if(t.maneuver.type=='arrive'){const st=R.stops[t.leg];document.querySelectorAll('.st')[t.leg].classList.add('done');
+   if(t.leg==R.stops.length-1)return arrived(st);
+   N.k++;say('Arrived at '+st.name)}}
+ const t=S[N.k+1],d=hav(p,{lat:t.maneuver.location[1],lng:t.maneuver.location[0]}),stop=R.stops[t.leg].name,tx=instr(t,stop);
+ $('#nar').textContent=glyph(t);$('#nd').textContent=fmt(d);$('#ni').textContent=tx;
+ const rem=d+R.remD[N.k+1],sec=R.remT[N.k+1]+d*(R.dur/R.dist||0);
+ $('#eta').textContent=new Date(Date.now()+sec*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ $('#rem').textContent=Math.max(1,Math.round(sec/60))+' min · '+fmt(rem);
+ if(N.last!=N.k){N.last=N.k;say((d>40?'In '+fmt(d)+', ':'')+tx)}
+}
+function arrived(st){$('#nar').textContent='⚑';$('#nd').textContent='Arrived';$('#ni').textContent='You reached '+st.name;$('#rem').textContent='Route complete';
+ if(N.tm)clearInterval(N.tm);if(N.watch!=null)navigator.geolocation.clearWatch(N.watch);say('You have arrived at '+st.name)}
+function endNav(quiet){
+ if(N){if(N.tm)clearInterval(N.tm);if(N.watch!=null)navigator.geolocation.clearWatch(N.watch);if(window.speechSynthesis)speechSynthesis.cancel();N=null}
+ document.body.classList.remove('navmode');$('#nav').classList.remove('on');$('#navbar').classList.remove('on');
+ if(!quiet&&map&&bounds){if(meM&&me)meM.setLatLng([me.lat,me.lng]);map.fitBounds(bounds,{paddingBottomRight:[0,260]})}
+}
+$('#endb').onclick=()=>endNav();
+$('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.voice?'🔊':'🔇';if(!N.voice&&window.speechSynthesis)speechSynthesis.cancel()};
 shuffleAll();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
