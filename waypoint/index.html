@@ -86,17 +86,22 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,#ffd25e 62%)}
 .rb{width:46px;height:46px;border-radius:50%;border:0;background:var(--bg);font-size:20px}
 .end{background:#e5393d;color:#fff;border:0;border-radius:16px;padding:14px 20px;font:800 16px var(--d)}
 body.navmode #back,body.navmode #fit,body.navmode #sheet{display:none}
+#info{right:14px;top:calc(env(safe-area-inset-top) + 66px);width:40px;height:40px;padding:0;font-size:19px;line-height:40px}
+#credit{position:absolute;z-index:900;right:62px;top:calc(env(safe-area-inset-top) + 72px);display:none;background:#fff;border-radius:12px;padding:9px 12px;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+#credit.on{display:block}#credit a{color:var(--ink);text-decoration:none;font-weight:700}
+body.navmode #info{top:calc(env(safe-area-inset-top) + 118px)}body.navmode #credit{top:calc(env(safe-area-inset-top) + 124px)}
 </style>
 </head>
 <body>
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gK1wi App Test</div><div class="count" id="coins">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>K1wi app test 1.0.0</div><div class="count" id="coins">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
   <div id="list"></div>
 </section>
 <section id="mapview" class="view"><div id="map"></div>
+  <button class="fab" id="info" aria-label="Map credits">ⓘ</button><div id="credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></div>
   <button class="fab" id="back">← Packages</button><button class="fab" id="fit">Fit route</button>
   <div id="sheet"></div>
   <div id="nav"><div class="ar" id="nar">↑</div><div><div class="d" id="nd"></div><div class="i" id="ni"></div></div></div>
@@ -155,7 +160,7 @@ async function route(pts,prof){
  const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}
 async function startRoute(){
  endNav(true);
- if(!map){map=L.map('map',{zoomControl:false});
+ if(!map){map=L.map('map',{zoomControl:false,attributionControl:false});
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map)}
  layers.forEach(l=>map.removeLayer(l));layers=[];
  $('#sheet').innerHTML='<b style="font:800 20px var(--d)">Finding the best way…</b>';
@@ -188,6 +193,7 @@ function gmaps(){const s=R.stops,d=s[s.length-1],w=s.slice(0,-1).map(c=>c.lat+',
  return 'https://www.google.com/maps/dir/?api=1'+(me.fake?'':'&origin='+me.lat+','+me.lng)+'&destination='+d.lat+','+d.lng+(w?'&waypoints='+encodeURIComponent(w):'')+'&travelmode='+(R.note=='Driving'?'driving':'walking')}
 function dens(l,st){const o=[];for(let i=0;i<l.length-1;i++){const a={lat:l[i][0],lng:l[i][1]},b={lat:l[i+1][0],lng:l[i+1][1]},n=Math.max(1,Math.round(hav(a,b)/st));for(let j=0;j<n;j++)o.push({lat:a.lat+(b.lat-a.lat)*j/n,lng:a.lng+(b.lng-a.lng)*j/n})}const e=l[l.length-1];o.push({lat:e[0],lng:e[1]});return o}
 function say(t){if(N&&N.voice&&window.speechSynthesis){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}}
+let ct;$('#info').onclick=()=>{const c=$('#credit');c.classList.toggle('on');clearTimeout(ct);if(c.classList.contains('on'))ct=setTimeout(()=>c.classList.remove('on'),5000)};
 function startNav(sim){
  document.body.classList.add('navmode');$('#nav').classList.add('on');$('#navbar').classList.add('on');
  N={k:0,voice:true,last:-1,watch:null,tm:null};$('#vbtn').textContent='🔊';
