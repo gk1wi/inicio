@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#f3efe6">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -69,10 +69,6 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,#ffd25e 62%)}
 .route{stroke-dasharray:2 11;stroke-linecap:round;animation:dash 1.6s linear infinite}
 @keyframes dash{to{stroke-dashoffset:-26}}
 @media (prefers-reduced-motion:reduce){.route,.me{animation:none}}
-.leaflet-tile-pane{filter:saturate(.3) contrast(1.02) brightness(1.04) sepia(.12)}
-.leaflet-container{background:#ece8de;font:inherit}
-.leaflet-control-attribution{font-size:9px!important;margin-bottom:2px}
-.leaflet-top{top:60px}
 .startbtn{width:100%;background:var(--ink);color:#fff;border:0;border-radius:18px;padding:16px;font:800 18px var(--d);margin:12px 0 8px}
 .row{display:flex;gap:8px;margin-bottom:8px}
 .row .ghost{flex:1;text-align:center;text-decoration:none;font-size:12.5px;padding:10px 6px}
@@ -86,28 +82,30 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,#ffd25e 62%)}
 .rb{width:46px;height:46px;border-radius:50%;border:0;background:var(--bg);font-size:20px}
 .end{background:#e5393d;color:#fff;border:0;border-radius:16px;padding:14px 20px;font:800 16px var(--d)}
 body.navmode #back,body.navmode #fit,body.navmode #sheet{display:none}
-#info{right:14px;top:calc(env(safe-area-inset-top) + 66px);width:40px;height:40px;padding:0;font-size:19px;line-height:40px}
-#credit{position:absolute;z-index:900;right:62px;top:calc(env(safe-area-inset-top) + 72px);display:none;background:#fff;border-radius:12px;padding:9px 12px;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
-#credit.on{display:block}#credit a{color:var(--ink);text-decoration:none;font-weight:700}
-body.navmode #info{top:calc(env(safe-area-inset-top) + 118px)}body.navmode #credit{top:calc(env(safe-area-inset-top) + 124px)}
+.maplibregl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 62px)}
+.maplibregl-ctrl-attrib{border-radius:14px!important;font:12px 'DM Sans',sans-serif}
+#mtlogo{position:absolute;z-index:900;left:14px;top:calc(env(safe-area-inset-top) + 66px);display:none;background:rgba(255,255,255,.88);border-radius:99px;padding:5px 10px}
+#mtlogo img{height:20px;display:block}
+body.navmode .maplibregl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)}
+body.navmode #mtlogo{top:calc(env(safe-area-inset-top) + 118px)}
 </style>
 </head>
 <body>
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>K1wi app test 1.0.0</div><div class="count" id="coins">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gK1wi app test 1.0.1</div><div class="count" id="coins">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
   <div id="list"></div>
 </section>
 <section id="mapview" class="view"><div id="map"></div>
-  <button class="fab" id="info" aria-label="Map credits">ⓘ</button><div id="credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></div>
+  <a id="mtlogo" href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener"><img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler"></a>
   <button class="fab" id="back">← Packages</button><button class="fab" id="fit">Fit route</button>
   <div id="sheet"></div>
   <div id="nav"><div class="ar" id="nar">↑</div><div><div class="d" id="nd"></div><div class="i" id="ni"></div></div></div>
   <div id="navbar"><div class="e"><b id="eta"></b><span id="rem"></span></div><button class="rb" id="vbtn">🔊</button><button class="end" id="endb">End</button></div></section>
 <button id="bar"><span class="t" id="barT"></span><span class="go">Start route →</span></button>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
 /* ===== CONFIG: replace the coordinates with the real ones ===== */
 const COMPANIES=[
@@ -117,9 +115,22 @@ const COMPANIES=[
  {id:'c2',name:'Company 2',mono:'2',c:'#e0287a',t:'#fddbe9',lat:20.10900,lng:-98.76300}
 ];
 const POOL=['Signature gift box','Artisan bakery set','Handcrafted bundle','Care package','Local delicacies','Tasting collection','Botanical arrangement','Coffee starter kit','Scented candle trio','Chocolate box','Weekend discovery kit','Private reserve'];
+/* ===== MAP: paste your MapTiler Cloud key here (free account) ===== */
+const MAPTILER_KEY='laTxSj4EXvHaXdrOjXUG';
+const MAP_STYLE_NAME='streets-v2'; // try: basic-v2, dataviz, outdoor-v2, bright-v2
 /* ============================================================== */
 const $=s=>document.querySelector(s);
-let packs={},sel=new Set(),map,layers=[],bounds;
+let packs={},sel=new Set(),map,layers=[],bounds,mapReady;
+const HAS_KEY=MAPTILER_KEY&&MAPTILER_KEY.indexOf('PASTE')!=0;
+const MAP_STYLE=HAS_KEY?`https://api.maptiler.com/maps/${MAP_STYLE_NAME}/style.json?key=${MAPTILER_KEY}`:{version:8,sources:{o:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap contributors'}},layers:[{id:'o',type:'raster',source:'o'}]};
+const PAD={top:80,bottom:270,left:50,right:50};
+if(HAS_KEY)document.getElementById('mtlogo').style.display='block';
+function initMap(){
+ if(map)return mapReady;
+ map=new maplibregl.Map({container:'map',style:MAP_STYLE,center:[COMPANIES[0].lng,COMPANIES[0].lat],zoom:13,attributionControl:false,dragRotate:false});
+ map.touchZoomRotate.disableRotation();
+ map.addControl(new maplibregl.AttributionControl({compact:true}),'top-right');
+ mapReady=new Promise(r=>map.on('load',r));return mapReady}
 const sty=c=>`--c:${c.c};--t:${c.t}`;
 function shuffleAll(){packs={};sel.clear();COMPANIES.forEach(c=>{
   const p=[...POOL].sort(()=>Math.random()-.5).slice(0,3);
@@ -134,12 +145,11 @@ function render(){
  $('#bar').classList.toggle('on',n>0);
 }
 function show(v){$('#pk').classList.toggle('on',v=='pk');$('#mapview').classList.toggle('on',v=='map');
- $('#bar').style.display=v=='map'?'none':'';if(v=='map'&&map)setTimeout(()=>map.invalidateSize(),50)}
+ $('#bar').style.display=v=='map'?'none':'';if(v=='map'&&map)setTimeout(()=>map.resize(),50)}
 $('#shuffle').onclick=shuffleAll;
 $('#back').onclick=()=>{endNav(true);show('pk')};
-$('#fit').onclick=()=>bounds&&map.fitBounds(bounds,{paddingBottomRight:[0,260]});
+$('#fit').onclick=()=>bounds&&map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
 $('#bar').onclick=()=>{show('map');startRoute()};
-const pin=c=>L.divIcon({className:'',iconSize:[40,40],iconAnchor:[8,38],html:`<div class="pin" style="${sty(c)}"><i>${c.mono}</i></div>`});
 function getPos(){return new Promise(res=>{const v=COMPANIES[0],fb={lat:v.lat-.012,lng:v.lng-.009,fake:true};
  if(!navigator.geolocation)return res(fb);
  navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res(fb),{enableHighAccuracy:true,timeout:8000})})}
@@ -160,15 +170,14 @@ async function route(pts,prof){
  const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}
 async function startRoute(){
  endNav(true);
- if(!map){map=L.map('map',{zoomControl:false,attributionControl:false});
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map)}
- layers.forEach(l=>map.removeLayer(l));layers=[];
+ await initMap();
+ layers.forEach(l=>l.remove());layers=[];
  $('#sheet').innerHTML='<b style="font:800 20px var(--d)">Finding the best way…</b>';
  me=await getPos();
  const stops=[...chosen()].sort((a,b)=>(a.id=='vicke'?-1:b.id=='vicke'?1:0)); // Vicke is always the first stop
  const pts=[me,...stops];
- meM=L.marker([me.lat,me.lng],{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[18,18],iconAnchor:[9,9]}),zIndexOffset:1000}).addTo(map);layers.push(meM);
- stops.forEach(c=>layers.push(L.marker([c.lat,c.lng],{icon:pin(c)}).addTo(map)));
+ const me_el=document.createElement('div');me_el.innerHTML='<div class="me"></div>';meM=new maplibregl.Marker({element:me_el}).setLngLat([me.lng,me.lat]).addTo(map);layers.push(meM);
+ stops.forEach(c=>{const e=document.createElement('div');e.innerHTML=`<div class="pin" style="${sty(c)}"><i>${c.mono}</i></div>`;layers.push(new maplibregl.Marker({element:e,anchor:'top-left',offset:[-8,-38]}).setLngLat([c.lng,c.lat]).addTo(map))});
  let line,dist=0,dur=0,note='Walking',steps=[];
  try{let r;try{r=await route(pts,'foot')}catch(e){r=await route(pts,'car');note='Driving'}
   line=r.geometry.coordinates.map(c=>[c[1],c[0]]);dist=r.distance;dur=r.duration;
@@ -176,10 +185,13 @@ async function startRoute(){
  }catch(e){line=pts.map(p=>[p.lat,p.lng]);note='Direct line'}
  const remD=[0],remT=[0];for(let i=steps.length-1;i>=0;i--){remD[i]=(remD[i+1]||0)+steps[i].distance;remT[i]=(remT[i+1]||0)+steps[i].duration}
  R={steps,stops,line,dist,dur,note,remD,remT};
- layers.push(L.polyline(line,{color:'#fff',weight:11,opacity:.95}).addTo(map));
- layers.push(L.polyline(line,{color:'#15171c',weight:4,className:'route'}).addTo(map));
- bounds=L.latLngBounds(pts.map(p=>[p.lat,p.lng])).pad(.25);
- map.fitBounds(bounds,{paddingBottomRight:[0,260]});
+ const gj={type:'Feature',geometry:{type:'LineString',coordinates:line.map(c=>[c[1],c[0]])}};
+ if(map.getSource('route'))map.getSource('route').setData(gj);
+ else{map.addSource('route',{type:'geojson',data:gj});const lay={'line-join':'round','line-cap':'round'};
+  map.addLayer({id:'rc',type:'line',source:'route',layout:lay,paint:{'line-color':'#ffffff','line-width':11}});
+  map.addLayer({id:'rl',type:'line',source:'route',layout:lay,paint:{'line-color':'#15171c','line-width':4.5}})}
+ bounds=new maplibregl.LngLatBounds();pts.forEach(p=>bounds.extend([p.lng,p.lat]));
+ map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
  const eta=new Date(Date.now()+dur*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  $('#sheet').innerHTML=`<div class="stats"><div class="stat"><b>${dur?Math.round(dur/60):'–'}</b><span>min · ${dur?'arrive '+eta:''}</span></div><div class="stat"><b>${dist?(dist/1000).toFixed(1):'–'}</b><span>km · ${note}</span></div></div>`+
   (steps.length?`<button class="startbtn" id="go">▶ Start navigation</button><div class="row"><button class="ghost" id="sim">Simulate trip (demo)</button><a class="ghost" target="_blank" rel="noopener" href="${gmaps()}">Open in Google Maps</a></div>`:'<p class="note">Turn-by-turn is unavailable right now (routing offline).</p>')+
@@ -191,9 +203,9 @@ async function startRoute(){
 }
 function gmaps(){const s=R.stops,d=s[s.length-1],w=s.slice(0,-1).map(c=>c.lat+','+c.lng).join('|');
  return 'https://www.google.com/maps/dir/?api=1'+(me.fake?'':'&origin='+me.lat+','+me.lng)+'&destination='+d.lat+','+d.lng+(w?'&waypoints='+encodeURIComponent(w):'')+'&travelmode='+(R.note=='Driving'?'driving':'walking')}
+const bearing=(a,b)=>{const t=Math.PI/180,y=Math.sin((b.lng-a.lng)*t)*Math.cos(b.lat*t),x=Math.cos(a.lat*t)*Math.sin(b.lat*t)-Math.sin(a.lat*t)*Math.cos(b.lat*t)*Math.cos((b.lng-a.lng)*t);return (Math.atan2(y,x)/t+360)%360};
 function dens(l,st){const o=[];for(let i=0;i<l.length-1;i++){const a={lat:l[i][0],lng:l[i][1]},b={lat:l[i+1][0],lng:l[i+1][1]},n=Math.max(1,Math.round(hav(a,b)/st));for(let j=0;j<n;j++)o.push({lat:a.lat+(b.lat-a.lat)*j/n,lng:a.lng+(b.lng-a.lng)*j/n})}const e=l[l.length-1];o.push({lat:e[0],lng:e[1]});return o}
 function say(t){if(N&&N.voice&&window.speechSynthesis){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}}
-let ct;$('#info').onclick=()=>{const c=$('#credit');c.classList.toggle('on');clearTimeout(ct);if(c.classList.contains('on'))ct=setTimeout(()=>c.classList.remove('on'),5000)};
 function startNav(sim){
  document.body.classList.add('navmode');$('#nav').classList.add('on');$('#navbar').classList.add('on');
  N={k:0,voice:true,last:-1,watch:null,tm:null};$('#vbtn').textContent='🔊';
@@ -202,7 +214,8 @@ function startNav(sim){
 }
 function update(p){
  if(!N)return;const S=R.steps;
- meM.setLatLng([p.lat,p.lng]);map.setView([p.lat,p.lng],17,{animate:true});
+ const pv=N.prev;N.prev=p;const br=pv&&hav(pv,p)>3?bearing(pv,p):null;
+ meM.setLngLat([p.lng,p.lat]);map.easeTo(Object.assign({center:[p.lng,p.lat],zoom:17,pitch:55,duration:500},br!=null?{bearing:br}:{}));
  for(;;){const t=S[N.k+1];if(!t)return;
   if(hav(p,{lat:t.maneuver.location[1],lng:t.maneuver.location[0]})>25)break;
   N.k++;
@@ -221,7 +234,7 @@ function arrived(st){$('#nar').textContent='⚑';$('#nd').textContent='Arrived';
 function endNav(quiet){
  if(N){if(N.tm)clearInterval(N.tm);if(N.watch!=null)navigator.geolocation.clearWatch(N.watch);if(window.speechSynthesis)speechSynthesis.cancel();N=null}
  document.body.classList.remove('navmode');$('#nav').classList.remove('on');$('#navbar').classList.remove('on');
- if(!quiet&&map&&bounds){if(meM&&me)meM.setLatLng([me.lat,me.lng]);map.fitBounds(bounds,{paddingBottomRight:[0,260]})}
+ if(!quiet&&map&&bounds){if(meM&&me)meM.setLngLat([me.lng,me.lat]);map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0})}
 }
 $('#endb').onclick=()=>endNav();
 $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.voice?'🔊':'🔇';if(!N.voice&&window.speechSynthesis)speechSynthesis.cancel()};
