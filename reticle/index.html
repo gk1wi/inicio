@@ -312,7 +312,7 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.10.0</div>
+          <div class="version-badge" id="versionBadge">v1.10.1</div>
         </div>
         <h1>Entrena tu aim</h1>
         <p>Reacciona. Sigue. Cambia de blanco. Cada sesión queda medida al milisegundo — la única meta es la marca que dejaste la última vez.</p>
@@ -432,7 +432,7 @@
       <div class="tag">LÍMITE ALCANZADO</div>
       <h2>Sesiones bloqueadas</h2>
       <p style="color:var(--text-dim); font-size:14px; line-height:1.6; margin-bottom:24px;">
-        Llegaste a 60 sesiones. Se bloquea el inicio de nuevas sesiones por 8 horas, sin importar el modo.
+        Llegaste a 20 sesiones. Se bloquea el inicio de nuevas sesiones por 8 horas, sin importar el modo.
       </p>
       <div class="result-stat full">
         <div style="width:100%; text-align:center;">
@@ -474,7 +474,7 @@
   // start, the app locks new sessions for 8 hours — enforced client-side
   // via a timestamp in localStorage, so it survives reloads and holds even
   // if the tab is closed and reopened later.
-  const SESSION_LIMIT = 60;
+  const SESSION_LIMIT = 20;
   const LOCK_DURATION_MS = 8 * 60 * 60 * 1000; // 8 hours
   let lockIv = null;
 
