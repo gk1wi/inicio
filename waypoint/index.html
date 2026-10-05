@@ -92,7 +92,7 @@ body.navmode #mtlogo{top:calc(env(safe-area-inset-top) + 118px)}
 </head>
 <body>
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>K1wi Test App v1.0.5</div><div class="count" id="coins">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>K1wi test app v1.0.6</div><div class="count" id="coins">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
@@ -117,6 +117,9 @@ const COMPANIES=[
 const POOL=['Signature gift box','Artisan bakery set','Handcrafted bundle','Care package','Local delicacies','Tasting collection','Botanical arrangement','Coffee starter kit','Scented candle trio','Chocolate box','Weekend discovery kit','Private reserve'];
 /* ===== MAP: paste your MapTiler Cloud key here (free account) ===== */
 const MAPTILER_KEY='laTxSj4EXvHaXdrOjXUG';
+/* ===== ROUTING: paste your OpenRouteService key (free at openrouteservice.org) ===== */
+const ORS_KEY='eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImQ1ODU0MDcwN2E4YTQxN2NiMjRiOTM5YTg4MjE2NTZmIiwiaCI6Im11cm11cjY0In0=';
+const HAS_ORS=ORS_KEY&&ORS_KEY.indexOf('PASTE')!=0;
 const MAP_STYLE_NAME='streets-v2'; // try: basic-v2, dataviz, outdoor-v2, bright-v2
 /* ============================================================== */
 const $=s=>document.querySelector(s);
@@ -170,8 +173,19 @@ async function route(pts,prof){
  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),8000);
  try{const r=await fetch(base+pts.map(p=>p.lng+','+p.lat).join(';')+'?overview=full&geometries=geojson&steps=true',{signal:ctl.signal});
   const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}finally{clearTimeout(tm)}}
+async function orsRoute(pts,prof){
+ const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),10000);
+ try{
+  const r=await fetch('https://api.openrouteservice.org/v2/directions/'+prof+'/geojson',{method:'POST',signal:ctl.signal,headers:{'Authorization':ORS_KEY,'Content-Type':'application/json'},body:JSON.stringify({coordinates:pts.map(p=>[p.lng,p.lat]),instructions:true})});
+  if(!r.ok)throw new Error('ORS '+r.status);
+  const j=await r.json(),f=j.features&&j.features[0];if(!f)throw new Error('ORS empty');
+  const co=f.geometry.coordinates,TY={0:['turn','left'],1:['turn','right'],2:['turn','sharp left'],3:['turn','sharp right'],4:['turn','slight left'],5:['turn','slight right'],6:['continue','straight'],7:['roundabout',''],8:['roundabout',''],9:['turn','uturn'],10:['arrive',''],11:['depart',''],12:['turn','slight left'],13:['turn','slight right']};
+  const legs=f.properties.segments.map(sg=>({steps:sg.steps.map(st=>{const t=TY[st.type]||['continue','straight'];
+   return{distance:st.distance,duration:st.duration,name:(st.name&&st.name!='-')?st.name:'',maneuver:{type:t[0],modifier:t[1],location:co[st.way_points[0]]}}})}));
+  return{geometry:{coordinates:co},legs,distance:f.properties.summary.distance,duration:f.properties.summary.duration}
+ }finally{clearTimeout(tm)}}
 async function startRoute(){
- endNav(true);
+ endNav(true);window.RERR='';
  await initMap();
  layers.forEach(l=>l.remove());layers=[];
  $('#sheet').innerHTML='<b style="font:800 20px var(--d)">Finding the best way…</b>';
@@ -181,7 +195,9 @@ async function startRoute(){
  const me_el=document.createElement('div');me_el.innerHTML='<div class="me"></div>';meM=new maplibregl.Marker({element:me_el}).setLngLat([me.lng,me.lat]).addTo(map);layers.push(meM);
  stops.forEach(c=>{const e=document.createElement('div');e.innerHTML=`<div class="pin" style="${sty(c)}"><i>${c.mono}</i></div>`;layers.push(new maplibregl.Marker({element:e,anchor:'top-left',offset:[-8,-38]}).setLngLat([c.lng,c.lat]).addTo(map))});
  let line,dist=0,dur=0,note='Walking',steps=[];
- try{let r;try{r=await route(pts,'foot')}catch(e){r=await route(pts,'car');note='Driving'}
+ try{let r;
+  try{r=HAS_ORS?await orsRoute(pts,'foot-walking'):await route(pts,'foot')}
+  catch(e1){window.RERR=(e1&&e1.message)||String(e1);try{r=await route(pts,'foot')}catch(e2){r=await route(pts,'car');note='Driving'}}
   line=r.geometry.coordinates.map(c=>[c[1],c[0]]);dist=r.distance;dur=r.duration;
   r.legs.forEach((l,i)=>l.steps.forEach(s=>steps.push({...s,leg:i})));
  }catch(e){line=pts.map(p=>[p.lat,p.lng]);note='Direct line'}
@@ -198,7 +214,7 @@ async function startRoute(){
  map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
  const eta=new Date(Date.now()+dur*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  $('#sheet').innerHTML=`<div class="stats"><div class="stat"><b>${dur?Math.round(dur/60):'–'}</b><span>min · ${dur?'arrive '+eta:''}</span></div><div class="stat"><b>${dist?(dist/1000).toFixed(1):'–'}</b><span>km · ${note}</span></div></div>`+
-  (steps.length?`<button class="startbtn" id="go">▶ Start navigation</button><div class="row"><button class="ghost" id="sim">Simulate trip (demo)</button><a class="ghost" target="_blank" rel="noopener" href="${gmaps()}">Open in Google Maps</a></div>`:'<p class="note">Turn-by-turn is unavailable right now (routing offline).</p>')+
+  (steps.length?`<button class="startbtn" id="go">▶ Start navigation</button><div class="row"><button class="ghost" id="sim">Simulate trip (demo)</button><a class="ghost" target="_blank" rel="noopener" href="${gmaps()}">Open in Google Maps</a></div>`:'<p class="note">Turn-by-turn is unavailable right now (routing offline).'+(window.RERR?' ['+window.RERR+']':'')+'</p>')+
   `<p class="note">${stops.length} stop${stops.length>1?'s':''}${me.fake?' · Location unavailable, using a demo start point':''} · Tap a stop to mark it done</p><div class="tl">`+
   stops.map((c,i)=>{const n=packs[c.id].filter(p=>sel.has(p.key)).map(p=>p.name).join(', ');
    return `<div class="st" style="${sty(c)}"><div class="b">${i+1}</div><div><b>${c.name}</b><small>${n}</small></div></div>`}).join('')+'</div>';
