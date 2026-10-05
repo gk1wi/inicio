@@ -8,133 +8,156 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Waypoint">
-<meta name="theme-color" content="#15171c">
+<meta name="theme-color" content="#f5f2ec">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* ── Foundations ─────────────────────────────────────────── */
-:root{--bg:#f3efe6;--ink:#15171c;--dim:#6d6f76;--line:#e3ded2;--gold:#ffd25e;--sh:0px;--sab:max(env(safe-area-inset-bottom),18px);--d:'Bricolage Grotesque',system-ui,sans-serif}
+:root{--bg:#f5f2ec;--ink:#14161a;--dim:#6a6d75;--line:#e7e2d8;--accent:#e2b765;--map-bg:#efede9;
+ --sh:0px;--sab:max(env(safe-area-inset-bottom),18px);--app-h:100%;
+ --d:'Bricolage Grotesque',system-ui,sans-serif;--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.4,.64,1)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}
 html{-webkit-text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}
-html{height:var(--app-h,100%);overflow:hidden;overscroll-behavior:none}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 'DM Sans',-apple-system,system-ui,sans-serif}
-body{height:var(--app-h,100%);overflow:hidden;overscroll-behavior:none}
-#app{position:fixed;top:0;left:0;right:0;height:var(--app-h,100%);overflow:hidden}
+html,body{height:var(--app-h);margin:0;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--ink);font:15px/1.45 'DM Sans',-apple-system,system-ui,sans-serif}
+#app{position:fixed;top:0;left:0;right:0;height:var(--app-h);overflow:hidden}
 button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
 a{color:inherit;text-decoration:none}
 input{-webkit-user-select:text;user-select:text;font-size:16px}
-#pk{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:none;padding:calc(env(safe-area-inset-top) + 18px) 18px 0}
-#pk.on{display:block}
+
+/* Screens crossfade instead of switching instantly */
+.view{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .5s ease,transform .8s var(--ease),visibility 0s .8s}
+.view.on{opacity:1;visibility:visible;transition-delay:0s}
+#pk.on,#mapview.on{transform:none}
+#pk{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 18px) 18px 0;transform:scale(.97)}
+#mapview{z-index:50;overflow:hidden;background:var(--map-bg);transform:translateY(28px)}
+#map{position:absolute;inset:0;opacity:0;transition:opacity 1s ease}
+#map.ready{opacity:1}
 .spacer{height:150px}
-/* Map screen is a full-screen fixed overlay (same idea as the reference page's modals) */
-#mapview{position:absolute;inset:0;z-index:50;display:none;overflow:hidden}
-#mapview.on{display:block}
-#map{position:absolute;inset:0}
-/* ── Status-bar fade: content scrolls under the notch and softly blurs out ── */
+
+/* Status-bar fade: content scrolls under the notch and blurs softly */
 .fade{position:absolute;left:0;right:0;top:0;height:calc(env(safe-area-inset-top) + 34px);pointer-events:none;
  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
  -webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent);mask-image:linear-gradient(to bottom,#000 55%,transparent)}
-#fadePk{z-index:40;background:linear-gradient(to bottom,rgba(243,239,230,.96),rgba(243,239,230,.7) 60%,rgba(243,239,230,0))}
-#fadeMap{z-index:800;background:linear-gradient(to bottom,rgba(236,233,228,.9),rgba(236,233,228,.6) 60%,rgba(236,233,228,0))}
+#fadePk{z-index:40;background:linear-gradient(to bottom,rgba(245,242,236,.96),rgba(245,242,236,.7) 60%,rgba(245,242,236,0))}
+#fadeMap{z-index:800;background:linear-gradient(to bottom,rgba(239,237,233,.9),rgba(239,237,233,.6) 60%,rgba(239,237,233,0))}
+
 /* ── Packages ─────────────────────────────────────────────── */
 .top{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
 .logo{display:flex;align-items:center;gap:8px;font:800 20px var(--d);letter-spacing:-.02em}
 .logo i{width:22px;height:22px;border-radius:50% 50% 50% 4px;background:var(--ink);transform:rotate(-45deg)}
 .count{background:var(--ink);color:#fff;border-radius:99px;padding:6px 12px;font-size:13px}
 h1{font:800 44px/.98 var(--d);letter-spacing:-.035em;margin:26px 0 8px}
-h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--gold) 62%)}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--accent) 62%)}
 .sub{color:var(--dim);margin:0 0 20px;max-width:32ch}
 .tools{display:flex;justify-content:flex-end;margin-bottom:14px}
-.ghost{border:1.5px solid var(--ink);border-radius:99px;padding:8px 14px;font-weight:700;font-size:13px;transition:transform .15s}
-.ghost:active{transform:scale(.97)}
+.ghost{border:1.5px solid var(--ink);border-radius:99px;padding:8px 14px;font-weight:700;font-size:13px;transition:transform .2s var(--ease),background .2s}
+.ghost:active{transform:scale(.97);background:rgba(20,22,26,.05)}
 .co{border-radius:28px;padding:16px;margin-bottom:16px;background:var(--t)}
-.co.in{animation:up .55s cubic-bezier(.2,.8,.2,1) both}
-@keyframes up{from{opacity:0;transform:translateY(14px)}}
+.co.in{animation:up .7s var(--ease) both}
 .ch{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .mono{width:46px;height:46px;border-radius:16px;background:var(--c);color:#fff;display:grid;place-items:center;font:800 24px var(--d);transform:rotate(-6deg)}
 .ch h2{font:800 25px var(--d);letter-spacing:-.02em;margin:0;flex:1}
 .ch small{font-weight:700;color:var(--c);font-size:12px}
-.pk{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid transparent;border-radius:18px;padding:13px 14px;margin-top:8px;transition:transform .15s,border-color .2s}
+.pk{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;border:2px solid transparent;border-radius:18px;padding:13px 14px;margin-top:8px;box-shadow:0 1px 0 rgba(20,22,26,.04);transition:transform .25s var(--ease),border-color .3s,box-shadow .3s}
 .pk:active{transform:scale(.98)}
 .pk .n{flex:1;font-weight:700}
 .pk small{display:block;color:var(--dim);font-weight:400}
-.pk .chk{width:30px;height:30px;border-radius:50%;background:var(--t);color:var(--c);display:grid;place-items:center;font:700 18px var(--d);transition:.2s}
-.pk.sel{border-color:var(--c)}
+.pk .chk{width:30px;height:30px;border-radius:50%;background:var(--t);color:var(--c);display:grid;place-items:center;font:700 18px var(--d);transition:background .3s,color .3s,transform .5s var(--spring)}
+.pk.sel{border-color:var(--c);box-shadow:0 8px 22px -10px var(--c)}
 .pk.sel .chk{background:var(--c);color:#fff;transform:rotate(90deg)}
-#bar{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--sab));z-index:1000;display:flex;align-items:center;gap:12px;background:var(--ink);color:#fff;border-radius:24px;padding:12px 12px 12px 20px;text-align:left;box-shadow:0 14px 40px rgba(20,22,28,.35);transform:translateY(160%);transition:transform .35s cubic-bezier(.2,.9,.3,1.2)}
+#bar{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--sab));z-index:1000;display:flex;align-items:center;gap:12px;background:var(--ink);color:#fff;border-radius:24px;padding:12px 12px 12px 20px;text-align:left;box-shadow:0 18px 44px rgba(20,22,26,.35);transform:translateY(160%);transition:transform .7s var(--spring),opacity .3s}
 #bar.on{transform:none}
+body.inmap #bar{opacity:0;transform:translateY(160%);pointer-events:none}
 #bar .t{flex:1;font-weight:700}
 #bar .t small{display:block;font-weight:400;opacity:.65}
-#bar .go{background:var(--gold);color:var(--ink);border-radius:16px;padding:13px 18px;font:800 15px var(--d)}
+#bar .go{background:var(--accent);color:var(--ink);border-radius:16px;padding:13px 18px;font:800 15px var(--d)}
+
 /* ── Map screen ───────────────────────────────────────────── */
-.fab{position:absolute;z-index:900;top:calc(env(safe-area-inset-top) + 14px);background:#fff;border-radius:99px;padding:11px 16px;font-weight:700;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.fab{position:absolute;z-index:900;top:calc(env(safe-area-inset-top) + 14px);background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-radius:99px;padding:11px 16px;font-weight:700;font-size:14px;box-shadow:0 8px 24px rgba(20,22,26,.16);transition:opacity .35s,transform .6s var(--ease)}
 #back{left:14px}#fit{right:14px}
-#sheet{position:absolute;left:10px;right:10px;bottom:calc(10px + var(--sab));z-index:900;background:#fff;border-radius:30px;padding:10px 20px 8px;max-height:52%;overflow:auto;box-shadow:0 -6px 40px rgba(0,0,0,.2)}
+body.navmode .fab{opacity:0;transform:translateY(-12px);pointer-events:none}
+#sheet{position:absolute;left:10px;right:10px;bottom:calc(10px + var(--sab));z-index:900;background:rgba(255,255,255,.93);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);border-radius:30px;padding:10px 20px 8px;max-height:52%;overflow:auto;box-shadow:0 -8px 44px rgba(20,22,26,.18);transform:translateY(calc(100% + 60px));transition:transform .9s var(--ease) .15s}
+#mapview.on #sheet{transform:none}
+body.navmode #mapview.on #sheet{transform:translateY(calc(100% + 60px));transition-delay:0s}
 #sheet:before{content:'';display:block;width:40px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+#sheet>*{animation:up .6s var(--ease) both}
+#sheet>:nth-child(2){animation-delay:.06s}
+#sheet>:nth-child(3){animation-delay:.12s}
+#sheet>:nth-child(n+4){animation-delay:.18s}
+#sheet>.load{animation:up .6s var(--ease) both,breathe 1.8s ease-in-out .6s infinite}
 .load{font:800 20px var(--d)}
 .stats{display:flex;gap:10px;margin-bottom:6px}
 .stat{flex:1;background:var(--bg);border-radius:16px;padding:10px 12px}
 .stat b{display:block;font:800 26px/1 var(--d);letter-spacing:-.02em}
 .stat span{font-size:12px;color:var(--dim)}
 .note{color:var(--dim);font-size:12px;margin:8px 0 0}
-.startbtn{width:100%;background:var(--ink);color:#fff;border-radius:18px;padding:16px;font:800 18px var(--d);margin:12px 0 8px;transition:transform .15s}
+.startbtn{width:100%;background:var(--ink);color:#fff;border-radius:18px;padding:16px;font:800 18px var(--d);margin:12px 0 8px;transition:transform .2s var(--ease)}
 .startbtn:active{transform:scale(.98)}
 .row{display:flex;gap:8px;margin-bottom:8px}
 .row .ghost{flex:1;text-align:center;font-size:12.5px;padding:10px 6px}
 .tl{margin-top:10px}
-.st{display:flex;gap:14px;align-items:flex-start;padding-bottom:16px;position:relative;transition:opacity .3s}
+.st{display:flex;gap:14px;align-items:flex-start;padding-bottom:16px;position:relative}
 .st:not(:last-child):before{content:'';position:absolute;left:17px;top:38px;bottom:0;width:2px;background:repeating-linear-gradient(var(--line) 0 4px,transparent 4px 8px)}
-.st .b{flex:none;width:36px;height:36px;border-radius:12px;background:var(--c);color:#fff;display:grid;place-items:center;font:800 18px var(--d)}
+.st .b{flex:none;width:36px;height:36px;border-radius:12px;background:var(--c);color:#fff;display:grid;place-items:center;font:800 18px var(--d);transition:background .4s}
 .st b{font:800 18px var(--d);letter-spacing:-.01em}
 .st small{display:block;color:var(--dim)}
+.st>div:last-child{transition:opacity .4s}
 .st.done .b{background:#d9d6cc}
 .st.done>div:last-child{opacity:.45;text-decoration:line-through}
+
 /* ── Navigation ───────────────────────────────────────────── */
-#nav{position:absolute;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 10px);z-index:950;background:var(--ink);color:#fff;border-radius:26px;padding:14px 16px;display:none;gap:14px;align-items:center;box-shadow:0 12px 36px rgba(0,0,0,.35)}
-#nav.on{display:flex}
-#nav .ar{flex:none;width:62px;height:62px;border-radius:20px;background:var(--gold);color:var(--ink);display:grid;place-items:center;font:800 36px var(--d)}
+#nav{position:absolute;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 10px);z-index:950;background:rgba(20,22,26,.94);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:#fff;border-radius:26px;padding:14px 16px;display:flex;gap:14px;align-items:center;box-shadow:0 14px 40px rgba(0,0,0,.35);opacity:0;transform:translateY(-130%);pointer-events:none;transition:transform .8s var(--ease),opacity .4s}
+#nav .ar{flex:none;width:62px;height:62px;border-radius:20px;background:var(--accent);color:var(--ink);display:grid;place-items:center;font:800 36px var(--d)}
 #nav .d{font:800 32px/1 var(--d);letter-spacing:-.02em}
 #nav .i{opacity:.9;margin-top:3px;line-height:1.25}
-#navbar{position:absolute;left:10px;right:10px;bottom:calc(10px + var(--sab));z-index:950;background:#fff;border-radius:28px;padding:14px 14px 14px 20px;display:none;align-items:center;gap:10px;box-shadow:0 -6px 40px rgba(0,0,0,.2)}
-#navbar.on{display:flex}
+#navbar{position:absolute;left:10px;right:10px;bottom:calc(10px + var(--sab));z-index:950;background:rgba(255,255,255,.93);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-radius:28px;padding:14px 14px 14px 20px;display:flex;align-items:center;gap:10px;box-shadow:0 -8px 44px rgba(20,22,26,.18);opacity:0;transform:translateY(130%);pointer-events:none;transition:transform .8s var(--ease),opacity .4s}
+body.navmode #nav,body.navmode #navbar{opacity:1;transform:none;pointer-events:auto}
 #navbar .e{flex:1}
 #navbar .e b{display:block;font:800 28px/1 var(--d);letter-spacing:-.02em}
 #navbar .e span{color:var(--dim);font-size:13px}
 .rb{width:46px;height:46px;border-radius:50%;background:var(--bg);font-size:20px}
-.end{background:#e5393d;color:#fff;border-radius:16px;padding:14px 20px;font:800 16px var(--d)}
-body.navmode #back,body.navmode #fit,body.navmode #sheet{display:none}
+.end{background:#d64545;color:#fff;border-radius:16px;padding:14px 20px;font:800 16px var(--d)}
+
 /* ── Arrival checkpoint ───────────────────────────────────── */
-#cp{position:absolute;inset:0;z-index:1600;display:none;align-items:flex-end;padding:0 10px calc(10px + var(--sab));background:rgba(21,23,28,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-#cp.on{display:flex}
-.cpc{width:100%;background:#fff;border-radius:32px;padding:22px 22px 18px;text-align:center;animation:rise .45s cubic-bezier(.2,.9,.3,1.1)}
-@keyframes rise{from{transform:translateY(50px);opacity:0}}
+#cp{position:absolute;inset:0;z-index:1600;display:flex;align-items:flex-end;padding:0 10px calc(10px + var(--sab));background:rgba(20,22,26,.5);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .45s,visibility 0s .45s}
+#cp.on{opacity:1;visibility:visible;transition-delay:0s}
+.cpc{width:100%;background:#fff;border-radius:32px;padding:22px 22px 18px;text-align:center;opacity:0;transform:translateY(60px) scale(.98);transition:transform .8s var(--ease),opacity .45s}
+#cp.on .cpc{opacity:1;transform:none}
 .cpc .mono{margin:0 auto 10px}
 .cpc h2{font:800 26px/1.05 var(--d);letter-spacing:-.02em;margin:0}
 .cpl{color:var(--dim);font-size:13px;margin:6px 0}
 .qr{display:inline-block;padding:14px;background:#fff;border:2px solid var(--line);border-radius:22px;margin:10px 0 4px;min-width:60px;min-height:60px}
 .qr img,.qr canvas{display:block}
 .code{font:800 22px var(--d);letter-spacing:.2em}
-#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 18px);transform:translate(-50%,-20px);opacity:0;background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:700;z-index:2000;white-space:nowrap;pointer-events:none;transition:.35s}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 18px);transform:translate(-50%,-20px);opacity:0;background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:700;z-index:2000;white-space:nowrap;pointer-events:none;transition:.5s var(--ease)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+
 /* ── Map markers & Mapbox controls ────────────────────────── */
-.pin{width:40px;height:40px;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);background:var(--c);border:3px solid #fff;box-shadow:0 8px 18px rgba(0,0,0,.3);display:grid;place-items:center}
+.drop{animation:drop .8s var(--spring) both}
+.pin{width:40px;height:40px;border-radius:50% 50% 50% 6px;transform:rotate(-45deg);background:var(--c);border:3px solid #fff;box-shadow:0 10px 20px rgba(0,0,0,.28);display:grid;place-items:center}
 .pin i{transform:rotate(45deg);font:800 18px var(--d);color:#fff;font-style:normal}
 .me{width:18px;height:18px;border-radius:50%;background:#2f6bff;border:3px solid #fff;animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,107,255,.5)}70%,100%{box-shadow:0 0 0 22px rgba(47,107,255,0)}}
-@media (prefers-reduced-motion:reduce){.me,.co.in,.cpc{animation:none}}
 .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 62px)}
 body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)}
-.mapboxgl-ctrl-bottom-right{bottom:calc(var(--sh) + var(--sab) + 22px);transition:bottom .3s}
+.mapboxgl-ctrl-bottom-right{bottom:calc(var(--sh) + var(--sab) + 22px);transition:bottom .6s var(--ease)}
 .mapboxgl-ctrl-attrib{border-radius:14px!important;font:12px 'DM Sans',sans-serif}
+
+/* ── Motion ───────────────────────────────────────────────── */
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+@keyframes drop{from{opacity:0;transform:translateY(-26px) scale(.5)}}
+@keyframes breathe{50%{opacity:.45}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,107,255,.5)}70%,100%{box-shadow:0 0 0 22px rgba(47,107,255,0)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important}}
 </style>
 </head>
 <body>
 <div id="app">
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gk1wi test app v1.1.8</div><div class="count" id="count">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gk1wi test app v1.1.9</div><div class="count" id="count">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
@@ -164,14 +187,15 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 'use strict';
 /* ═════════ CONFIG ═════════ */
 const COMPANIES=[
- {id:'vicke',name:'Vicke',mono:'V',c:'#ff5a1f',t:'#ffe3d6',lat:20.267146049493117,lng:-98.94394396404996}, // real location
- {id:'yesi',name:'Yesi',mono:'Y',c:'#6b4eff',t:'#e6e0ff',lat:20.27100,lng:-98.93800},
- {id:'c1',name:'Company 1',mono:'1',c:'#0aa678',t:'#d5f3e8',lat:20.26200,lng:-98.95000},
- {id:'c2',name:'Company 2',mono:'2',c:'#e0287a',t:'#fddbe9',lat:20.27400,lng:-98.94800}
+ {id:'vicke',name:'Vicke',mono:'V',c:'#e4572e',t:'#fde6dc',lat:20.267146049493117,lng:-98.94394396404996}, // real location
+ {id:'yesi',name:'Yesi',mono:'Y',c:'#5b4fd1',t:'#e7e4fb',lat:20.27100,lng:-98.93800},
+ {id:'c1',name:'Company 1',mono:'1',c:'#16896a',t:'#d9f0e7',lat:20.26200,lng:-98.95000},
+ {id:'c2',name:'Company 2',mono:'2',c:'#c72c66',t:'#fbdde8',lat:20.27400,lng:-98.94800}
 ];
 const POOL=['Signature gift box','Artisan bakery set','Handcrafted bundle','Care package','Local delicacies','Tasting collection','Botanical arrangement','Coffee starter kit','Scented candle trio','Chocolate box','Weekend discovery kit','Private reserve'];
-const MAP_STYLE='mapbox://styles/mapbox/streets-v12'; // or light-v11, outdoors-v12, navigation-day-v1
-const ARRIVE_M=25; // metres from a maneuver / stop that counts as reached
+const MAP_STYLE='mapbox://styles/mapbox/light-v11'; // also: streets-v12, outdoors-v12, navigation-day-v1
+const ARRIVE_M=25;       // metres from a maneuver / stop that counts as reached
+const SIM_STEP_MS=400;   // demo trip tick
 let TOKEN='PASTE_YOUR_MAPBOX_TOKEN_HERE'; // leave as is: the app asks for it on the phone, so it never goes to GitHub
 try{TOKEN=localStorage.getItem('mbt')||TOKEN}catch(e){}
 const hasToken=()=>TOKEN.indexOf('PASTE')!==0;
@@ -179,20 +203,34 @@ const hasToken=()=>TOKEN.indexOf('PASTE')!==0;
 /* ═════════ UTILITIES ═════════ */
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
+const REDUCED=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const T=n=>REDUCED?0:n; // every programmatic animation duration goes through here
 const sty=c=>`--c:${c.c};--t:${c.t}`;
 const fmt=m=>m<1000?Math.max(10,Math.round(m/10)*10)+' m':(m/1000).toFixed(1)+' km';
 const clock=sec=>new Date(Date.now()+sec*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 const hav=(a,b)=>{const t=Math.PI/180,x=(b.lng-a.lng)*t*Math.cos((a.lat+b.lat)/2*t),y=(b.lat-a.lat)*t;return Math.hypot(x,y)*6371000};
 const bearing=(a,b)=>{const t=Math.PI/180,dl=(b.lng-a.lng)*t,y=Math.sin(dl)*Math.cos(b.lat*t),x=Math.cos(a.lat*t)*Math.sin(b.lat*t)-Math.sin(a.lat*t)*Math.cos(b.lat*t)*Math.cos(dl);return (Math.atan2(y,x)/t+360)%360};
-const loc=s=>({lat:s.maneuver.location[1],lng:s.maneuver.location[0]});
+const pt=c=>({lng:c[0],lat:c[1]});
+const loc=s=>pt(s.maneuver.location);
 const feature=co=>({type:'Feature',geometry:{type:'LineString',coordinates:co}});
 const makeCode=()=>Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
 function densify(co,step){const out=[];
- for(let i=0;i<co.length-1;i++){const a={lng:co[i][0],lat:co[i][1]},b={lng:co[i+1][0],lat:co[i+1][1]},n=Math.max(1,Math.round(hav(a,b)/step));
+ for(let i=0;i<co.length-1;i++){const a=pt(co[i]),b=pt(co[i+1]),n=Math.max(1,Math.round(hav(a,b)/step));
   for(let j=0;j<n;j++)out.push({lat:a.lat+(b.lat-a.lat)*j/n,lng:a.lng+(b.lng-a.lng)*j/n})}
- const e=co[co.length-1];out.push({lng:e[0],lat:e[1]});return out}
+ out.push(pt(co[co.length-1]));return out}
 let toastTimer;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),2600)}
+
+/* ═════════ MOTION ═════════ */
+const linear=t=>t;
+const ease=t=>1-Math.pow(1-t,4);                                    // easeOutQuart
+const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;            // easeInOutCubic
+const lerp=(a,b,k)=>a+(b-a)*k;
+const lerpAngle=(a,b,k)=>a+((((b-a)%360)+540)%360-180)*k;           // shortest way round the circle
+function tween(ms,fn,e=ease){ // returns a cancel function
+ let id=0,t0=0;
+ const step=now=>{t0=t0||now;const k=ms>0?Math.min(1,(now-t0)/ms):1;fn(e(k));if(k<1)id=requestAnimationFrame(step)};
+ id=requestAnimationFrame(step);return()=>cancelAnimationFrame(id)}
 
 /* ═════════ TURN INSTRUCTIONS ═════════ */
 const ARROWS={left:'↰',right:'↱','slight left':'↖','slight right':'↗','sharp left':'↲','sharp right':'↳',straight:'↑',uturn:'↶'};
@@ -215,7 +253,7 @@ function shuffle(){
  for(const c of COMPANIES)packs[c.id]=[...POOL].sort(()=>Math.random()-.5).slice(0,3).map((name,i)=>({key:c.id+i,name,price:(Math.floor(Math.random()*18)+5)*10}));
  fresh=true;render()}
 function render(){
- $('#list').innerHTML=COMPANIES.map((c,i)=>`<div class="co${fresh?' in':''}" style="${sty(c)};animation-delay:${i*70}ms"><div class="ch"><div class="mono">${c.mono}</div><h2>${c.name}</h2><small>3 packages</small></div>`+
+ $('#list').innerHTML=COMPANIES.map((c,i)=>`<div class="co${fresh?' in':''}" style="${sty(c)};animation-delay:${i*80}ms"><div class="ch"><div class="mono">${c.mono}</div><h2>${c.name}</h2><small>3 packages</small></div>`+
   packs[c.id].map(p=>`<button class="pk${sel.has(p.key)?' sel':''}" data-k="${p.key}"><span class="n">${p.name}<small>$${p.price} MXN</small></span><span class="chk">${sel.has(p.key)?'✓':'+'}</span></button>`).join('')+'</div>').join('');
  fresh=false;
  const n=chosen().length;
@@ -223,55 +261,75 @@ function render(){
  $('#barT').innerHTML=`${sel.size} package${sel.size===1?'':'s'}<small>${n} stop${n===1?'':'s'} on your route</small>`;
  $('#bar').classList.toggle('on',n>0)}
 function show(v){
- $('#pk').classList.toggle('on',v==='pk');$('#mapview').classList.toggle('on',v==='map');
- $('#bar').style.display=v==='map'?'none':'';
- document.documentElement.style.background=v==='map'?'#ece9e4':''; // status-bar area matches the screen below it
- if(v==='map'&&map)setTimeout(()=>map.resize(),50)}
+ $('#pk').classList.toggle('on',v==='pk');
+ $('#mapview').classList.toggle('on',v==='map');
+ document.body.classList.toggle('inmap',v==='map')}
 
 /* ═════════ MAP ═════════ */
-let map,mapReady,meM,bounds,markers=[],R=null,me=null;
+const ROUTE_LAYOUT={'line-join':'round','line-cap':'round'};
+let map,mapReady,meM,bounds,markers=[],R=null,me=null,stopReveal=null,stopGlide=null;
 function initMap(){
  if(map)return mapReady;
  mapboxgl.accessToken=TOKEN;
  map=new mapboxgl.Map({container:'map',style:MAP_STYLE,center:[COMPANIES[0].lng,COMPANIES[0].lat],zoom:13,attributionControl:false,logoPosition:'bottom-right',dragRotate:false});
  map.touchZoomRotate.disableRotation();
  map.addControl(new mapboxgl.AttributionControl({compact:true}),'top-right');
- if(window.ResizeObserver)new ResizeObserver(()=>map.resize()).observe($('#mapview')); // keeps the canvas matched to the real screen height
- mapReady=new Promise(r=>{map.on('load',()=>{map.resize();r()});setTimeout(r,6000)});
+ new ResizeObserver(()=>map.resize()).observe($('#mapview')); // keeps the canvas matched to the real screen height
+ mapReady=new Promise(r=>{map.on('load',()=>{$('#map').classList.add('ready');r()});setTimeout(r,6000)});
  return mapReady}
-function drawRoute(co){
- const src=map.getSource('route');
- if(src)return src.setData(feature(co));
+const setRoute=co=>map.getSource('route').setData(feature(co));
+function ensureRoute(co){
+ if(map.getSource('route'))return;
  map.addSource('route',{type:'geojson',data:feature(co)});
- const layout={'line-join':'round','line-cap':'round'};
- map.addLayer({id:'route-casing',type:'line',source:'route',layout,paint:{'line-color':'#fff','line-width':11}});
- map.addLayer({id:'route-line',type:'line',source:'route',layout,paint:{'line-color':'#15171c','line-width':4.5}})}
+ map.addLayer({id:'route-glow',type:'line',source:'route',layout:ROUTE_LAYOUT,paint:{'line-color':'#14161a','line-opacity':.14,'line-width':16,'line-blur':10}});
+ map.addLayer({id:'route-casing',type:'line',source:'route',layout:ROUTE_LAYOUT,paint:{'line-color':'#fff','line-width':11}});
+ map.addLayer({id:'route-line',type:'line',source:'route',layout:ROUTE_LAYOUT,paint:{'line-color':'#14161a','line-width':4.5}})}
+/* Draws the route; with animate=true the line "grows" from the start to the destination */
+function drawRoute(co,animate){
+ ensureRoute(co);
+ if(stopReveal)stopReveal();
+ if(!animate||REDUCED)return setRoute(co);
+ setRoute([co[0],co[0]]); // start from nothing, so the full line never flashes before the animation
+ const cum=[0];
+ for(let i=1;i<co.length;i++)cum[i]=cum[i-1]+hav(pt(co[i-1]),pt(co[i]));
+ const total=cum[cum.length-1]||1;
+ stopReveal=tween(1600,k=>{
+  const d=total*k;let i=1;
+  while(i<co.length-1&&cum[i]<d)i++;
+  const f=(d-cum[i-1])/((cum[i]-cum[i-1])||1),a=co[i-1],b=co[i];
+  setRoute([...co.slice(0,i),[lerp(a[0],b[0],f),lerp(a[1],b[1],f)]])},easeInOut)}
 /* Erase the part of the line already travelled (Apple Maps style) */
 function trimRoute(p){
  const co=R.co;let best=R.idx,bd=Infinity;
- for(let i=R.idx,end=Math.min(co.length-1,R.idx+80);i<=end;i++){const d=hav(p,{lng:co[i][0],lat:co[i][1]});if(d<bd){bd=d;best=i}}
+ for(let i=R.idx,end=Math.min(co.length-1,R.idx+80);i<=end;i++){const d=hav(p,pt(co[i]));if(d<bd){bd=d;best=i}}
  R.idx=best;
  const a=co[best],b=co[best+1]||a,k=Math.cos(p.lat*Math.PI/180);
  const passed=((p.lng-a[0])*(b[0]-a[0])*k*k+(p.lat-a[1])*(b[1]-a[1]))>0;
  const rest=co.slice(passed?best+1:best);
  if(!rest.length)rest.push(co[co.length-1]);
- map.getSource('route').setData(feature([[p.lng,p.lat],...rest]))}
-/* Fit the whole route inside the part of the map that is actually visible:
-   below the top buttons, above the bottom sheet (measured live, so it adapts to any screen / sheet height) */
-function fitRoute(animate){
+ setRoute([[p.lng,p.lat],...rest])}
+/* Fits the whole route inside the part of the map that is actually visible:
+   below the top buttons, above the bottom sheet (measured live, so it adapts to any screen). */
+function fitRoute(duration){
  if(!map||!R)return;
  map.resize();
- const m=$('#map').getBoundingClientRect(),fab=$('#fit').getBoundingClientRect(),sh=$('#sheet').getBoundingClientRect();
- let top=Math.round(fab.bottom-m.top+58),   // +58 leaves room for the pin that sits above its point
-     bottom=Math.round(m.bottom-sh.top+26);
- const room=m.height-180;                    // always keep some map visible on small screens
+ const fab=$('#fit'),sheet=$('#sheet'),H=$('#map').clientHeight;
+ let top=fab.offsetTop+fab.offsetHeight+58,   // +58 leaves room for the pin that sits above its point
+     bottom=parseFloat(getComputedStyle(sheet).bottom)+sheet.offsetHeight+26;
+ const room=H-180;                             // always keep some map visible on small screens
  if(top+bottom>room){const k=room/(top+bottom);top=Math.round(top*k);bottom=Math.round(bottom*k)}
  map.setPadding({top:0,bottom:0,left:0,right:0});
- map.fitBounds(bounds,{padding:{top,bottom,left:48,right:48},maxZoom:17.5,pitch:0,bearing:0,duration:animate?700:0})}
+ map.fitBounds(bounds,{padding:{top,bottom,left:48,right:48},maxZoom:17.5,pitch:0,bearing:0,duration:T(duration),easing:ease})}
 /* Keeps the (required) Mapbox logo, bottom-right, just above the active panel */
 function syncLogo(){
  const el=document.body.classList.contains('navmode')?$('#navbar'):$('#sheet');
- document.documentElement.style.setProperty('--sh',(el?el.offsetHeight:0)+'px')}
+ document.documentElement.style.setProperty('--sh',el.offsetHeight+'px')}
+const setSheet=html=>{$('#sheet').innerHTML=html;syncLogo()};
+/* Glides the "you are here" dot between GPS fixes so it moves with the camera */
+function glide(to,ms){
+ if(stopGlide)stopGlide();
+ const from=meM.getLngLat();
+ stopGlide=tween(ms,k=>meM.setLngLat([lerp(from.lng,to.lng,k),lerp(from.lat,to.lat,k)]),linear)}
 
 /* ═════════ LOCATION & ROUTING ═════════ */
 function getPos(){
@@ -298,21 +356,20 @@ const gmapsUrl=()=>{
 /* ═════════ ROUTE PREVIEW ═════════ */
 let rerr='';
 function askToken(){
- $('#sheet').innerHTML=`<b class="load">Enter your Mapbox token</b><p class="note">Paste your public token (starts with pk.). It is saved only on this phone.</p><input id="tk" autocapitalize="off" autocorrect="off" placeholder="pk.eyJ..." style="width:100%;padding:13px;border:2px solid var(--line);border-radius:14px;margin:8px 0"><button class="startbtn" id="tks">Save and continue</button>`;
- $('#tks').onclick=()=>{const v=$('#tk').value.trim();if(v.indexOf('pk.')!==0)return;try{localStorage.setItem('mbt',v)}catch(e){}TOKEN=v;startRoute().catch(routeFailed)};
- syncLogo()}
+ setSheet(`<b class="load">Enter your Mapbox token</b><p class="note">Paste your public token (starts with pk.). It is saved only on this phone.</p><input id="tk" autocapitalize="off" autocorrect="off" placeholder="pk.eyJ..." style="width:100%;padding:13px;border:2px solid var(--line);border-radius:14px;margin:8px 0"><button class="startbtn" id="tks">Save and continue</button>`);
+ $('#tks').onclick=()=>{const v=$('#tk').value.trim();if(v.indexOf('pk.')!==0)return;try{localStorage.setItem('mbt',v)}catch(e){}TOKEN=v;startRoute().catch(routeFailed)}}
 function routeFailed(){
- $('#sheet').innerHTML='<b class="load">Connection problem</b><button class="startbtn" id="retry">Try again</button>';
+ setSheet('<b class="load">Connection problem</b><button class="startbtn" id="retry">Try again</button>');
  $('#retry').onclick=()=>startRoute().catch(routeFailed)}
 async function startRoute(){
  endNav(true);rerr='';
  if(!hasToken())return askToken();
- $('#sheet').innerHTML='<b class="load">Finding the best way…</b>';syncLogo();
+ setSheet('<b class="load">Finding the best way…</b>');
  await initMap();
  map.setPadding({top:0,bottom:0,left:0,right:0});
  markers.forEach(m=>m.remove());markers=[];
  me=await getPos();
- $('#sheet').innerHTML='<b class="load">Calculating the route…</b>';
+ setSheet('<b class="load">Calculating the route…</b>');
  const stops=[...chosen()].sort((a,b)=>(a.id==='vicke'?-1:b.id==='vicke'?1:0)); // Vicke is always the first stop
  const pts=[me,...stops];
 
@@ -327,48 +384,50 @@ async function startRoute(){
  for(let i=steps.length-1;i>=0;i--){remD[i]=(remD[i+1]||0)+steps[i].distance;remT[i]=(remT[i+1]||0)+steps[i].duration}
  R={co,steps,stops,dist,dur,note,remD,remT,idx:0};
 
- const meEl=document.createElement('div');meEl.innerHTML='<div class="me"></div>';meEl.style.zIndex=5;
+ const meEl=document.createElement('div');meEl.innerHTML='<div class="drop"><div class="me"></div></div>';meEl.style.zIndex=5;
  meM=new mapboxgl.Marker({element:meEl}).setLngLat([me.lng,me.lat]).addTo(map);markers.push(meM);
- for(const c of stops){
-  const el=document.createElement('div');el.innerHTML=`<div class="pin" style="${sty(c)}"><i>${c.mono}</i></div>`;
-  markers.push(new mapboxgl.Marker({element:el,anchor:'top-left',offset:[-8,-38]}).setLngLat([c.lng,c.lat]).addTo(map))}
+ stops.forEach((c,i)=>{
+  const el=document.createElement('div');
+  el.innerHTML=`<div class="drop" style="animation-delay:${450+i*140}ms"><div class="pin" style="${sty(c)}"><i>${c.mono}</i></div></div>`;
+  markers.push(new mapboxgl.Marker({element:el,anchor:'top-left',offset:[-8,-38]}).setLngLat([c.lng,c.lat]).addTo(map))});
  if(!map.isStyleLoaded())await new Promise(r=>{map.once('idle',r);setTimeout(r,4000)});
- drawRoute(co);
  bounds=new mapboxgl.LngLatBounds();pts.forEach(p=>bounds.extend([p.lng,p.lat]));co.forEach(c=>bounds.extend(c)); // whole path, not just the endpoints
  renderSheet(); // sheet first, so its real height is known when fitting
- fitRoute(false)}
+ fitRoute(1800);
+ drawRoute(co,true)}
 function renderSheet(){
  const {dist,dur,note,steps,stops}=R;
- $('#sheet').innerHTML=
+ setSheet(
   `<div class="stats"><div class="stat"><b>${dur?Math.round(dur/60):'–'}</b><span>min${dur?' · arrive '+clock(dur):''}</span></div><div class="stat"><b>${dist?(dist/1000).toFixed(1):'–'}</b><span>km · ${note}</span></div></div>`+
   (steps.length
    ?`<button class="startbtn" id="go">▶ Start navigation</button><div class="row"><button class="ghost" id="sim">Simulate trip (demo)</button><a class="ghost" target="_blank" rel="noopener" href="${gmapsUrl()}">Open in Google Maps</a></div>`
    :`<p class="note">Turn-by-turn is unavailable right now (routing offline).${rerr?` [${rerr}]`:''}</p>`)+
   `<p class="note">${stops.length} stop${stops.length>1?'s':''}${me.fake?' · Location unavailable, using a demo start point':''}</p><div class="tl">`+
-  stops.map((c,i)=>`<div class="st" style="${sty(c)}"><div class="b">${i+1}</div><div><b>${c.name}</b><small>${picked(c)}</small></div></div>`).join('')+'</div>';
- if(steps.length){$('#go').onclick=()=>startNav(false);$('#sim').onclick=()=>startNav(true)}
- requestAnimationFrame(syncLogo)}
+  stops.map((c,i)=>`<div class="st" style="${sty(c)}"><div class="b">${i+1}</div><div><b>${c.name}</b><small>${picked(c)}</small></div></div>`).join('')+'</div>');
+ if(steps.length){$('#go').onclick=()=>startNav(false);$('#sim').onclick=()=>startNav(true)}}
 
 /* ═════════ NAVIGATION ═════════ */
 let N=null;
 const say=t=>{if(N&&N.voice&&window.speechSynthesis){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}};
 async function keepAwake(){try{if(N&&'wakeLock' in navigator&&!N.wake)N.wake=await navigator.wakeLock.request('screen')}catch(e){}}
 function startNav(sim){
- document.body.classList.add('navmode');$('#nav').classList.add('on');$('#navbar').classList.add('on');
- N={k:0,voice:true,last:-1,paused:false,pos:me,prev:null,watch:null,tm:null,wake:null};
+ if(stopReveal)stopReveal();
+ document.body.classList.add('navmode');
+ N={k:0,voice:true,last:-1,paused:false,pos:me,prev:null,watch:null,tm:null,wake:null,sim,intro:true,br:map.getBearing()};
  $('#vbtn').textContent='🔊';keepAwake();syncLogo();
  if(sim){
   const pts=densify(R.co,6);let i=0;
-  N.tm=setInterval(()=>{if(N.paused)return;if(i>=pts.length)return clearInterval(N.tm);update(pts[i++])},400)
+  N.tm=setInterval(()=>{if(N.paused)return;if(i>=pts.length)return clearInterval(N.tm);update(pts[i++])},SIM_STEP_MS)
  }else{
   update(me);
   N.watch=navigator.geolocation.watchPosition(p=>update({lat:p.coords.latitude,lng:p.coords.longitude}),()=>{},{enableHighAccuracy:true})}}
 function update(p){
  if(!N||N.paused)return;
- N.pos=p;const S=R.steps,pv=N.prev;N.prev=p;
- const br=pv&&hav(pv,p)>3?bearing(pv,p):null;
- meM.setLngLat([p.lng,p.lat]);
- map.easeTo({center:[p.lng,p.lat],zoom:17.3,pitch:0,padding:{top:340,bottom:100,left:0,right:0},duration:500,...(br!==null&&{bearing:br})});
+ const S=R.steps,pv=N.prev,intro=N.intro,ms=T(intro?1600:N.sim?SIM_STEP_MS:1000);
+ N.pos=p;N.prev=p;N.intro=false;
+ if(pv&&hav(pv,p)>3)N.br=lerpAngle(N.br,bearing(pv,p),.4); // smoothed heading: no sudden swings
+ glide(p,ms);
+ map.easeTo({center:[p.lng,p.lat],zoom:17.3,pitch:0,bearing:N.br,padding:{top:340,bottom:100,left:0,right:0},duration:ms,easing:intro?ease:linear});
  trimRoute(p);
  for(;;){
   const t=S[N.k+1];if(!t)return;
@@ -386,9 +445,10 @@ function checkpoint(i){
  const c=R.stops[i],last=i===R.stops.length-1,code=makeCode();
  say('Arrived at '+c.name);
  $('#cp').innerHTML=`<div class="cpc" style="${sty(c)}"><div class="mono">${c.mono}</div><h2>You've arrived at ${c.name}</h2><p class="cpl">Show this code at the counter to start your visit</p><div class="qr" id="qr"></div><div class="code">${code}</div><p class="cpl">${picked(c)}</p><button class="startbtn" id="cpdone">Visit completed · ${last?'Finish journey':'Continue'}</button></div>`;
- $('#cp').classList.add('on');
- if(window.QRCode)new QRCode($('#qr'),{text:`WAYPOINT|${c.id}|${code}|${Date.now()}`,width:190,height:190,colorDark:'#15171c',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
- $('#cpdone').onclick=()=>finishVisit(i)}
+ if(window.QRCode)new QRCode($('#qr'),{text:`WAYPOINT|${c.id}|${code}|${Date.now()}`,width:190,height:190,colorDark:'#14161a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+ $('#cpdone').onclick=()=>finishVisit(i);
+ void $('#cp').offsetWidth; // commit the hidden state first so the card animates in
+ $('#cp').classList.add('on')}
 function finishVisit(i){
  $$('.st')[i].classList.add('done');$('#cp').classList.remove('on');
  if(i===R.stops.length-1){endNav();return toast('Journey complete 🎉')}
@@ -400,42 +460,38 @@ function endNav(quiet){
   try{N.wake&&N.wake.release()}catch(e){}
   if(window.speechSynthesis)speechSynthesis.cancel();
   N=null}
+ if(stopGlide)stopGlide();
  $('#cp').classList.remove('on');
- document.body.classList.remove('navmode');$('#nav').classList.remove('on');$('#navbar').classList.remove('on');
+ document.body.classList.remove('navmode');
  if(quiet||!map||!R)return;
- map.setPadding({top:0,bottom:0,left:0,right:0});
- R.idx=0;drawRoute(R.co);meM.setLngLat([me.lng,me.lat]);
- requestAnimationFrame(syncLogo);fitRoute(true)}
+ R.idx=0;drawRoute(R.co,true);meM.setLngLat([me.lng,me.lat]);
+ syncLogo();fitRoute(1400)}
 
 /* ═════════ EVENTS & STARTUP ═════════ */
 $('#list').onclick=e=>{const b=e.target.closest('.pk');if(!b)return;const k=b.dataset.k;sel.has(k)?sel.delete(k):sel.add(k);render()};
 $('#shuffle').onclick=shuffle;
 $('#back').onclick=()=>{endNav(true);show('pk')};
-$('#fit').onclick=()=>fitRoute(true);
+$('#fit').onclick=()=>fitRoute(900);
 $('#bar').onclick=()=>{show('map');startRoute().catch(routeFailed)};
 $('#endb').onclick=()=>endNav();
 $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.voice?'🔊':'🔇';if(!N.voice&&window.speechSynthesis)speechSynthesis.cancel()};
-/* Native feel: no pinch-zoom of the page, no selection, no context menu */
-['gesturestart','gesturechange','gestureend'].forEach(e=>document.addEventListener(e,ev=>ev.preventDefault()));
-document.addEventListener('selectstart',e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName||''))e.preventDefault()});
-document.addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&N){N.wake=null;keepAwake()}});
-/* iOS standalone can report a layout height ~59px shorter than the real screen (the status-bar zone), which cuts the app off at the bottom.
-   Force the app to the real full-screen height. */
+
+/* iOS standalone can report a layout height ~59px shorter than the real screen (the status-bar zone),
+   which cuts the app off at the bottom. Force the app to the real full-screen height. */
 function fixHeight(){
  const s=window.screen,tall=Math.max(s.width,s.height),portrait=innerHeight>=innerWidth;
  let h=innerHeight;
  if(navigator.standalone&&portrait)h=Math.max(h,tall);
- document.documentElement.style.setProperty('--app-h',h+'px');
- if(map)map.resize()}
+ document.documentElement.style.setProperty('--app-h',h+'px')}
 ['resize','orientationchange','pageshow'].forEach(e=>window.addEventListener(e,()=>{fixHeight();setTimeout(fixHeight,300)}));
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)fixHeight()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)return;fixHeight();if(N){N.wake=null;keepAwake()}});
+
+/* Native feel: no pinch-zoom of the page, no selection, no context menu */
+['gesturestart','gesturechange','gestureend'].forEach(e=>document.addEventListener(e,ev=>ev.preventDefault()));
+document.addEventListener('selectstart',e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName||''))e.preventDefault()});
+document.addEventListener('contextmenu',e=>e.preventDefault());
+
 fixHeight();
-const fitScreen=()=>map&&map.resize();
-window.addEventListener('resize',fitScreen);
-window.addEventListener('orientationchange',()=>setTimeout(fitScreen,300));
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)fitScreen()});
-fitScreen();setTimeout(fitScreen,300);
 shuffle();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
