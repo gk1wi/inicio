@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Waypoint</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,6 +33,12 @@ input{-webkit-user-select:text;user-select:text;font-size:16px}
 #mapview{position:absolute;inset:0;z-index:50;display:none;overflow:hidden}
 #mapview.on{display:block}
 #map{position:absolute;inset:0}
+/* ── Status-bar fade: content scrolls under the notch and softly blurs out ── */
+.fade{position:absolute;left:0;right:0;top:0;height:calc(env(safe-area-inset-top) + 26px);pointer-events:none;
+ -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+ -webkit-mask-image:linear-gradient(to bottom,#000 55%,transparent);mask-image:linear-gradient(to bottom,#000 55%,transparent)}
+#fadePk{z-index:40;background:linear-gradient(to bottom,rgba(243,239,230,.96),rgba(243,239,230,.7) 60%,rgba(243,239,230,0))}
+#fadeMap{z-index:800;background:linear-gradient(to bottom,rgba(236,233,228,.9),rgba(236,233,228,.6) 60%,rgba(236,233,228,0))}
 /* ── Packages ─────────────────────────────────────────────── */
 .top{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
 .logo{display:flex;align-items:center;gap:8px;font:800 20px var(--d);letter-spacing:-.02em}
@@ -128,16 +134,18 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 <body>
 <div id="app">
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gk1wi test app v1.1.6</div><div class="count" id="count">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gk1wi test app v1.1.7</div><div class="count" id="count">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
   <div id="list"></div>
   <div class="spacer"></div>
 </section>
+<div class="fade" id="fadePk"></div>
 
 <section id="mapview" class="view">
   <div id="map"></div>
+  <div class="fade" id="fadeMap"></div>
   <button class="fab" id="back">← Packages</button>
   <button class="fab" id="fit">Fit route</button>
   <div id="sheet"></div>
@@ -163,7 +171,6 @@ const COMPANIES=[
 ];
 const POOL=['Signature gift box','Artisan bakery set','Handcrafted bundle','Care package','Local delicacies','Tasting collection','Botanical arrangement','Coffee starter kit','Scented candle trio','Chocolate box','Weekend discovery kit','Private reserve'];
 const MAP_STYLE='mapbox://styles/mapbox/streets-v12'; // or light-v11, outdoors-v12, navigation-day-v1
-const PAD={top:80,bottom:270,left:50,right:50};
 const ARRIVE_M=25; // metres from a maneuver / stop that counts as reached
 let TOKEN='PASTE_YOUR_MAPBOX_TOKEN_HERE'; // leave as is: the app asks for it on the phone, so it never goes to GitHub
 try{TOKEN=localStorage.getItem('mbt')||TOKEN}catch(e){}
@@ -249,6 +256,18 @@ function trimRoute(p){
  const rest=co.slice(passed?best+1:best);
  if(!rest.length)rest.push(co[co.length-1]);
  map.getSource('route').setData(feature([[p.lng,p.lat],...rest]))}
+/* Fit the whole route inside the part of the map that is actually visible:
+   below the top buttons, above the bottom sheet (measured live, so it adapts to any screen / sheet height) */
+function fitRoute(animate){
+ if(!map||!R)return;
+ map.resize();
+ const m=$('#map').getBoundingClientRect(),fab=$('#fit').getBoundingClientRect(),sh=$('#sheet').getBoundingClientRect();
+ let top=Math.round(fab.bottom-m.top+58),   // +58 leaves room for the pin that sits above its point
+     bottom=Math.round(m.bottom-sh.top+26);
+ const room=m.height-180;                    // always keep some map visible on small screens
+ if(top+bottom>room){const k=room/(top+bottom);top=Math.round(top*k);bottom=Math.round(bottom*k)}
+ map.setPadding({top:0,bottom:0,left:0,right:0});
+ map.fitBounds(bounds,{padding:{top,bottom,left:48,right:48},maxZoom:17.5,pitch:0,bearing:0,duration:animate?700:0})}
 /* Keeps the (required) Mapbox logo, bottom-right, just above the active panel */
 function syncLogo(){
  const el=document.body.classList.contains('navmode')?$('#navbar'):$('#sheet');
@@ -315,9 +334,9 @@ async function startRoute(){
   markers.push(new mapboxgl.Marker({element:el,anchor:'top-left',offset:[-8,-38]}).setLngLat([c.lng,c.lat]).addTo(map))}
  if(!map.isStyleLoaded())await new Promise(r=>{map.once('idle',r);setTimeout(r,4000)});
  drawRoute(co);
- bounds=new mapboxgl.LngLatBounds();pts.forEach(p=>bounds.extend([p.lng,p.lat]));
- map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
- renderSheet()}
+ bounds=new mapboxgl.LngLatBounds();pts.forEach(p=>bounds.extend([p.lng,p.lat]));co.forEach(c=>bounds.extend(c)); // whole path, not just the endpoints
+ renderSheet(); // sheet first, so its real height is known when fitting
+ fitRoute(false)}
 function renderSheet(){
  const {dist,dur,note,steps,stops}=R;
  $('#sheet').innerHTML=
@@ -386,14 +405,13 @@ function endNav(quiet){
  if(quiet||!map||!R)return;
  map.setPadding({top:0,bottom:0,left:0,right:0});
  R.idx=0;drawRoute(R.co);meM.setLngLat([me.lng,me.lat]);
- map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
- requestAnimationFrame(syncLogo)}
+ requestAnimationFrame(syncLogo);fitRoute(true)}
 
 /* ═════════ EVENTS & STARTUP ═════════ */
 $('#list').onclick=e=>{const b=e.target.closest('.pk');if(!b)return;const k=b.dataset.k;sel.has(k)?sel.delete(k):sel.add(k);render()};
 $('#shuffle').onclick=shuffle;
 $('#back').onclick=()=>{endNav(true);show('pk')};
-$('#fit').onclick=()=>bounds&&map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
+$('#fit').onclick=()=>fitRoute(true);
 $('#bar').onclick=()=>{show('map');startRoute().catch(routeFailed)};
 $('#endb').onclick=()=>endNav();
 $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.voice?'🔊':'🔇';if(!N.voice&&window.speechSynthesis)speechSynthesis.cancel()};
