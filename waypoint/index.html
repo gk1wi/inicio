@@ -21,15 +21,17 @@
 html{-webkit-text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}
 html{height:100%;overflow:hidden;overscroll-behavior:none}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 'DM Sans',-apple-system,system-ui,sans-serif}
-body{height:100%;overflow-y:auto;overscroll-behavior-y:none;-webkit-overflow-scrolling:touch}
+body{height:100%;overflow:hidden;overscroll-behavior:none}
+/* iPhone home-screen apps report a viewport about one notch-height too short, so the app is sized from --vh (set in JS to the real screen height) */
+#app{position:fixed;top:0;left:0;width:100%;height:var(--vh,100vh);overflow:hidden}
 button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
 a{color:inherit;text-decoration:none}
 input{-webkit-user-select:text;user-select:text;font-size:16px}
-#pk{display:none;padding:calc(env(safe-area-inset-top) + 18px) 18px 0}
+#pk{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:none;padding:calc(env(safe-area-inset-top) + 18px) 18px 0}
 #pk.on{display:block}
 .spacer{height:150px}
 /* Map screen is a full-screen fixed overlay (same idea as the reference page's modals) */
-#mapview{position:fixed;inset:0;z-index:50;display:none;overflow:hidden}
+#mapview{position:absolute;inset:0;z-index:50;display:none;overflow:hidden}
 #mapview.on{display:block}
 #map{position:absolute;inset:0}
 /* Soft dark fade under the status bar / Dynamic Island (full-screen look) */
@@ -59,7 +61,7 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--gold) 6
 .pk .chk{width:30px;height:30px;border-radius:50%;background:var(--t);color:var(--c);display:grid;place-items:center;font:700 18px var(--d);transition:.2s}
 .pk.sel{border-color:var(--c)}
 .pk.sel .chk{background:var(--c);color:#fff;transform:rotate(90deg)}
-#bar{position:fixed;left:14px;right:14px;bottom:calc(14px + var(--sab));z-index:1000;display:flex;align-items:center;gap:12px;background:var(--ink);color:#fff;border-radius:24px;padding:12px 12px 12px 20px;text-align:left;box-shadow:0 14px 40px rgba(20,22,28,.35);transform:translateY(160%);transition:transform .35s cubic-bezier(.2,.9,.3,1.2)}
+#bar{position:absolute;left:14px;right:14px;bottom:calc(14px + var(--sab));z-index:1000;display:flex;align-items:center;gap:12px;background:var(--ink);color:#fff;border-radius:24px;padding:12px 12px 12px 20px;text-align:left;box-shadow:0 14px 40px rgba(20,22,28,.35);transform:translateY(160%);transition:transform .35s cubic-bezier(.2,.9,.3,1.2)}
 #bar.on{transform:none}
 #bar .t{flex:1;font-weight:700}
 #bar .t small{display:block;font-weight:400;opacity:.65}
@@ -102,7 +104,7 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--gold) 6
 .end{background:#e5393d;color:#fff;border-radius:16px;padding:14px 20px;font:800 16px var(--d)}
 body.navmode #back,body.navmode #fit,body.navmode #sheet{display:none}
 /* ── Arrival checkpoint ───────────────────────────────────── */
-#cp{position:fixed;inset:0;z-index:1600;display:none;align-items:flex-end;padding:0 10px calc(10px + var(--sab));background:rgba(21,23,28,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#cp{position:absolute;inset:0;z-index:1600;display:none;align-items:flex-end;padding:0 10px calc(10px + var(--sab));background:rgba(21,23,28,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 #cp.on{display:flex}
 .cpc{width:100%;background:#fff;border-radius:32px;padding:22px 22px 18px;text-align:center;animation:rise .45s cubic-bezier(.2,.9,.3,1.1)}
 @keyframes rise{from{transform:translateY(50px);opacity:0}}
@@ -129,8 +131,9 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 <body>
 <div id="sb"></div>
 
+<div id="app">
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gk1wi test app v1.1.2</div><div class="count" id="count">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gk1wi test app v1.1.3</div><div class="count" id="count">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
@@ -149,6 +152,7 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 
 <button id="bar"><span class="t" id="barT"></span><span class="go">Start route →</span></button>
 <div id="cp"></div>
+</div>
 <div id="toast"></div>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
@@ -402,9 +406,14 @@ $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.v
 document.addEventListener('selectstart',e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName||''))e.preventDefault()});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&N){N.wake=null;keepAwake()}});
-const fitMap=()=>map&&map.resize();
-window.addEventListener('resize',fitMap);
-window.addEventListener('orientationchange',()=>setTimeout(fitMap,300));
+function fitScreen(){
+ const portrait=innerHeight>=innerWidth,full=portrait?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
+ document.documentElement.style.setProperty('--vh',(navigator.standalone?Math.max(innerHeight,full):innerHeight)+'px');
+ if(map)map.resize()}
+window.addEventListener('resize',fitScreen);
+window.addEventListener('orientationchange',()=>setTimeout(fitScreen,300));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)fitScreen()});
+fitScreen();setTimeout(fitScreen,300);
 shuffle();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
