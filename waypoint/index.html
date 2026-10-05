@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#f3efe6">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -82,30 +82,26 @@ h1 em{font-style:normal;background:linear-gradient(transparent 62%,#ffd25e 62%)}
 .rb{width:46px;height:46px;border-radius:50%;border:0;background:var(--bg);font-size:20px}
 .end{background:#e5393d;color:#fff;border:0;border-radius:16px;padding:14px 20px;font:800 16px var(--d)}
 body.navmode #back,body.navmode #fit,body.navmode #sheet{display:none}
-.maplibregl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 62px)}
-.maplibregl-ctrl-attrib{border-radius:14px!important;font:12px 'DM Sans',sans-serif}
-#mtlogo{position:absolute;z-index:900;left:14px;top:calc(env(safe-area-inset-top) + 66px);display:none;background:rgba(255,255,255,.88);border-radius:99px;padding:5px 10px}
-#mtlogo img{height:20px;display:block}
-body.navmode .maplibregl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)}
-body.navmode #mtlogo{top:calc(env(safe-area-inset-top) + 118px)}
+.mapboxgl-ctrl-top-right,.mapboxgl-ctrl-top-left{top:calc(env(safe-area-inset-top) + 62px)}
+.mapboxgl-ctrl-attrib{border-radius:14px!important;font:12px 'DM Sans',sans-serif}
+body.navmode .mapboxgl-ctrl-top-right,body.navmode .mapboxgl-ctrl-top-left{top:calc(env(safe-area-inset-top) + 114px)}
 </style>
 </head>
 <body>
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>K1wi test app v1.0.6</div><div class="count" id="coins">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gk1wi app test v1.0.8</div><div class="count" id="coins">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
   <div id="list"></div>
 </section>
 <section id="mapview" class="view"><div id="map"></div>
-  <a id="mtlogo" href="https://www.maptiler.com/copyright/" target="_blank" rel="noopener"><img src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler"></a>
   <button class="fab" id="back">← Packages</button><button class="fab" id="fit">Fit route</button>
   <div id="sheet"></div>
   <div id="nav"><div class="ar" id="nar">↑</div><div><div class="d" id="nd"></div><div class="i" id="ni"></div></div></div>
   <div id="navbar"><div class="e"><b id="eta"></b><span id="rem"></span></div><button class="rb" id="vbtn">🔊</button><button class="end" id="endb">End</button></div></section>
 <button id="bar"><span class="t" id="barT"></span><span class="go">Start route →</span></button>
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
 <script>
 /* ===== CONFIG: replace the coordinates with the real ones ===== */
 const COMPANIES=[
@@ -115,24 +111,21 @@ const COMPANIES=[
  {id:'c2',name:'Company 2',mono:'2',c:'#e0287a',t:'#fddbe9',lat:20.10900,lng:-98.76300}
 ];
 const POOL=['Signature gift box','Artisan bakery set','Handcrafted bundle','Care package','Local delicacies','Tasting collection','Botanical arrangement','Coffee starter kit','Scented candle trio','Chocolate box','Weekend discovery kit','Private reserve'];
-/* ===== MAP: paste your MapTiler Cloud key here (free account) ===== */
-const MAPTILER_KEY='laTxSj4EXvHaXdrOjXUG';
-/* ===== ROUTING: paste your OpenRouteService key (free at openrouteservice.org) ===== */
-const ORS_KEY='eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImQ1ODU0MDcwN2E4YTQxN2NiMjRiOTM5YTg4MjE2NTZmIiwiaCI6Im11cm11cjY0In0=';
-const HAS_ORS=ORS_KEY&&ORS_KEY.indexOf('PASTE')!=0;
-const MAP_STYLE_NAME='streets-v2'; // try: basic-v2, dataviz, outdoor-v2, bright-v2
+/* ===== MAPBOX: paste your public access token (starts with pk.) from account.mapbox.com ===== */
+let MAPBOX_TOKEN='PASTE_YOUR_MAPBOX_TOKEN_HERE'; // keep as is: the app asks for the token on the phone, so it never goes to GitHub
+try{MAPBOX_TOKEN=localStorage.getItem('mbt')||MAPBOX_TOKEN}catch(e){}
+const MAP_STYLE_NAME='streets-v12'; // try: light-v11, outdoors-v12, navigation-day-v1
 /* ============================================================== */
 const $=s=>document.querySelector(s);
 let packs={},sel=new Set(),map,layers=[],bounds,mapReady;
-const HAS_KEY=MAPTILER_KEY&&MAPTILER_KEY.indexOf('PASTE')!=0;
-const MAP_STYLE=HAS_KEY?`https://api.maptiler.com/maps/${MAP_STYLE_NAME}/style.json?key=${MAPTILER_KEY}`:{version:8,sources:{o:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,attribution:'© OpenStreetMap contributors'}},layers:[{id:'o',type:'raster',source:'o'}]};
+const hasToken=()=>MAPBOX_TOKEN&&MAPBOX_TOKEN.indexOf('PASTE')!=0;
 const PAD={top:80,bottom:270,left:50,right:50};
-if(HAS_KEY)document.getElementById('mtlogo').style.display='block';
 function initMap(){
  if(map)return mapReady;
- map=new maplibregl.Map({container:'map',style:MAP_STYLE,center:[COMPANIES[0].lng,COMPANIES[0].lat],zoom:13,attributionControl:false,dragRotate:false});
+ mapboxgl.accessToken=MAPBOX_TOKEN;
+ map=new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/'+MAP_STYLE_NAME,center:[COMPANIES[0].lng,COMPANIES[0].lat],zoom:13,attributionControl:false,logoPosition:'top-left',dragRotate:false});
  map.touchZoomRotate.disableRotation();
- map.addControl(new maplibregl.AttributionControl({compact:true}),'top-right');
+ map.addControl(new mapboxgl.AttributionControl({compact:true}),'top-right');
  mapReady=new Promise(r=>{map.on('load',r);setTimeout(r,6000)});return mapReady}
 const sty=c=>`--c:${c.c};--t:${c.t}`;
 function shuffleAll(){packs={};sel.clear();COMPANIES.forEach(c=>{
@@ -169,35 +162,29 @@ function instr(s,stop){const t=s.maneuver.type,m=s.maneuver.modifier||'',on=s.na
  if(!m||m=='straight')return 'Continue straight'+(s.name?' on '+s.name:'');
  const [a,b]=m.split(' ');return (b?(a=='slight'?'Bear ':'Sharp '):'Turn ')+(b||a)+on}
 async function route(pts,prof){
- const base=prof=='foot'?'https://routing.openstreetmap.de/routed-foot/route/v1/foot/':'https://router.project-osrm.org/route/v1/driving/';
- const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),8000);
- try{const r=await fetch(base+pts.map(p=>p.lng+','+p.lat).join(';')+'?overview=full&geometries=geojson&steps=true',{signal:ctl.signal});
-  const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}finally{clearTimeout(tm)}}
-async function orsRoute(pts,prof){
  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),10000);
  try{
-  const r=await fetch('https://api.openrouteservice.org/v2/directions/'+prof+'/geojson',{method:'POST',signal:ctl.signal,headers:{'Authorization':ORS_KEY,'Content-Type':'application/json'},body:JSON.stringify({coordinates:pts.map(p=>[p.lng,p.lat]),instructions:true})});
-  if(!r.ok)throw new Error('ORS '+r.status);
-  const j=await r.json(),f=j.features&&j.features[0];if(!f)throw new Error('ORS empty');
-  const co=f.geometry.coordinates,TY={0:['turn','left'],1:['turn','right'],2:['turn','sharp left'],3:['turn','sharp right'],4:['turn','slight left'],5:['turn','slight right'],6:['continue','straight'],7:['roundabout',''],8:['roundabout',''],9:['turn','uturn'],10:['arrive',''],11:['depart',''],12:['turn','slight left'],13:['turn','slight right']};
-  const legs=f.properties.segments.map(sg=>({steps:sg.steps.map(st=>{const t=TY[st.type]||['continue','straight'];
-   return{distance:st.distance,duration:st.duration,name:(st.name&&st.name!='-')?st.name:'',maneuver:{type:t[0],modifier:t[1],location:co[st.way_points[0]]}}})}));
-  return{geometry:{coordinates:co},legs,distance:f.properties.summary.distance,duration:f.properties.summary.duration}
+  const u='https://api.mapbox.com/directions/v5/mapbox/'+prof+'/'+pts.map(p=>p.lng+','+p.lat).join(';')+'?steps=true&geometries=geojson&overview=full&access_token='+MAPBOX_TOKEN;
+  const r=await fetch(u,{signal:ctl.signal});
+  if(!r.ok)throw new Error('Mapbox '+r.status);
+  const j=await r.json();if(!j.routes||!j.routes[0])throw new Error('Mapbox '+(j.code||'no route'));return j.routes[0]
  }finally{clearTimeout(tm)}}
 async function startRoute(){
  endNav(true);window.RERR='';
+ if(!hasToken()){$('#sheet').innerHTML='<b style="font:800 20px var(--d)">Enter your Mapbox token</b><p class="note">Paste your public token (starts with pk.). It is saved only on this phone.</p><input id="tk" autocapitalize="off" autocorrect="off" placeholder="pk.eyJ..." style="width:100%;padding:13px;border:2px solid var(--line);border-radius:14px;font:inherit;margin:8px 0"><button class="startbtn" id="tks">Save and continue</button>';
+  $('#tks').onclick=()=>{const v=$('#tk').value.trim();if(v.indexOf('pk.')!=0)return;try{localStorage.setItem('mbt',v)}catch(e){}MAPBOX_TOKEN=v;startRoute()};return}
  await initMap();
  layers.forEach(l=>l.remove());layers=[];
  $('#sheet').innerHTML='<b style="font:800 20px var(--d)">Finding the best way…</b>';
  me=await getPos();$('#sheet').innerHTML='<b style="font:800 20px var(--d)">Calculating the route…</b>';
  const stops=[...chosen()].sort((a,b)=>(a.id=='vicke'?-1:b.id=='vicke'?1:0)); // Vicke is always the first stop
  const pts=[me,...stops];
- const me_el=document.createElement('div');me_el.innerHTML='<div class="me"></div>';meM=new maplibregl.Marker({element:me_el}).setLngLat([me.lng,me.lat]).addTo(map);layers.push(meM);
- stops.forEach(c=>{const e=document.createElement('div');e.innerHTML=`<div class="pin" style="${sty(c)}"><i>${c.mono}</i></div>`;layers.push(new maplibregl.Marker({element:e,anchor:'top-left',offset:[-8,-38]}).setLngLat([c.lng,c.lat]).addTo(map))});
+ const me_el=document.createElement('div');me_el.innerHTML='<div class="me"></div>';meM=new mapboxgl.Marker({element:me_el}).setLngLat([me.lng,me.lat]).addTo(map);layers.push(meM);
+ stops.forEach(c=>{const e=document.createElement('div');e.innerHTML=`<div class="pin" style="${sty(c)}"><i>${c.mono}</i></div>`;layers.push(new mapboxgl.Marker({element:e,anchor:'top-left',offset:[-8,-38]}).setLngLat([c.lng,c.lat]).addTo(map))});
  let line,dist=0,dur=0,note='Walking',steps=[];
  try{let r;
-  try{r=HAS_ORS?await orsRoute(pts,'foot-walking'):await route(pts,'foot')}
-  catch(e1){window.RERR=(e1&&e1.message)||String(e1);try{r=await route(pts,'foot')}catch(e2){r=await route(pts,'car');note='Driving'}}
+  try{r=await route(pts,'walking')}
+  catch(e1){window.RERR=(e1&&e1.message)||String(e1);r=await route(pts,'driving');note='Driving'}
   line=r.geometry.coordinates.map(c=>[c[1],c[0]]);dist=r.distance;dur=r.duration;
   r.legs.forEach((l,i)=>l.steps.forEach(s=>steps.push({...s,leg:i})));
  }catch(e){line=pts.map(p=>[p.lat,p.lng]);note='Direct line'}
@@ -210,7 +197,7 @@ async function startRoute(){
   map.addLayer({id:'rc',type:'line',source:'route',layout:lay,paint:{'line-color':'#ffffff','line-width':11}});
   map.addLayer({id:'rl',type:'line',source:'route',layout:lay,paint:{'line-color':'#15171c','line-width':4.5}})}
  map.setPadding({top:0,bottom:0,left:0,right:0});
- bounds=new maplibregl.LngLatBounds();pts.forEach(p=>bounds.extend([p.lng,p.lat]));
+ bounds=new mapboxgl.LngLatBounds();pts.forEach(p=>bounds.extend([p.lng,p.lat]));
  map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
  const eta=new Date(Date.now()+dur*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  $('#sheet').innerHTML=`<div class="stats"><div class="stat"><b>${dur?Math.round(dur/60):'–'}</b><span>min · ${dur?'arrive '+eta:''}</span></div><div class="stat"><b>${dist?(dist/1000).toFixed(1):'–'}</b><span>km · ${note}</span></div></div>`+
