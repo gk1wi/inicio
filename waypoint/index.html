@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Waypoint</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -17,10 +17,13 @@
 <style>
 :root{--bg:#f3efe6;--ink:#15171c;--dim:#6d6f76;--card:#fff;--line:#e3ded2;
 --d:'Bricolage Grotesque',system-ui,sans-serif}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}
+input,textarea{-webkit-user-select:text;user-select:text;font-size:16px!important}
+img,a{-webkit-user-drag:none}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 'DM Sans',-apple-system,system-ui,sans-serif}
-body{padding-top:env(safe-area-inset-top)}
-.view{position:absolute;inset:0;overflow:auto;padding:calc(env(safe-area-inset-top) + 18px) 18px 150px;display:none}
+body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none;padding-top:env(safe-area-inset-top)}
+.view{position:absolute;inset:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(env(safe-area-inset-top) + 18px) 18px 150px;display:none}
 .view.on{display:block}
 #mapview{padding:0;overflow:hidden}
 #map{position:absolute;inset:0}
@@ -89,7 +92,7 @@ body.navmode .mapboxgl-ctrl-top-right,body.navmode .mapboxgl-ctrl-top-left{top:c
 </head>
 <body>
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gk1wi app test v1.0.8</div><div class="count" id="coins">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>K1wi TEST APP V.1.0.9</div><div class="count" id="coins">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
@@ -105,10 +108,10 @@ body.navmode .mapboxgl-ctrl-top-right,body.navmode .mapboxgl-ctrl-top-left{top:c
 <script>
 /* ===== CONFIG: replace the coordinates with the real ones ===== */
 const COMPANIES=[
- {id:'vicke',name:'Vicke',mono:'V',c:'#ff5a1f',t:'#ffe3d6',lat:20.10110,lng:-98.75910},   // <- Vicke's real location
- {id:'yesi',name:'Yesi',mono:'Y',c:'#6b4eff',t:'#e6e0ff',lat:20.10480,lng:-98.75300},
- {id:'c1',name:'Company 1',mono:'1',c:'#0aa678',t:'#d5f3e8',lat:20.09700,lng:-98.76500},
- {id:'c2',name:'Company 2',mono:'2',c:'#e0287a',t:'#fddbe9',lat:20.10900,lng:-98.76300}
+ {id:'vicke',name:'Vicke',mono:'V',c:'#ff5a1f',t:'#ffe3d6',lat:20.267146049493117,lng:-98.94394396404996},   // Vicke (real location)
+ {id:'yesi',name:'Yesi',mono:'Y',c:'#6b4eff',t:'#e6e0ff',lat:20.27100,lng:-98.93800},
+ {id:'c1',name:'Company 1',mono:'1',c:'#0aa678',t:'#d5f3e8',lat:20.26200,lng:-98.95000},
+ {id:'c2',name:'Company 2',mono:'2',c:'#e0287a',t:'#fddbe9',lat:20.27400,lng:-98.94800}
 ];
 const POOL=['Signature gift box','Artisan bakery set','Handcrafted bundle','Care package','Local delicacies','Tasting collection','Botanical arrangement','Coffee starter kit','Scented candle trio','Chocolate box','Weekend discovery kit','Private reserve'];
 /* ===== MAPBOX: paste your public access token (starts with pk.) from account.mapbox.com ===== */
@@ -245,6 +248,9 @@ function endNav(quiet){
 }
 $('#endb').onclick=()=>endNav();
 $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.voice?'🔊':'🔇';if(!N.voice&&window.speechSynthesis)speechSynthesis.cancel()};
+['gesturestart','gesturechange','gestureend'].forEach(e=>document.addEventListener(e,ev=>ev.preventDefault()));
+document.addEventListener('selectstart',e=>{if(!/INPUT|TEXTAREA/.test((e.target.tagName||'')))e.preventDefault()});
+document.addEventListener('contextmenu',e=>e.preventDefault());
 shuffleAll();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
