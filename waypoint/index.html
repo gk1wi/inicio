@@ -19,8 +19,9 @@
 :root{--bg:#f3efe6;--ink:#15171c;--dim:#6d6f76;--line:#e3ded2;--gold:#ffd25e;--sh:0px;--d:'Bricolage Grotesque',system-ui,sans-serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}
 html{-webkit-text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 'DM Sans',-apple-system,system-ui,sans-serif}
-body{position:fixed;inset:0;overflow:hidden}
+html{height:100%}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 'DM Sans',-apple-system,system-ui,sans-serif}
+body{position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden}
 button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
 a{color:inherit;text-decoration:none}
 input{-webkit-user-select:text;user-select:text;font-size:16px}
@@ -126,7 +127,7 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 <div id="sb"></div>
 
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gK1wi Test App v1.1.0</div><div class="count" id="count">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gK1wi Test App v1.1.1</div><div class="count" id="count">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
@@ -224,7 +225,8 @@ function initMap(){
  map=new mapboxgl.Map({container:'map',style:MAP_STYLE,center:[COMPANIES[0].lng,COMPANIES[0].lat],zoom:13,attributionControl:false,logoPosition:'bottom-right',dragRotate:false});
  map.touchZoomRotate.disableRotation();
  map.addControl(new mapboxgl.AttributionControl({compact:true}),'top-right');
- mapReady=new Promise(r=>{map.on('load',r);setTimeout(r,6000)});
+ if(window.ResizeObserver)new ResizeObserver(()=>map.resize()).observe($('#mapview')); // keeps the canvas matched to the real screen height
+ mapReady=new Promise(r=>{map.on('load',()=>{map.resize();r()});setTimeout(r,6000)});
  return mapReady}
 function drawRoute(co){
  const src=map.getSource('route');
@@ -396,6 +398,9 @@ $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.v
 document.addEventListener('selectstart',e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName||''))e.preventDefault()});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&N){N.wake=null;keepAwake()}});
+const fitMap=()=>map&&map.resize();
+window.addEventListener('resize',fitMap);
+window.addEventListener('orientationchange',()=>setTimeout(fitMap,300));
 shuffle();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
