@@ -92,7 +92,7 @@ body.navmode #mtlogo{top:calc(env(safe-area-inset-top) + 118px)}
 </head>
 <body>
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gK1wi APP TEST v1.0.3</div><div class="count" id="coins">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>K1wi Test App v1.0.4</div><div class="count" id="coins">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
@@ -116,7 +116,7 @@ const COMPANIES=[
 ];
 const POOL=['Signature gift box','Artisan bakery set','Handcrafted bundle','Care package','Local delicacies','Tasting collection','Botanical arrangement','Coffee starter kit','Scented candle trio','Chocolate box','Weekend discovery kit','Private reserve'];
 /* ===== MAP: paste your MapTiler Cloud key here (free account) ===== */
-const MAPTILER_KEY='laTxSj4EXvHaXdrOjXUG';
+const MAPTILER_KEY='PASTE_YOUR_KEY_HERE';
 const MAP_STYLE_NAME='streets-v2'; // try: basic-v2, dataviz, outdoor-v2, bright-v2
 /* ============================================================== */
 const $=s=>document.querySelector(s);
@@ -130,7 +130,7 @@ function initMap(){
  map=new maplibregl.Map({container:'map',style:MAP_STYLE,center:[COMPANIES[0].lng,COMPANIES[0].lat],zoom:13,attributionControl:false,dragRotate:false});
  map.touchZoomRotate.disableRotation();
  map.addControl(new maplibregl.AttributionControl({compact:true}),'top-right');
- mapReady=new Promise(r=>map.on('load',r));return mapReady}
+ mapReady=new Promise(r=>{map.on('load',r);setTimeout(r,6000)});return mapReady}
 const sty=c=>`--c:${c.c};--t:${c.t}`;
 function shuffleAll(){packs={};sel.clear();COMPANIES.forEach(c=>{
   const p=[...POOL].sort(()=>Math.random()-.5).slice(0,3);
@@ -149,10 +149,11 @@ function show(v){$('#pk').classList.toggle('on',v=='pk');$('#mapview').classList
 $('#shuffle').onclick=shuffleAll;
 $('#back').onclick=()=>{endNav(true);show('pk')};
 $('#fit').onclick=()=>bounds&&map.fitBounds(bounds,{padding:PAD,maxZoom:17,pitch:0,bearing:0});
-$('#bar').onclick=()=>{show('map');startRoute()};
+$('#bar').onclick=()=>{show('map');startRoute().catch(()=>{$('#sheet').innerHTML='<b style="font:800 20px var(--d)">Connection problem</b><button class="startbtn" id="retry">Try again</button>';$('#retry').onclick=()=>startRoute().catch(()=>{})})};
 function getPos(){return new Promise(res=>{const v=COMPANIES[0],fb={lat:v.lat-.012,lng:v.lng-.009,fake:true};
  if(!navigator.geolocation)return res(fb);
- navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res(fb),{enableHighAccuracy:true,timeout:8000})})}
+ let done=false;const f=v=>{if(!done){done=true;res(v)}};setTimeout(()=>f(fb),12000);
+ navigator.geolocation.getCurrentPosition(p=>f({lat:p.coords.latitude,lng:p.coords.longitude}),()=>f(fb),{enableHighAccuracy:true,timeout:9000,maximumAge:60000})})}
 let R=null,me=null,meM=null,N=null;
 const fmt=m=>m<1000?Math.max(10,Math.round(m/10)*10)+' m':(m/1000).toFixed(1)+' km';
 const hav=(a,b)=>{const t=Math.PI/180,x=(b.lng-a.lng)*t*Math.cos((a.lat+b.lat)/2*t),y=(b.lat-a.lat)*t;return Math.sqrt(x*x+y*y)*6371000};
@@ -166,14 +167,15 @@ function instr(s,stop){const t=s.maneuver.type,m=s.maneuver.modifier||'',on=s.na
  const [a,b]=m.split(' ');return (b?(a=='slight'?'Bear ':'Sharp '):'Turn ')+(b||a)+on}
 async function route(pts,prof){
  const base=prof=='foot'?'https://routing.openstreetmap.de/routed-foot/route/v1/foot/':'https://router.project-osrm.org/route/v1/driving/';
- const r=await fetch(base+pts.map(p=>p.lng+','+p.lat).join(';')+'?overview=full&geometries=geojson&steps=true');
- const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}
+ const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),8000);
+ try{const r=await fetch(base+pts.map(p=>p.lng+','+p.lat).join(';')+'?overview=full&geometries=geojson&steps=true',{signal:ctl.signal});
+  const j=await r.json();if(!j.routes||!j.routes[0])throw 0;return j.routes[0]}finally{clearTimeout(tm)}}
 async function startRoute(){
  endNav(true);
  await initMap();
  layers.forEach(l=>l.remove());layers=[];
  $('#sheet').innerHTML='<b style="font:800 20px var(--d)">Finding the best way…</b>';
- me=await getPos();
+ me=await getPos();$('#sheet').innerHTML='<b style="font:800 20px var(--d)">Calculating the route…</b>';
  const stops=[...chosen()].sort((a,b)=>(a.id=='vicke'?-1:b.id=='vicke'?1:0)); // Vicke is always the first stop
  const pts=[me,...stops];
  const me_el=document.createElement('div');me_el.innerHTML='<div class="me"></div>';meM=new maplibregl.Marker({element:me_el}).setLngLat([me.lng,me.lat]).addTo(map);layers.push(meM);
@@ -185,6 +187,7 @@ async function startRoute(){
  }catch(e){line=pts.map(p=>[p.lat,p.lng]);note='Direct line'}
  const remD=[0],remT=[0];for(let i=steps.length-1;i>=0;i--){remD[i]=(remD[i+1]||0)+steps[i].distance;remT[i]=(remT[i+1]||0)+steps[i].duration}
  R={steps,stops,line,dist,dur,note,remD,remT};
+ if(!map.isStyleLoaded())await new Promise(r=>{map.once('idle',r);setTimeout(r,4000)});
  const gj={type:'Feature',geometry:{type:'LineString',coordinates:line.map(c=>[c[1],c[0]])}};
  if(map.getSource('route'))map.getSource('route').setData(gj);
  else{map.addSource('route',{type:'geojson',data:gj});const lay={'line-join':'round','line-cap':'round'};
