@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Waypoint</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -22,8 +22,7 @@ html{-webkit-text-size-adjust:100%;overscroll-behavior:none;touch-action:manipul
 html{height:100%;overflow:hidden;overscroll-behavior:none}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 'DM Sans',-apple-system,system-ui,sans-serif}
 body{height:100%;overflow:hidden;overscroll-behavior:none}
-/* iPhone home-screen apps report a viewport about one notch-height too short, so the app is sized from --vh (set in JS to the real screen height) */
-#app{position:fixed;top:0;left:0;width:100%;height:var(--vh,100vh);overflow:hidden}
+#app{position:fixed;inset:0;overflow:hidden}
 button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
 a{color:inherit;text-decoration:none}
 input{-webkit-user-select:text;user-select:text;font-size:16px}
@@ -34,8 +33,8 @@ input{-webkit-user-select:text;user-select:text;font-size:16px}
 #mapview{position:absolute;inset:0;z-index:50;display:none;overflow:hidden}
 #mapview.on{display:block}
 #map{position:absolute;inset:0}
-/* Soft dark fade under the status bar / Dynamic Island (full-screen look) */
-#sb{position:fixed;top:0;left:0;right:0;height:calc(env(safe-area-inset-top) + 26px);background:linear-gradient(rgba(21,23,28,.8),rgba(21,23,28,0));z-index:1900;pointer-events:none}
+/* Soft blurred fade at the top edge */
+#sb{position:fixed;top:0;left:0;right:0;height:calc(env(safe-area-inset-top) + 34px);background:linear-gradient(rgba(243,239,230,.88),rgba(243,239,230,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 35%,transparent);mask-image:linear-gradient(#000 35%,transparent);z-index:1900;pointer-events:none}
 /* ── Packages ─────────────────────────────────────────────── */
 .top{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
 .logo{display:flex;align-items:center;gap:8px;font:800 20px var(--d);letter-spacing:-.02em}
@@ -133,7 +132,7 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 
 <div id="app">
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gK1wiw test app v1.1.4</div><div class="count" id="count">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gK1wi Test App v1.1.5</div><div class="count" id="count">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
   <p class="note" id="dbg"></p>
@@ -155,6 +154,7 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 <div id="cp"></div>
 </div>
 <div id="toast"></div>
+<div id="probe" style="position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)"></div>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -407,12 +407,9 @@ $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.v
 document.addEventListener('selectstart',e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName||''))e.preventDefault()});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&N){N.wake=null;keepAwake()}});
-const isStandalone=()=>navigator.standalone===true||matchMedia('(display-mode: standalone)').matches;
 function fitScreen(){
- const portrait=innerHeight>=innerWidth,full=portrait?Math.max(screen.width,screen.height):Math.min(screen.width,screen.height);
- const h=isStandalone()?Math.max(innerHeight,full):innerHeight;
- document.documentElement.style.setProperty('--vh',h+'px');
- $('#dbg').textContent=`debug · standalone ${isStandalone()} · inner ${innerHeight} · screen ${screen.height} · app ${h}`; // temporary
+ const cs=getComputedStyle($('#probe'));
+ $('#dbg').textContent=`debug · inner ${innerWidth}x${innerHeight} · screen ${screen.height} · top ${cs.paddingTop} · bottom ${cs.paddingBottom}`; // temporary
  if(map)map.resize()}
 window.addEventListener('resize',fitScreen);
 window.addEventListener('orientationchange',()=>setTimeout(fitScreen,300));
