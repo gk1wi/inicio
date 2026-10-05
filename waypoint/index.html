@@ -33,8 +33,6 @@ input{-webkit-user-select:text;user-select:text;font-size:16px}
 #mapview{position:absolute;inset:0;z-index:50;display:none;overflow:hidden}
 #mapview.on{display:block}
 #map{position:absolute;inset:0}
-/* Soft blurred fade at the top edge */
-#sb{position:fixed;top:0;left:0;right:0;height:calc(env(safe-area-inset-top) + 34px);background:linear-gradient(rgba(243,239,230,.88),rgba(243,239,230,0));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(#000 35%,transparent);mask-image:linear-gradient(#000 35%,transparent);z-index:1900;pointer-events:none}
 /* ── Packages ─────────────────────────────────────────────── */
 .top{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
 .logo{display:flex;align-items:center;gap:8px;font:800 20px var(--d);letter-spacing:-.02em}
@@ -128,14 +126,11 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 </style>
 </head>
 <body>
-<div id="sb"></div>
-
 <div id="app">
 <section id="pk" class="view on">
-  <div class="top"><div class="logo"><i></i>gK1wi Test App v1.1.5</div><div class="count" id="count">0 selected</div></div>
+  <div class="top"><div class="logo"><i></i>gk1wi test app v1.1.6</div><div class="count" id="count">0 selected</div></div>
   <h1>Pick your<br><em>packages.</em></h1>
   <p class="sub">Choose what you want to collect. We'll map the way to every business.</p>
-  <p class="note" id="dbg"></p>
   <div class="tools"><button class="ghost" id="shuffle">↻ Shuffle packages</button></div>
   <div id="list"></div>
   <div class="spacer"></div>
@@ -154,7 +149,6 @@ body.navmode .mapboxgl-ctrl-top-right{top:calc(env(safe-area-inset-top) + 114px)
 <div id="cp"></div>
 </div>
 <div id="toast"></div>
-<div id="probe" style="position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)"></div>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -224,6 +218,7 @@ function render(){
 function show(v){
  $('#pk').classList.toggle('on',v==='pk');$('#mapview').classList.toggle('on',v==='map');
  $('#bar').style.display=v==='map'?'none':'';
+ document.documentElement.style.background=v==='map'?'#ece9e4':''; // status-bar area matches the screen below it
  if(v==='map'&&map)setTimeout(()=>map.resize(),50)}
 
 /* ═════════ MAP ═════════ */
@@ -407,10 +402,7 @@ $('#vbtn').onclick=()=>{if(!N)return;N.voice=!N.voice;$('#vbtn').textContent=N.v
 document.addEventListener('selectstart',e=>{if(!/INPUT|TEXTAREA/.test(e.target.tagName||''))e.preventDefault()});
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&N){N.wake=null;keepAwake()}});
-function fitScreen(){
- const cs=getComputedStyle($('#probe'));
- $('#dbg').textContent=`debug · inner ${innerWidth}x${innerHeight} · screen ${screen.height} · top ${cs.paddingTop} · bottom ${cs.paddingBottom}`; // temporary
- if(map)map.resize()}
+const fitScreen=()=>map&&map.resize();
 window.addEventListener('resize',fitScreen);
 window.addEventListener('orientationchange',()=>setTimeout(fitScreen,300));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)fitScreen()});
