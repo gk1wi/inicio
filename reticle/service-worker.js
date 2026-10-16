@@ -1,4 +1,4 @@
-const CACHE_NAME = "reticle-cache-v1.10.1";
+const CACHE_NAME = "reticle-cache-v1.11.0";
 const APP_SHELL = [
   "./",
   "./index.html",

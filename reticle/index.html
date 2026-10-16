@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#14171a">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -13,16 +13,23 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#14171a;
-    --bg-alt:#1b1f23;
-    --surface:#20252b;
-    --surface-2:#262c33;
-    --line:#31383f;
-    --text:#eae7e0;
-    --text-dim:#8a9098;
-    --accent:#3ecfc2;
-    --accent-soft:#1f3a38;
-    --amber:#ffb84d;
+    /* Neutral scale only — black through white. The single live accent is
+       white itself (score, selection, the primary action); the only hue in
+       the whole app is --error, reserved for misses and the session lockout,
+       the two moments that actually are a fault or a hard stop. */
+    --bg:#0a0a0a;
+    --bg-alt:#111113;
+    --surface:#18181a;
+    --surface-2:#212123;
+    --line:#2c2c2e;
+    --line-strong:#48484a;
+    --text:#f2f2f0;
+    --text-soft:#c7c7c5;
+    --text-dim:#87878a;
+    --accent:#ffffff;
+    --accent-soft:#232323;
+    --error:#e5484d;
+    --error-soft:#2a1416;
     --font-display:'JetBrains Mono', monospace;
     --font-body:'Inter', system-ui, -apple-system, sans-serif;
   }
@@ -63,17 +70,17 @@
     width:14px; height:14px;
     pointer-events:none;
   }
-  .bracket::before{ top:-1px; left:-1px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
-  .bracket::after{ top:-1px; right:-1px; border-top:2px solid var(--accent); border-right:2px solid var(--accent); }
-  .bracket .bl{ bottom:-1px; left:-1px; border-bottom:2px solid var(--accent); border-left:2px solid var(--accent); }
-  .bracket .br{ bottom:-1px; right:-1px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
+  .bracket::before{ top:-1px; left:-1px; border-top:1.5px solid var(--line-strong); border-left:1.5px solid var(--line-strong); }
+  .bracket::after{ top:-1px; right:-1px; border-top:1.5px solid var(--line-strong); border-right:1.5px solid var(--line-strong); }
+  .bracket .bl{ bottom:-1px; left:-1px; border-bottom:1.5px solid var(--line-strong); border-left:1.5px solid var(--line-strong); }
+  .bracket .br{ bottom:-1px; right:-1px; border-bottom:1.5px solid var(--line-strong); border-right:1.5px solid var(--line-strong); }
 
   /* ---------- MENU SCREEN ---------- */
   #menu{
     align-items:stretch;
     justify-content:center;
     background:
-      radial-gradient(ellipse 900px 500px at 15% 20%, rgba(62,207,194,0.06), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 15% 20%, rgba(255,255,255,0.035), transparent 60%),
       var(--bg);
   }
   .menu-wrap{
@@ -193,7 +200,7 @@
     width:100%;
     padding:16px;
     background:var(--accent);
-    color:#0d1413;
+    color:#0a0a0a;
     border:none;
     font-family:var(--font-body);
     font-weight:700;
@@ -202,7 +209,7 @@
     letter-spacing:.01em;
     transition:transform .08s ease, background .15s ease;
   }
-  .start-btn:hover{ background:#4fe0d2; }
+  .start-btn:hover{ background:var(--text-soft); }
   .start-btn:active{ transform:scale(0.99); }
 
   /* ---------- GAME SCREEN ---------- */
@@ -222,14 +229,15 @@
   .hud-item{display:flex; flex-direction:column; gap:2px;}
   .hud-item span{font-size:10.5px; color:var(--text-dim);}
   .hud-item b{font-family:var(--font-display); font-size:19px; display:inline-block;}
-  #hud-timer b{color:var(--amber);}
+  #hud-timer b{color:var(--text-soft);}
   #hud-score b{color:var(--accent);}
   /* One-shot pulse for discrete HUD jumps (e.g. misses +1). Triggered by
      toggling this class on change only — runs on the compositor, costs
-     nothing on the frames where the value doesn't change. */
+     nothing on the frames where the value doesn't change. The only red in
+     the HUD: a miss is the one event here worth flagging as a fault. */
   .hud-item b.pulse{ animation: hudPulse .3s ease; }
   @keyframes hudPulse{
-    0%{ color:#ff6b6b; transform:scale(1.22); }
+    0%{ color:var(--error); transform:scale(1.22); }
     100%{ color:inherit; transform:scale(1); }
   }
   .exit-btn{
@@ -242,7 +250,7 @@
   #countdown{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     font-family:var(--font-display); font-size:120px; color:var(--accent);
-    background:rgba(20,23,26,0.85);
+    background:rgba(10,10,10,0.85);
     z-index:10;
   }
   #countdown.hidden{display:none;}
@@ -260,6 +268,16 @@
     align-items:center; justify-content:center;
     background:var(--bg);
   }
+  /* The lockout is the one hard stop in the app outside of a miss, so it's
+     the other place --error earns its keep: the tag, the corner brackets
+     and the countdown itself, nothing else on the panel. */
+  .locked-panel{ text-align:center; margin:auto; }
+  .locked-panel::before, .locked-panel::after,
+  .locked-panel .bl, .locked-panel .br{ border-color:var(--error) !important; }
+  .locked-panel .tag{ color:var(--error); }
+  .locked-panel p{ color:var(--text-dim); font-size:14px; line-height:1.6; margin-bottom:24px; }
+  .locked-panel .result-stat.full > div{ width:100%; text-align:center; }
+  .locked-panel .result-stat.full b{ font-size:34px; color:var(--error); }
   .results-panel .tag{
     font-family:var(--font-display); font-size:11px; color:var(--accent); letter-spacing:.06em; margin-bottom:6px;
   }
@@ -275,7 +293,11 @@
     margin-bottom:20px;
   }
   .record-banner.show{display:flex;}
-  .record-banner.warn{ border-color:var(--amber); color:var(--amber); background:rgba(255,184,77,0.08); }
+  .banner-icon{ width:15px; height:15px; flex:none; }
+  /* Difficulty unlocked is good news, not a warning — same neutral/white
+     treatment as a new record, just a hair dimmer so the record banner
+     still reads as the headline when both show at once. */
+  .record-banner.warn{ border-color:var(--line-strong); color:var(--text-soft); background:var(--surface-2); }
   .results-grid{
     display:grid; grid-template-columns:1fr 1fr; gap:16px;
     margin-bottom:26px;
@@ -293,7 +315,7 @@
   .result-stat.full .vs b{font-size:16px; color:var(--text); display:block; margin-top:2px;}
   .results-actions{display:flex; gap:10px;}
   .results-actions button{flex:1; padding:14px; font-family:var(--font-body); font-weight:700; font-size:14px; cursor:pointer; border:1px solid var(--line); background:none; color:var(--text);}
-  .results-actions .retry{ background:var(--accent); color:#0d1413; border-color:var(--accent);}
+  .results-actions .retry{ background:var(--accent); color:#0a0a0a; border-color:var(--accent);}
   .results-actions button:hover{ border-color:var(--accent); }
 
   @media (max-width: 820px){
@@ -312,14 +334,14 @@
         <div class="brand">
           <div class="brand-mark"></div>
           <div class="brand-name">RETICLE</div>
-          <div class="version-badge" id="versionBadge">v1.10.1</div>
+          <div class="version-badge" id="versionBadge">v1.11.0</div>
         </div>
         <h1>Entrena tu aim</h1>
         <p>Reacciona. Sigue. Cambia de blanco. Cada sesión queda medida al milisegundo — la única meta es la marca que dejaste la última vez.</p>
         <div class="stat-row">
           <div class="stat"><b id="statTotalSessions">0</b><span>sesiones jugadas</span></div>
           <div class="stat"><b id="statBestOverall">—</b><span>mejor puntaje global</span></div>
-          <div class="stat"><b id="statSessionsLeft">60</b><span>antes de bloqueo</span></div>
+          <div class="stat"><b id="statSessionsLeft">20</b><span>antes de bloqueo</span></div>
         </div>
         <div class="credit">created by <b>gK1wi</b></div>
         <div class="social-row">
@@ -407,7 +429,10 @@
       <div class="tag" id="resultsMode">FLICK</div>
       <h2>Sesión terminada</h2>
       <div class="record-banner" id="recordBanner">★ Nuevo récord en este modo</div>
-      <div class="record-banner warn" id="unlockBanner">🔓 Nivel desbloqueado</div>
+      <div class="record-banner warn" id="unlockBanner">
+        <svg class="banner-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 11V7a4 4 0 0 1 7.6-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span id="unlockBannerText">Nivel desbloqueado</span>
+      </div>
       <div class="results-grid">
         <div class="result-stat"><span>aciertos / fallos</span><b id="resHits">0 / 0</b></div>
         <div class="result-stat"><span>precisión</span><b id="resAcc">0%</b></div>
@@ -427,17 +452,17 @@
 
   <!-- LOCKED -->
   <section id="locked" class="screen">
-    <div class="results-panel bracket" style="text-align:center; margin:auto;">
+    <div class="results-panel bracket locked-panel">
       <span class="bl"></span><span class="br"></span>
       <div class="tag">LÍMITE ALCANZADO</div>
       <h2>Sesiones bloqueadas</h2>
-      <p style="color:var(--text-dim); font-size:14px; line-height:1.6; margin-bottom:24px;">
+      <p>
         Llegaste a 20 sesiones. Se bloquea el inicio de nuevas sesiones por 8 horas, sin importar el modo.
       </p>
       <div class="result-stat full">
-        <div style="width:100%; text-align:center;">
+        <div>
           <span>se desbloquea en</span>
-          <b id="lockTimer" style="font-size:34px; color:var(--accent);">08:00:00</b>
+          <b id="lockTimer">08:00:00</b>
         </div>
       </div>
     </div>
@@ -468,10 +493,10 @@
   }
   let store = loadData();
 
-  /* ============ 60-session lock ============ */
+  /* ============ session lock ============ */
   // Every click on "Empezar sesión" (or "Repetir") counts toward this,
-  // regardless of mode (flick/tracking/switch) or duration. On the 60th
-  // start, the app locks new sessions for 8 hours — enforced client-side
+  // regardless of mode (flick/tracking/switch) or duration. On reaching
+  // the limit, the app locks new sessions for 8 hours — enforced client-side
   // via a timestamp in localStorage, so it survives reloads and holds even
   // if the tab is closed and reopened later.
   const SESSION_LIMIT = 20;
@@ -966,13 +991,14 @@
 
   function render(ts){
     const w = wrap.clientWidth, h = wrap.clientHeight;
-    ctx.fillStyle = "#14171a";
+    ctx.fillStyle = "#0a0a0a";
     ctx.fillRect(0,0,w,h);
 
     // prerendered grid — one drawImage instead of ~20-30 stroke() calls/frame
     ctx.drawImage(gridCanvas, 0, 0, w, h);
 
-    // targets
+    // targets — white reads as the one "live" signal in the scene, same
+    // role the teal accent used to play, just moved onto the neutral scale.
     for(const t of session.targets){
       let pulse = 1;
       if(t.bornAt){
@@ -981,22 +1007,22 @@
       }
       ctx.beginPath();
       ctx.arc(t.x, t.y, t.radius*pulse, 0, Math.PI*2);
-      ctx.fillStyle = "rgba(62,207,194,0.14)";
+      ctx.fillStyle = "rgba(255,255,255,0.12)";
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = "#3ecfc2";
+      ctx.strokeStyle = "#f2f2f0";
       ctx.stroke();
 
       ctx.beginPath();
       ctx.arc(t.x, t.y, 3, 0, Math.PI*2);
-      ctx.fillStyle = "#eae7e0";
+      ctx.fillStyle = "#f2f2f0";
       ctx.fill();
 
       if(t.lifetime){
         const remain = 1 - Math.min(1, (ts - t.bornAt)/t.lifetime);
         ctx.beginPath();
         ctx.arc(t.x, t.y, t.radius + 6, -Math.PI/2, -Math.PI/2 + remain*Math.PI*2);
-        ctx.strokeStyle = "#ffb84d";
+        ctx.strokeStyle = "#8a8a8c";
         ctx.lineWidth = 2;
         ctx.stroke();
       }
@@ -1006,19 +1032,20 @@
     if(session.mode === "tracking"){
       ctx.beginPath();
       ctx.arc(session.mouse.x, session.mouse.y, 5, 0, Math.PI*2);
-      ctx.strokeStyle = "#ffb84d";
+      ctx.strokeStyle = "#8a8a8c";
       ctx.lineWidth = 2;
       ctx.stroke();
     }
 
-    // flashes
+    // flashes — a hit flashes white, a miss flashes red. The only two
+    // colors a shot can ever produce on screen.
     const now = ts;
     flashes = flashes.filter(f => (now - f.born) < 260);
     for(const f of flashes){
       const life = (now - f.born)/260;
       ctx.beginPath();
       ctx.arc(f.x, f.y, 8 + life*22, 0, Math.PI*2);
-      ctx.strokeStyle = f.good ? `rgba(62,207,194,${1-life})` : `rgba(255,90,90,${1-life})`;
+      ctx.strokeStyle = f.good ? `rgba(255,255,255,${1-life})` : `rgba(229,72,77,${1-life})`;
       ctx.lineWidth = 2;
       ctx.stroke();
     }
@@ -1112,7 +1139,7 @@
     const oldT = scoreToT(prevBest, session.mode, session.duration);
     const unlockBanner = document.getElementById("unlockBanner");
     if(isRecord && Math.round(newT*100) > Math.round(oldT*100)){
-      unlockBanner.textContent = "🔓 Nuevo récord — la dificultad sube a " + Math.round(newT*100) + "%";
+      document.getElementById("unlockBannerText").textContent = "Nuevo récord — la dificultad sube a " + Math.round(newT*100) + "%";
       unlockBanner.classList.add("show");
     } else {
       unlockBanner.classList.remove("show");
