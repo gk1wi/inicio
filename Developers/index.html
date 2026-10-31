@@ -950,14 +950,25 @@ addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimat
     return { render, END: START + DUR + EXIT, TL, canState };
   }
   const START = 0.15, DUR = 4.0, SHAKE = 0.3, END = START + DUR + 0.35;
-  const logo = document.getElementById('gkLogo');
-  const gf = KiwiGraffiti({ wrap: document.getElementById('gkLogoWrap'), logo, width: 84, start: START, dur: DUR, shake: SHAKE });
+  const logo = document.getElementById('gkLogo'), wrap = document.getElementById('gkLogoWrap');
+  // la animación se arma con el ancho REAL del logo (en celular es más chico que en PC)
+  let gf = null, gfW = 0, lastT = 0;
+  function build() {
+    gfW = wrap.getBoundingClientRect().width;
+    [...wrap.children].forEach(c => { if (c !== logo) c.remove(); });
+    gf = KiwiGraffiti({ wrap, logo, width: gfW, start: START, dur: DUR, shake: SHAKE });
+  }
+  build();
+  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => {
+    if (Math.abs(wrap.getBoundingClientRect().width - gfW) < 0.5) return;
+    build(); gf.render(playing ? lastT : END + 1);
+  }, 120); });
   if (matchMedia('(prefers-reduced-motion:reduce)').matches) { gf.render(END + 1); return; }
   let t0 = null, playing = false;
   function loop(now) {
     if (t0 === null) t0 = now;
     const e = (now - t0) / 1000;
-    gf.render(Math.min(e, END + 0.05));
+    lastT = Math.min(e, END + 0.05); gf.render(lastT);
     if (e < END + 0.05) requestAnimationFrame(loop); else playing = false;
   }
   const brand = document.getElementById('brand');
