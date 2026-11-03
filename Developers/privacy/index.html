@@ -1,123 +1,327 @@
-<!doctype html>
-<html lang="es-MX">
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Aviso de privacidad · gK1wi Developers</title>
-  <meta name="description" content="Aviso de privacidad de gK1wi Developers y de sus productos, incluido ChilaPOS.">
-  <link rel="stylesheet" href="/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aviso de privacidad | gK1wi Developers</title>
+<meta name="description" content="Aviso de privacidad de gK1wi Developers y de sus productos, incluido ChilaPOS.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://developers.gk1wi.com/privacy/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23000'/><text x='50' y='67' font-size='52' font-family='Arial' font-weight='800' fill='%23fff' text-anchor='middle'>gK</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--panel:#111113;--panel2:#1a1a1d;--line:#26262a;--line2:#3a3a40;--mute:#8e8e93;--fg:#ededea;--live:#6fd3a1;
+  --inv-bg:#ededea;--inv-fg:#000;
+  --d:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;--b:'Geist','Helvetica Neue',Arial,sans-serif;--m:'Geist Mono',ui-monospace,monospace;
+  --ease:cubic-bezier(.2,.7,.1,1)
+}
+[data-theme=light]{--bg:#f3f4f5;--panel:#fff;--panel2:#eceef0;--line:#dcdee1;--line2:#c3c6cb;--mute:#62656b;--fg:#0a0a0b;--live:#1b9a5f;--inv-bg:#0a0a0b;--inv-fg:#f3f4f5}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:var(--bg);color:var(--fg);font-family:var(--b);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;overflow-x:hidden;transition:background .4s,color .4s}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:6px}
+::selection{background:var(--fg);color:var(--bg)}
+.wrap{width:min(1220px,100% - 2.5rem);margin-inline:auto}
+h1,h2,h3{font-family:var(--d);font-weight:600;letter-spacing:-.035em;line-height:.98;font-variation-settings:'opsz' 96}
+h2{font-size:clamp(2.3rem,5.6vw,4.4rem);max-width:15ch}
+.mute{color:var(--mute)}
+#bar{position:fixed;top:0;left:0;right:0;height:2px;background:var(--fg);transform:scaleX(0);transform-origin:left;z-index:90}
+
+/* header */
+header{position:fixed;inset:0 0 auto;z-index:80;padding-top:env(safe-area-inset-top,0);background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid transparent;transition:border-color .3s}
+header.scrolled{border-color:var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{font-family:var(--d);font-weight:700;font-size:1.2rem;letter-spacing:-.04em}
+.brand .bt{font-weight:400;color:var(--mute)}
+.nav ul{display:flex;gap:2rem;list-style:none}
+.nav ul a{font-size:.93rem;color:var(--mute);transition:color .2s}
+.nav ul a:hover{color:var(--fg)}
+.tools{display:flex;align-items:center;gap:.6rem}
+.theme{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:border-color .2s}
+.theme:hover{border-color:var(--fg)}
+.lang{font:600 .72rem/1 inherit;letter-spacing:.06em;color:var(--fg)}
+.theme i{width:14px;height:14px;border-radius:50%;background:linear-gradient(90deg,var(--fg) 50%,transparent 50%);border:1.5px solid var(--fg);transition:transform .5s var(--ease)}
+[data-theme=light] .theme i{transform:rotate(180deg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.9rem 1.6rem;border-radius:999px;border:1px solid var(--line2);font-weight:500;font-size:.95rem;transition:background .25s,color .25s,border-color .25s,transform .3s var(--ease)}
+.btn:hover{border-color:var(--fg)}
+.btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.solid:hover{background:transparent;color:var(--fg)}
+.btn.sm{padding:.55rem 1.1rem;font-size:.88rem}
+@media(max-width:820px){.nav ul{display:none}}
+.brand-logo{position:relative;width:84px;aspect-ratio:124/47.9;isolation:isolate;flex:none;margin-top:-4px}
+.brand-logo #gkLogo{position:absolute;inset:0;width:100%;height:100%;background-color:#fff}
+[data-theme=light] .brand-logo{filter:invert(1)}
+@media(max-width:400px){.brand-logo{width:74px}}
+footer{border-top:1px solid var(--line);padding:2rem 0 calc(2rem + env(safe-area-inset-bottom,0px));color:var(--mute);font-size:.9rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.logoShape {
+    -webkit-mask-image: url("data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%20standalone%3D%22no%22%3F%3E%0A%3C%21--%20Created%20with%20Inkscape%20%28http%3A//www.inkscape.org/%29%20--%3E%0A%0A%3Csvg%0A%20%20%20width%3D%22124.0mm%22%0A%20%20%20height%3D%2247.900000000000006mm%22%0A%20%20%20viewBox%3D%2243.1%20115.5%20124.0%2047.900000000000006%22%0A%20%20%20version%3D%221.1%22%0A%20%20%20id%3D%22svg1%22%0A%20%20%20inkscape%3Aexport-filename%3D%22..%5CKiwiWhite.png%22%0A%20%20%20inkscape%3Aexport-xdpi%3D%22851.46729%22%0A%20%20%20inkscape%3Aexport-ydpi%3D%22851.46729%22%0A%20%20%20inkscape%3Aversion%3D%221.4.3%20%280d15f75%2C%202025-12-25%29%22%0A%20%20%20sodipodi%3Adocname%3D%22Kiwi.svg%22%0A%20%20%20xml%3Aspace%3D%22preserve%22%0A%20%20%20xmlns%3Ainkscape%3D%22http%3A//www.inkscape.org/namespaces/inkscape%22%0A%20%20%20xmlns%3Asodipodi%3D%22http%3A//sodipodi.sourceforge.net/DTD/sodipodi-0.dtd%22%0A%20%20%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%0A%20%20%20xmlns%3Asvg%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Csodipodi%3Anamedview%0A%20%20%20%20%20id%3D%22namedview1%22%0A%20%20%20%20%20pagecolor%3D%22%23ffffff%22%0A%20%20%20%20%20bordercolor%3D%22%23000000%22%0A%20%20%20%20%20borderopacity%3D%220.25%22%0A%20%20%20%20%20inkscape%3Ashowpageshadow%3D%222%22%0A%20%20%20%20%20inkscape%3Apageopacity%3D%220.0%22%0A%20%20%20%20%20inkscape%3Apagecheckerboard%3D%220%22%0A%20%20%20%20%20inkscape%3Adeskcolor%3D%22%23d1d1d1%22%0A%20%20%20%20%20inkscape%3Adocument-units%3D%22mm%22%0A%20%20%20%20%20inkscape%3Azoom%3D%220.7616793%22%0A%20%20%20%20%20inkscape%3Acx%3D%22188.3995%22%0A%20%20%20%20%20inkscape%3Acy%3D%22465.41898%22%0A%20%20%20%20%20inkscape%3Awindow-width%3D%221920%22%0A%20%20%20%20%20inkscape%3Awindow-height%3D%221057%22%0A%20%20%20%20%20inkscape%3Awindow-x%3D%22-8%22%0A%20%20%20%20%20inkscape%3Awindow-y%3D%22-8%22%0A%20%20%20%20%20inkscape%3Awindow-maximized%3D%221%22%0A%20%20%20%20%20inkscape%3Acurrent-layer%3D%22layer1%22%0A%20%20%20%20%20showgrid%3D%22false%22%20/%3E%3Cdefs%0A%20%20%20%20%20id%3D%22defs1%22%3E%3Cstyle%0A%20%20%20%20%20%20%20type%3D%22text/css%22%0A%20%20%20%20%20%20%20id%3D%22style1%22%3E%0A%20%20%20%3C%21%5BCDATA%5B%0A%20%20%20%20.fil1%20%7Bfill%3A%23ffffff%3Bfill-rule%3Anonzero%7D%0A%20%20%20%20.fil0%20%7Bfill%3Aurl%28%23id0%29%7D%0A%20%20%20%5D%5D%3E%0A%20%20%3C/style%3E%3CradialGradient%0A%20%20%20%20%20%20%20id%3D%22id0%22%0A%20%20%20%20%20%20%20gradientUnits%3D%22userSpaceOnUse%22%0A%20%20%20%20%20%20%20cx%3D%222.5%22%0A%20%20%20%20%20%20%20cy%3D%221.66667%22%0A%20%20%20%20%20%20%20r%3D%222.5%22%0A%20%20%20%20%20%20%20fx%3D%222.5%22%0A%20%20%20%20%20%20%20fy%3D%221.66667%22%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%220%22%0A%20%20%20style%3D%22stop-color%3A%23FEFEFE%22%0A%20%20%20id%3D%22stop1%22%20/%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%221%22%0A%20%20%20style%3D%22stop-color%3A%23E6E6E6%22%0A%20%20%20id%3D%22stop2%22%20/%3E%0A%20%20%3C/radialGradient%3E%3Cstyle%0A%20%20%20%20%20%20%20type%3D%22text/css%22%0A%20%20%20%20%20%20%20id%3D%22style1-0%22%3E%0A%20%20%20%3C%21%5BCDATA%5B%0A%20%20%20%20.fil1%20%7Bfill%3A%23ffffff%3Bfill-rule%3Anonzero%7D%0A%20%20%20%20.fil0%20%7Bfill%3Aurl%28%23id0%29%7D%0A%20%20%20%5D%5D%3E%0A%20%20%3C/style%3E%3CradialGradient%0A%20%20%20%20%20%20%20id%3D%22id0-9%22%0A%20%20%20%20%20%20%20gradientUnits%3D%22userSpaceOnUse%22%0A%20%20%20%20%20%20%20cx%3D%222.5%22%0A%20%20%20%20%20%20%20cy%3D%221.66667%22%0A%20%20%20%20%20%20%20r%3D%222.5%22%0A%20%20%20%20%20%20%20fx%3D%222.5%22%0A%20%20%20%20%20%20%20fy%3D%221.66667%22%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%220%22%0A%20%20%20style%3D%22stop-color%3A%23FEFEFE%22%0A%20%20%20id%3D%22stop1-4%22%20/%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%221%22%0A%20%20%20style%3D%22stop-color%3A%23E6E6E6%22%0A%20%20%20id%3D%22stop2-8%22%20/%3E%0A%20%20%3C/radialGradient%3E%3Cstyle%0A%20%20%20%20%20%20%20type%3D%22text/css%22%0A%20%20%20%20%20%20%20id%3D%22style1-09%22%3E%0A%20%20%20%3C%21%5BCDATA%5B%0A%20%20%20%20.fil1%20%7Bfill%3A%23ffffff%3Bfill-rule%3Anonzero%7D%0A%20%20%20%20.fil0%20%7Bfill%3Aurl%28%23id0%29%7D%0A%20%20%20%5D%5D%3E%0A%20%20%3C/style%3E%3CradialGradient%0A%20%20%20%20%20%20%20id%3D%22id0-4%22%0A%20%20%20%20%20%20%20gradientUnits%3D%22userSpaceOnUse%22%0A%20%20%20%20%20%20%20cx%3D%222.5%22%0A%20%20%20%20%20%20%20cy%3D%221.66667%22%0A%20%20%20%20%20%20%20r%3D%222.5%22%0A%20%20%20%20%20%20%20fx%3D%222.5%22%0A%20%20%20%20%20%20%20fy%3D%221.66667%22%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%220%22%0A%20%20%20style%3D%22stop-color%3A%23FEFEFE%22%0A%20%20%20id%3D%22stop1-8%22%20/%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%221%22%0A%20%20%20style%3D%22stop-color%3A%23E6E6E6%22%0A%20%20%20id%3D%22stop2-82%22%20/%3E%0A%20%20%3C/radialGradient%3E%3C/defs%3E%3Cg%0A%20%20%20%20%20inkscape%3Alabel%3D%22Layer%201%22%0A%20%20%20%20%20inkscape%3Agroupmode%3D%22layer%22%0A%20%20%20%20%20id%3D%22layer1%22%3E%3Cpath%0A%20%20%20%20%20%20%20id%3D%22text1%22%0A%20%20%20%20%20%20%20style%3D%22font-size%3A50.8px%3Bfont-family%3AExclamation%3B-inkscape-font-specification%3A%27Exclamation%2C%20Normal%27%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Bfill%3A%23ffffff%3Bfill-opacity%3A1%3Bstroke-width%3A28.1951%22%0A%20%20%20%20%20%20%20d%3D%22m%20127.97288%2C120.40212%20c%20-3.11089%2C-0.16866%20-6.33497%2C0.16833%20-9.27617%2C0.84297%20-3.11088%2C0.67463%20-6.10894%2C1.91142%20-8.6542%2C3.71044%20-0.84842%2C0.5622%20-2.60177%2C1.63036%20-2.9977%2C2.58609%20-0.50905%2C1.34926%200.39629%2C12.64972%201.18815%2C16.52887%200.67873%2C3.37316%201.69666%2C6.80207%203.22382%2C9.95036%201.24435%2C2.64231%203.56327%2C5.73474%206.73072%2C6.35315%201.4706%2C0.2811%203.11093%2C0.44934%204.6381%2C0.50556%201.64028%2C0%204.58147%2C0.16888%205.76926%2C-1.18038%201.07466%2C-1.18062%201.7536%2C-2.86731%202.54546%2C-4.21657%200.33937%2C-0.50598%201.6966%2C-0.44971%201.75316%2C0.16871%200.0566%2C1.29304%200.33929%2C2.81085%200.39585%2C4.1039%200.0565%2C0.44975%200.4524%2C0.84372%200.96146%2C0.7875%202.48871%2C-0.22488%205.2039%2C-0.95602%206.61794%2C-2.86748%201.41404%2C-1.79902%202.37535%2C-6.01522%203.0541%2C-8.76998%200.96154%2C-4.21645%201.69686%2C-8.48951%202.03623%2C-12.8184%200.28281%2C-2.81097%200.56601%2C-5.95885%200.057%2C-8.82603%20-0.16969%2C-1.01195%20-0.96193%2C-1.743%20-1.92348%2C-1.96788%20-2.88463%2C-0.61841%20-5.71259%2C-1.23682%20-8.59722%2C-1.85523%20-0.56562%2C-0.11244%20-1.07481%2C0.28135%20-1.07481%2C0.84354%20l%20-0.28251%2C11.6935%20c%200%2C0.16866%200.0562%2C0.28102%200.11278%2C0.39346%201.41404%2C2.86718%202.65888%2C5.84681%203.56385%2C8.88265%200.16969%2C0.61841%20-1.69722%2C0.33722%20-1.92346%2C-0.33742%20-0.56562%2C-1.96767%20-1.35715%2C-3.935%20-2.14901%2C-5.84645%20-0.11313%2C-0.16866%20-0.28291%2C-0.16866%20-0.33947%2C0%20-1.01811%2C2.9234%20-2.6584%2C5.50904%20-4.46837%2C8.09513%20-0.33937%2C0.50597%20-2.14926%2C-0.1685%20-1.69677%2C-0.78691%202.2059%2C-3.26073%204.18569%2C-6.52172%204.97755%2C-10.45708%20v%20-0.22476%20c%20-0.28281%2C-3.26072%20-0.67926%2C-6.46506%20-1.13175%2C-9.66956%20-0.11312%2C-0.89951%20-0.28256%2C-1.74281%20-0.45225%2C-2.5861%20-0.0566%2C-0.2811%20-0.113%2C-0.61832%20-0.22612%2C-0.95564%20-0.22625%2C-1.1806%20-1.24431%2C-2.02374%20-2.43211%2C-2.07996%20z%20m%20-27.4925%2C0.36258%20c%20-0.32523%2C0.002%20-0.646909%2C0.0168%20-0.957997%2C0.0309%20-2.714954%2C0.16866%20-5.430041%2C0.39362%20-8.144994%2C0.89959%20-2.319023%2C0.39354%20-5.995297%2C1.29282%20-6.956844%2C3.03562%20-0.113122%2C0.28109%20-0.16996%2C0.56204%20-0.283083%2C0.78691%20-0.05656%2C0.33732%20-0.05638%2C0.61833%20-0.05638%2C0.95564%20-0.05656%2C1.91146%200.735406%2C4.3852%201.640391%2C6.07178%200.791862%2C1.57414%202.545209%2C1.63055%204.298617%2C1.23702%201.187792%2C-0.2811%202.262323%2C-0.73086%203.393554%2C-1.29306%200.678738%2C-0.33731%202.828052%2C0.78725%201.866505%2C1.237%20-0.848417%2C0.44975%20-1.86681%2C0.84325%20-2.884917%2C1.12435%200.7353%2C6.80255%201.471083%2C13.37995%202.262941%2C20.23872%200.169684%2C1.51792%200.452515%2C3.71074%200.735323%2C4.7227%200.678738%2C2.13633%202.941077%2C1.51783%204.694484%2C0.95564%201.30092%2C-0.44976%201.97943%2C-0.73107%202.48848%2C-1.96789%200.62218%2C-1.57414%201.01828%2C-4.2161%201.24453%2C-5.84647%201.35748%2C-8.714%202.09281%2C-22.9942%200.73534%2C-29.06589%20-0.16969%2C-0.8433%20-0.50924%2C-2.07973%20-1.24454%2C-2.52948%20-0.84842%2C-0.50598%20-1.85572%2C-0.60097%20-2.83141%2C-0.59305%20z%20m%20-28.455686%2C0.052%20c%20-1.030479%2C0.003%20-2.01373%2C0.0488%20-2.876293%2C0.091%20-1.696845%2C0.0563%20-3.393485%2C0.16898%20-5.09033%2C0.45008%20-1.923093%2C0.33731%20-3.619631%2C1.40525%20-4.750862%2C3.03561%20-1.923091%2C2.86718%20-2.94146%2C6.52172%20-3.450515%2C9.89488%20-0.113123%2C0.67464%20-2.036072%2C0.1123%20-2.092634%2C-0.50611%20-0.226246%2C-2.0239%20-0.339448%2C-7.92714%20-0.905064%2C-8.99532%20-0.339368%2C-0.73085%20-1.244334%2C-0.50572%20-1.866511%2C-0.4495%20-1.923093%2C0.22488%20-5.090759%2C0.44977%20-5.882621%2C2.5861%20-0.79186%2C2.19255%20-0.452193%2C5.1159%20-0.282509%2C7.42089%200.226246%2C3.82292%200.621782%2C7.58937%201.243959%2C11.35607%200.509053%2C3.26073%201.075102%2C6.57792%202.093209%2C9.7262%200.282808%2C0.78707%200.565219%2C2.07995%201.243958%2C2.64215%201.074669%2C0.95573%203.50706%2C0.78726%205.317028%2C0.67482%200.395932%2C0%200.621929%2C-0.39356%200.452244%2C-0.73088%20-0.05656%2C-0.16866%20-0.16956%2C-0.33746%20-0.226122%2C-0.50612%20-0.904984%2C-2.02389%20-1.074398%2C-3.7664%20-1.017836%2C-6.01517%200%2C-0.61841%201.47048%2C-0.22518%201.527042%2C0.28079%200.05656%2C1.34927%200.05632%2C2.6986%200.452243%2C4.04786%200.395931%2C1.23683%200.961753%2C3.20458%201.979861%2C4.04787%201.979654%2C1.57414%206.334999%2C1.74255%208.710583%2C1.74255%202.092777%2C-0.0562%204.468384%2C-0.16868%206.504599%2C-0.73088%201.80997%2C-0.56219%201.583378%2C-2.02385%201.413693%2C-3.71043%20-0.565616%2C-4.10401%20-2.54531%2C-7.81444%20-4.638087%2C-11.30005%20-0.05656%2C-0.16866%20-0.113123%2C-0.33707%200%2C-0.44951%202.601831%2C-1.91146%204.581807%2C-5.05994%206.222091%2C-7.70225%201.866531%2C-3.03584%203.902538%2C-6.2964%205.09033%2C-9.66956%200.622178%2C-1.68659%200.735324%2C-3.54213%20-0.565591%2C-4.89141%20-1.993794%2C-1.98173%20-5.514423%2C-2.35015%20-8.605865%2C-2.33962%20z%20m%2091.129416%2C16.50712%20c%20-3.22401%2C-0.11243%20-6.44821%2C0.0564%20-9.61565%2C0.50613%20-1.41404%2C0.16866%20-2.94098%2C0.50568%20-3.78942%2C1.57385%20-0.45249%2C0.56219%20-0.62219%2C1.23721%20-0.73532%2C1.91184%20-0.22624%2C1.4617%20-0.0569%2C2.97944%200.11277%2C4.49737%200.62218%2C5.84681%201.92348%2C12.87446%201.92348%2C12.87446%200%2C0%200.2824%2C2.81078%204.41139%2C3.20431%204.18556%2C0.39354%208.03222%2C-0.84354%208.03222%2C-0.84354%202.77152%2C-0.67463%202.14879%2C-17.03425%202.03567%2C-20.96961%200%2C-0.33731%20-0.22617%2C-1.68661%20-0.39586%2C-2.02392%20-0.39593%2C-0.61842%20-1.24398%2C-0.73089%20-1.97928%2C-0.73089%20z%22%0A%20%20%20%20%20%20%20sodipodi%3Anodetypes%3D%22sccccccccccccccccccccccccccccccscssscccccccscccccccccssccccccccccccccccccccccccccccccccccccccccc%22%20/%3E%3Cpath%0A%20%20%20%20%20%20%20class%3D%22fil1%22%0A%20%20%20%20%20%20%20d%3D%22m%20154.26174%2C126.06405%20c%20-0.91049%2C-5.94134%200.84273%2C-8.51852%201.05276%2C-8.80217%200.0111%2C-0.0174%200.0244%2C-0.0343%200.0391%2C-0.0504%200.1521%2C-0.16768%200.41138%2C-0.18031%200.57908%2C-0.0282%20l%20-4.3e-4%2C6.5e-4%20c%200.0125%2C0.0109%202.43757%2C2.14936%202.55326%2C8.51972%200.89944%2C-0.91038%202.5772%2C-2.28084%204.80783%2C-2.66003%200.0164%2C-0.006%200.0332%2C-0.006%200.0505%2C-0.008%200.22533%2C-0.0217%200.42561%2C0.14355%200.44727%2C0.36888%20l%20-0.40808%2C0.0387%200.40651%2C-0.0385%20c%205.4e-4%2C0.009%200.31545%2C2.89401%20-2.39094%2C5.4604%201.5378%2C-0.14995%203.81817%2C-0.23165%204.21491%2C0.53885%200.0581%2C0.10456%200.07%2C0.23358%200.0224%2C0.35311%20l%20-9.3e-4%2C-3.7e-4%20c%20-0.0132%2C0.0338%20-0.67478%2C1.69304%20-4.54456%2C2.65572%200.57252%2C0.2455%201.16342%2C0.55238%201.40855%2C0.85322%200.0427%2C0.0428%200.0765%2C0.0954%200.0975%2C0.15666%200.0735%2C0.21422%20-0.0409%2C0.44738%20-0.25497%2C0.52071%20l%20-1.8e-4%2C-4.7e-4%20c%20-0.007%2C9.6e-4%20-2.12137%2C0.74391%20-4.14451%2C-0.0168%20l%200.10532%2C1.23511%20c%200.0193%2C0.22558%20-0.14813%2C0.42411%20-0.37365%2C0.44336%20l%20-1.43979%2C0.12277%20c%20-0.22554%2C0.0193%20-0.42405%2C-0.14812%20-0.4433%2C-0.37365%20l%20-0.10543%2C-1.23512%20c%20-1.7552%2C1.02814%20-3.81532%2C0.75868%20-4.05773%2C0.72236%20-0.20499%2C-0.02%20-0.36621%2C-0.19207%20-0.36877%2C-0.40287%20l%204.8e-4%2C2e-5%20c%20-0.003%2C-0.37231%200.66326%2C-0.89628%201.31783%2C-1.32065%20-3.62987%2C-0.26762%20-4.72392%2C-1.5599%20-4.90147%2C-1.8072%20-0.0723%2C-0.0904%20-0.10585%2C-0.21099%20-0.0823%2C-0.33362%20l%209.4e-4%2C1.7e-4%20c%200.17031%2C-0.87051%202.50096%2C-1.18785%204.07755%2C-1.30317%20-2.89548%2C-1.93301%20-3.24379%2C-4.58501%20-3.27791%2C-4.93697%20-0.003%2C-0.0225%20-0.007%2C-0.0454%20-0.005%2C-0.0688%20-9.6e-4%2C-0.22635%200.18145%2C-0.41086%200.40788%2C-0.41199%20l%20-2e-5%2C3.2e-4%20c%202.27283%2C-0.0114%204.16765%2C1.06%205.21178%2C1.80738%20z%22%0A%20%20%20%20%20%20%20id%3D%22path2%22%0A%20%20%20%20%20%20%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23ffffff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke-width%3A12.1302%3Bimage-rendering%3AoptimizeQuality%3Bshape-rendering%3AgeometricPrecision%3Btext-rendering%3AgeometricPrecision%22%0A%20%20%20%20%20%20%20sodipodi%3Anodetypes%3D%22cccccccccccccccccccccssssccccccccccccccc%22%20/%3E%3C/g%3E%3C/svg%3E%0A");
+    mask-image: url("data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%20standalone%3D%22no%22%3F%3E%0A%3C%21--%20Created%20with%20Inkscape%20%28http%3A//www.inkscape.org/%29%20--%3E%0A%0A%3Csvg%0A%20%20%20width%3D%22124.0mm%22%0A%20%20%20height%3D%2247.900000000000006mm%22%0A%20%20%20viewBox%3D%2243.1%20115.5%20124.0%2047.900000000000006%22%0A%20%20%20version%3D%221.1%22%0A%20%20%20id%3D%22svg1%22%0A%20%20%20inkscape%3Aexport-filename%3D%22..%5CKiwiWhite.png%22%0A%20%20%20inkscape%3Aexport-xdpi%3D%22851.46729%22%0A%20%20%20inkscape%3Aexport-ydpi%3D%22851.46729%22%0A%20%20%20inkscape%3Aversion%3D%221.4.3%20%280d15f75%2C%202025-12-25%29%22%0A%20%20%20sodipodi%3Adocname%3D%22Kiwi.svg%22%0A%20%20%20xml%3Aspace%3D%22preserve%22%0A%20%20%20xmlns%3Ainkscape%3D%22http%3A//www.inkscape.org/namespaces/inkscape%22%0A%20%20%20xmlns%3Asodipodi%3D%22http%3A//sodipodi.sourceforge.net/DTD/sodipodi-0.dtd%22%0A%20%20%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%0A%20%20%20xmlns%3Asvg%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Csodipodi%3Anamedview%0A%20%20%20%20%20id%3D%22namedview1%22%0A%20%20%20%20%20pagecolor%3D%22%23ffffff%22%0A%20%20%20%20%20bordercolor%3D%22%23000000%22%0A%20%20%20%20%20borderopacity%3D%220.25%22%0A%20%20%20%20%20inkscape%3Ashowpageshadow%3D%222%22%0A%20%20%20%20%20inkscape%3Apageopacity%3D%220.0%22%0A%20%20%20%20%20inkscape%3Apagecheckerboard%3D%220%22%0A%20%20%20%20%20inkscape%3Adeskcolor%3D%22%23d1d1d1%22%0A%20%20%20%20%20inkscape%3Adocument-units%3D%22mm%22%0A%20%20%20%20%20inkscape%3Azoom%3D%220.7616793%22%0A%20%20%20%20%20inkscape%3Acx%3D%22188.3995%22%0A%20%20%20%20%20inkscape%3Acy%3D%22465.41898%22%0A%20%20%20%20%20inkscape%3Awindow-width%3D%221920%22%0A%20%20%20%20%20inkscape%3Awindow-height%3D%221057%22%0A%20%20%20%20%20inkscape%3Awindow-x%3D%22-8%22%0A%20%20%20%20%20inkscape%3Awindow-y%3D%22-8%22%0A%20%20%20%20%20inkscape%3Awindow-maximized%3D%221%22%0A%20%20%20%20%20inkscape%3Acurrent-layer%3D%22layer1%22%0A%20%20%20%20%20showgrid%3D%22false%22%20/%3E%3Cdefs%0A%20%20%20%20%20id%3D%22defs1%22%3E%3Cstyle%0A%20%20%20%20%20%20%20type%3D%22text/css%22%0A%20%20%20%20%20%20%20id%3D%22style1%22%3E%0A%20%20%20%3C%21%5BCDATA%5B%0A%20%20%20%20.fil1%20%7Bfill%3A%23ffffff%3Bfill-rule%3Anonzero%7D%0A%20%20%20%20.fil0%20%7Bfill%3Aurl%28%23id0%29%7D%0A%20%20%20%5D%5D%3E%0A%20%20%3C/style%3E%3CradialGradient%0A%20%20%20%20%20%20%20id%3D%22id0%22%0A%20%20%20%20%20%20%20gradientUnits%3D%22userSpaceOnUse%22%0A%20%20%20%20%20%20%20cx%3D%222.5%22%0A%20%20%20%20%20%20%20cy%3D%221.66667%22%0A%20%20%20%20%20%20%20r%3D%222.5%22%0A%20%20%20%20%20%20%20fx%3D%222.5%22%0A%20%20%20%20%20%20%20fy%3D%221.66667%22%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%220%22%0A%20%20%20style%3D%22stop-color%3A%23FEFEFE%22%0A%20%20%20id%3D%22stop1%22%20/%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%221%22%0A%20%20%20style%3D%22stop-color%3A%23E6E6E6%22%0A%20%20%20id%3D%22stop2%22%20/%3E%0A%20%20%3C/radialGradient%3E%3Cstyle%0A%20%20%20%20%20%20%20type%3D%22text/css%22%0A%20%20%20%20%20%20%20id%3D%22style1-0%22%3E%0A%20%20%20%3C%21%5BCDATA%5B%0A%20%20%20%20.fil1%20%7Bfill%3A%23ffffff%3Bfill-rule%3Anonzero%7D%0A%20%20%20%20.fil0%20%7Bfill%3Aurl%28%23id0%29%7D%0A%20%20%20%5D%5D%3E%0A%20%20%3C/style%3E%3CradialGradient%0A%20%20%20%20%20%20%20id%3D%22id0-9%22%0A%20%20%20%20%20%20%20gradientUnits%3D%22userSpaceOnUse%22%0A%20%20%20%20%20%20%20cx%3D%222.5%22%0A%20%20%20%20%20%20%20cy%3D%221.66667%22%0A%20%20%20%20%20%20%20r%3D%222.5%22%0A%20%20%20%20%20%20%20fx%3D%222.5%22%0A%20%20%20%20%20%20%20fy%3D%221.66667%22%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%220%22%0A%20%20%20style%3D%22stop-color%3A%23FEFEFE%22%0A%20%20%20id%3D%22stop1-4%22%20/%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%221%22%0A%20%20%20style%3D%22stop-color%3A%23E6E6E6%22%0A%20%20%20id%3D%22stop2-8%22%20/%3E%0A%20%20%3C/radialGradient%3E%3Cstyle%0A%20%20%20%20%20%20%20type%3D%22text/css%22%0A%20%20%20%20%20%20%20id%3D%22style1-09%22%3E%0A%20%20%20%3C%21%5BCDATA%5B%0A%20%20%20%20.fil1%20%7Bfill%3A%23ffffff%3Bfill-rule%3Anonzero%7D%0A%20%20%20%20.fil0%20%7Bfill%3Aurl%28%23id0%29%7D%0A%20%20%20%5D%5D%3E%0A%20%20%3C/style%3E%3CradialGradient%0A%20%20%20%20%20%20%20id%3D%22id0-4%22%0A%20%20%20%20%20%20%20gradientUnits%3D%22userSpaceOnUse%22%0A%20%20%20%20%20%20%20cx%3D%222.5%22%0A%20%20%20%20%20%20%20cy%3D%221.66667%22%0A%20%20%20%20%20%20%20r%3D%222.5%22%0A%20%20%20%20%20%20%20fx%3D%222.5%22%0A%20%20%20%20%20%20%20fy%3D%221.66667%22%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%220%22%0A%20%20%20style%3D%22stop-color%3A%23FEFEFE%22%0A%20%20%20id%3D%22stop1-8%22%20/%3E%0A%20%20%20%3Cstop%0A%20%20%20offset%3D%221%22%0A%20%20%20style%3D%22stop-color%3A%23E6E6E6%22%0A%20%20%20id%3D%22stop2-82%22%20/%3E%0A%20%20%3C/radialGradient%3E%3C/defs%3E%3Cg%0A%20%20%20%20%20inkscape%3Alabel%3D%22Layer%201%22%0A%20%20%20%20%20inkscape%3Agroupmode%3D%22layer%22%0A%20%20%20%20%20id%3D%22layer1%22%3E%3Cpath%0A%20%20%20%20%20%20%20id%3D%22text1%22%0A%20%20%20%20%20%20%20style%3D%22font-size%3A50.8px%3Bfont-family%3AExclamation%3B-inkscape-font-specification%3A%27Exclamation%2C%20Normal%27%3Bwriting-mode%3Alr-tb%3Bdirection%3Altr%3Bfill%3A%23ffffff%3Bfill-opacity%3A1%3Bstroke-width%3A28.1951%22%0A%20%20%20%20%20%20%20d%3D%22m%20127.97288%2C120.40212%20c%20-3.11089%2C-0.16866%20-6.33497%2C0.16833%20-9.27617%2C0.84297%20-3.11088%2C0.67463%20-6.10894%2C1.91142%20-8.6542%2C3.71044%20-0.84842%2C0.5622%20-2.60177%2C1.63036%20-2.9977%2C2.58609%20-0.50905%2C1.34926%200.39629%2C12.64972%201.18815%2C16.52887%200.67873%2C3.37316%201.69666%2C6.80207%203.22382%2C9.95036%201.24435%2C2.64231%203.56327%2C5.73474%206.73072%2C6.35315%201.4706%2C0.2811%203.11093%2C0.44934%204.6381%2C0.50556%201.64028%2C0%204.58147%2C0.16888%205.76926%2C-1.18038%201.07466%2C-1.18062%201.7536%2C-2.86731%202.54546%2C-4.21657%200.33937%2C-0.50598%201.6966%2C-0.44971%201.75316%2C0.16871%200.0566%2C1.29304%200.33929%2C2.81085%200.39585%2C4.1039%200.0565%2C0.44975%200.4524%2C0.84372%200.96146%2C0.7875%202.48871%2C-0.22488%205.2039%2C-0.95602%206.61794%2C-2.86748%201.41404%2C-1.79902%202.37535%2C-6.01522%203.0541%2C-8.76998%200.96154%2C-4.21645%201.69686%2C-8.48951%202.03623%2C-12.8184%200.28281%2C-2.81097%200.56601%2C-5.95885%200.057%2C-8.82603%20-0.16969%2C-1.01195%20-0.96193%2C-1.743%20-1.92348%2C-1.96788%20-2.88463%2C-0.61841%20-5.71259%2C-1.23682%20-8.59722%2C-1.85523%20-0.56562%2C-0.11244%20-1.07481%2C0.28135%20-1.07481%2C0.84354%20l%20-0.28251%2C11.6935%20c%200%2C0.16866%200.0562%2C0.28102%200.11278%2C0.39346%201.41404%2C2.86718%202.65888%2C5.84681%203.56385%2C8.88265%200.16969%2C0.61841%20-1.69722%2C0.33722%20-1.92346%2C-0.33742%20-0.56562%2C-1.96767%20-1.35715%2C-3.935%20-2.14901%2C-5.84645%20-0.11313%2C-0.16866%20-0.28291%2C-0.16866%20-0.33947%2C0%20-1.01811%2C2.9234%20-2.6584%2C5.50904%20-4.46837%2C8.09513%20-0.33937%2C0.50597%20-2.14926%2C-0.1685%20-1.69677%2C-0.78691%202.2059%2C-3.26073%204.18569%2C-6.52172%204.97755%2C-10.45708%20v%20-0.22476%20c%20-0.28281%2C-3.26072%20-0.67926%2C-6.46506%20-1.13175%2C-9.66956%20-0.11312%2C-0.89951%20-0.28256%2C-1.74281%20-0.45225%2C-2.5861%20-0.0566%2C-0.2811%20-0.113%2C-0.61832%20-0.22612%2C-0.95564%20-0.22625%2C-1.1806%20-1.24431%2C-2.02374%20-2.43211%2C-2.07996%20z%20m%20-27.4925%2C0.36258%20c%20-0.32523%2C0.002%20-0.646909%2C0.0168%20-0.957997%2C0.0309%20-2.714954%2C0.16866%20-5.430041%2C0.39362%20-8.144994%2C0.89959%20-2.319023%2C0.39354%20-5.995297%2C1.29282%20-6.956844%2C3.03562%20-0.113122%2C0.28109%20-0.16996%2C0.56204%20-0.283083%2C0.78691%20-0.05656%2C0.33732%20-0.05638%2C0.61833%20-0.05638%2C0.95564%20-0.05656%2C1.91146%200.735406%2C4.3852%201.640391%2C6.07178%200.791862%2C1.57414%202.545209%2C1.63055%204.298617%2C1.23702%201.187792%2C-0.2811%202.262323%2C-0.73086%203.393554%2C-1.29306%200.678738%2C-0.33731%202.828052%2C0.78725%201.866505%2C1.237%20-0.848417%2C0.44975%20-1.86681%2C0.84325%20-2.884917%2C1.12435%200.7353%2C6.80255%201.471083%2C13.37995%202.262941%2C20.23872%200.169684%2C1.51792%200.452515%2C3.71074%200.735323%2C4.7227%200.678738%2C2.13633%202.941077%2C1.51783%204.694484%2C0.95564%201.30092%2C-0.44976%201.97943%2C-0.73107%202.48848%2C-1.96789%200.62218%2C-1.57414%201.01828%2C-4.2161%201.24453%2C-5.84647%201.35748%2C-8.714%202.09281%2C-22.9942%200.73534%2C-29.06589%20-0.16969%2C-0.8433%20-0.50924%2C-2.07973%20-1.24454%2C-2.52948%20-0.84842%2C-0.50598%20-1.85572%2C-0.60097%20-2.83141%2C-0.59305%20z%20m%20-28.455686%2C0.052%20c%20-1.030479%2C0.003%20-2.01373%2C0.0488%20-2.876293%2C0.091%20-1.696845%2C0.0563%20-3.393485%2C0.16898%20-5.09033%2C0.45008%20-1.923093%2C0.33731%20-3.619631%2C1.40525%20-4.750862%2C3.03561%20-1.923091%2C2.86718%20-2.94146%2C6.52172%20-3.450515%2C9.89488%20-0.113123%2C0.67464%20-2.036072%2C0.1123%20-2.092634%2C-0.50611%20-0.226246%2C-2.0239%20-0.339448%2C-7.92714%20-0.905064%2C-8.99532%20-0.339368%2C-0.73085%20-1.244334%2C-0.50572%20-1.866511%2C-0.4495%20-1.923093%2C0.22488%20-5.090759%2C0.44977%20-5.882621%2C2.5861%20-0.79186%2C2.19255%20-0.452193%2C5.1159%20-0.282509%2C7.42089%200.226246%2C3.82292%200.621782%2C7.58937%201.243959%2C11.35607%200.509053%2C3.26073%201.075102%2C6.57792%202.093209%2C9.7262%200.282808%2C0.78707%200.565219%2C2.07995%201.243958%2C2.64215%201.074669%2C0.95573%203.50706%2C0.78726%205.317028%2C0.67482%200.395932%2C0%200.621929%2C-0.39356%200.452244%2C-0.73088%20-0.05656%2C-0.16866%20-0.16956%2C-0.33746%20-0.226122%2C-0.50612%20-0.904984%2C-2.02389%20-1.074398%2C-3.7664%20-1.017836%2C-6.01517%200%2C-0.61841%201.47048%2C-0.22518%201.527042%2C0.28079%200.05656%2C1.34927%200.05632%2C2.6986%200.452243%2C4.04786%200.395931%2C1.23683%200.961753%2C3.20458%201.979861%2C4.04787%201.979654%2C1.57414%206.334999%2C1.74255%208.710583%2C1.74255%202.092777%2C-0.0562%204.468384%2C-0.16868%206.504599%2C-0.73088%201.80997%2C-0.56219%201.583378%2C-2.02385%201.413693%2C-3.71043%20-0.565616%2C-4.10401%20-2.54531%2C-7.81444%20-4.638087%2C-11.30005%20-0.05656%2C-0.16866%20-0.113123%2C-0.33707%200%2C-0.44951%202.601831%2C-1.91146%204.581807%2C-5.05994%206.222091%2C-7.70225%201.866531%2C-3.03584%203.902538%2C-6.2964%205.09033%2C-9.66956%200.622178%2C-1.68659%200.735324%2C-3.54213%20-0.565591%2C-4.89141%20-1.993794%2C-1.98173%20-5.514423%2C-2.35015%20-8.605865%2C-2.33962%20z%20m%2091.129416%2C16.50712%20c%20-3.22401%2C-0.11243%20-6.44821%2C0.0564%20-9.61565%2C0.50613%20-1.41404%2C0.16866%20-2.94098%2C0.50568%20-3.78942%2C1.57385%20-0.45249%2C0.56219%20-0.62219%2C1.23721%20-0.73532%2C1.91184%20-0.22624%2C1.4617%20-0.0569%2C2.97944%200.11277%2C4.49737%200.62218%2C5.84681%201.92348%2C12.87446%201.92348%2C12.87446%200%2C0%200.2824%2C2.81078%204.41139%2C3.20431%204.18556%2C0.39354%208.03222%2C-0.84354%208.03222%2C-0.84354%202.77152%2C-0.67463%202.14879%2C-17.03425%202.03567%2C-20.96961%200%2C-0.33731%20-0.22617%2C-1.68661%20-0.39586%2C-2.02392%20-0.39593%2C-0.61842%20-1.24398%2C-0.73089%20-1.97928%2C-0.73089%20z%22%0A%20%20%20%20%20%20%20sodipodi%3Anodetypes%3D%22sccccccccccccccccccccccccccccccscssscccccccscccccccccssccccccccccccccccccccccccccccccccccccccccc%22%20/%3E%3Cpath%0A%20%20%20%20%20%20%20class%3D%22fil1%22%0A%20%20%20%20%20%20%20d%3D%22m%20154.26174%2C126.06405%20c%20-0.91049%2C-5.94134%200.84273%2C-8.51852%201.05276%2C-8.80217%200.0111%2C-0.0174%200.0244%2C-0.0343%200.0391%2C-0.0504%200.1521%2C-0.16768%200.41138%2C-0.18031%200.57908%2C-0.0282%20l%20-4.3e-4%2C6.5e-4%20c%200.0125%2C0.0109%202.43757%2C2.14936%202.55326%2C8.51972%200.89944%2C-0.91038%202.5772%2C-2.28084%204.80783%2C-2.66003%200.0164%2C-0.006%200.0332%2C-0.006%200.0505%2C-0.008%200.22533%2C-0.0217%200.42561%2C0.14355%200.44727%2C0.36888%20l%20-0.40808%2C0.0387%200.40651%2C-0.0385%20c%205.4e-4%2C0.009%200.31545%2C2.89401%20-2.39094%2C5.4604%201.5378%2C-0.14995%203.81817%2C-0.23165%204.21491%2C0.53885%200.0581%2C0.10456%200.07%2C0.23358%200.0224%2C0.35311%20l%20-9.3e-4%2C-3.7e-4%20c%20-0.0132%2C0.0338%20-0.67478%2C1.69304%20-4.54456%2C2.65572%200.57252%2C0.2455%201.16342%2C0.55238%201.40855%2C0.85322%200.0427%2C0.0428%200.0765%2C0.0954%200.0975%2C0.15666%200.0735%2C0.21422%20-0.0409%2C0.44738%20-0.25497%2C0.52071%20l%20-1.8e-4%2C-4.7e-4%20c%20-0.007%2C9.6e-4%20-2.12137%2C0.74391%20-4.14451%2C-0.0168%20l%200.10532%2C1.23511%20c%200.0193%2C0.22558%20-0.14813%2C0.42411%20-0.37365%2C0.44336%20l%20-1.43979%2C0.12277%20c%20-0.22554%2C0.0193%20-0.42405%2C-0.14812%20-0.4433%2C-0.37365%20l%20-0.10543%2C-1.23512%20c%20-1.7552%2C1.02814%20-3.81532%2C0.75868%20-4.05773%2C0.72236%20-0.20499%2C-0.02%20-0.36621%2C-0.19207%20-0.36877%2C-0.40287%20l%204.8e-4%2C2e-5%20c%20-0.003%2C-0.37231%200.66326%2C-0.89628%201.31783%2C-1.32065%20-3.62987%2C-0.26762%20-4.72392%2C-1.5599%20-4.90147%2C-1.8072%20-0.0723%2C-0.0904%20-0.10585%2C-0.21099%20-0.0823%2C-0.33362%20l%209.4e-4%2C1.7e-4%20c%200.17031%2C-0.87051%202.50096%2C-1.18785%204.07755%2C-1.30317%20-2.89548%2C-1.93301%20-3.24379%2C-4.58501%20-3.27791%2C-4.93697%20-0.003%2C-0.0225%20-0.007%2C-0.0454%20-0.005%2C-0.0688%20-9.6e-4%2C-0.22635%200.18145%2C-0.41086%200.40788%2C-0.41199%20l%20-2e-5%2C3.2e-4%20c%202.27283%2C-0.0114%204.16765%2C1.06%205.21178%2C1.80738%20z%22%0A%20%20%20%20%20%20%20id%3D%22path2%22%0A%20%20%20%20%20%20%20style%3D%22clip-rule%3Aevenodd%3Bfill%3A%23ffffff%3Bfill-opacity%3A1%3Bfill-rule%3Aevenodd%3Bstroke-width%3A12.1302%3Bimage-rendering%3AoptimizeQuality%3Bshape-rendering%3AgeometricPrecision%3Btext-rendering%3AgeometricPrecision%22%0A%20%20%20%20%20%20%20sodipodi%3Anodetypes%3D%22cccccccccccccccccccccssssccccccccccccccc%22%20/%3E%3C/g%3E%3C/svg%3E%0A");
+    -webkit-mask-size: contain; mask-size: contain;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    background-color: #ffffff;
+  }
+
+.brand{display:inline-flex;align-items:center;gap:.7rem;line-height:1}
+.brand .bt{font-family:var(--d);font-weight:500;font-size:1.02rem;letter-spacing:-.01em;color:var(--mute);padding-left:.7rem;border-left:1px solid var(--line2);height:1.15rem;display:inline-flex;align-items:center;margin-top:5px}
+@media(max-width:400px){.brand .bt{display:none}}
+/* ---- aviso de privacidad ---- */
+main{padding:clamp(7.5rem,14vh,9.5rem) 0 clamp(4rem,8vw,6rem)}
+.doc{width:min(760px,100% - 2.5rem);margin-inline:auto}
+.kicker{font-family:var(--m);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.doc h1{font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:-.05em;line-height:.95;font-weight:650;margin:.8rem 0 1rem}
+.updated{color:var(--mute);font-size:.95rem}
+.toc{list-style:none;counter-reset:t;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem 2rem;margin:2.4rem 0 1rem;padding:1.4rem 1.6rem;border:1px solid var(--line);border-radius:20px;background:var(--panel)}
+.toc li{counter-increment:t;font-size:.95rem}
+.toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--m);font-size:.75rem;color:var(--mute);margin-right:.7rem}
+.toc a{color:var(--mute);transition:color .2s}.toc a:hover{color:var(--fg)}
+@media(max-width:620px){.toc{grid-template-columns:1fr}}
+.doc h2{font-size:clamp(1.6rem,3.6vw,2.2rem);max-width:none;margin:3.2rem 0 1rem;scroll-margin-top:90px}
+.doc h2 .n{font-family:var(--m);font-size:.8rem;font-weight:500;letter-spacing:.06em;color:var(--mute);display:block;margin-bottom:.6rem}
+.doc h3{font-size:1.3rem;margin:1.8rem 0 .6rem;letter-spacing:-.02em}
+.doc p{margin:.8rem 0}
+.doc p,.doc li{color:color-mix(in srgb,var(--fg) 86%,var(--mute))}
+.doc strong{color:var(--fg);font-weight:600}
+.doc ul{margin:.8rem 0 .8rem 1.2rem}
+.doc li{margin:.35rem 0}
+.doc a.inl{border-bottom:1px solid var(--line2)}.doc a.inl:hover{border-color:var(--fg)}
+.note{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:1.4rem 1.6rem;margin:1.2rem 0}
+.note p:first-child{margin-top:0}.note p:last-child{margin-bottom:0}
+.fill{background:color-mix(in srgb,#f5c542 30%,transparent);color:var(--fg);border-radius:6px;padding:0 .35rem;font-weight:600}
+.doc [data-lang]{display:none}
+html[lang=es] .doc [data-lang=es],html[lang=en] .doc [data-lang=en]{display:block}
+footer a{color:var(--mute);transition:color .2s}footer a:hover{color:var(--fg)}
+
+</style>
 </head>
 <body>
-  <header><div class="wrap"><a class="brand" href="/">gK1wi Developers</a>
-    <nav><a href="/privacidad/" aria-current="page">Privacidad</a></nav></div></header>
-  <main><div class="wrap">
-    <h1>Aviso de privacidad</h1>
-    <p class="updated">Última actualización: 3 de noviembre de 2026</p>
+<script>try{const t=localStorage.getItem('gk-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<div id="bar" aria-hidden="true"></div>
 
-    <ol class="toc">
-      <li><a href="#responsable">Responsable</a></li>
-      <li><a href="#principios">Cómo trabajamos</a></li>
-      <li><a href="#licencias">Datos para las licencias</a></li>
-      <li><a href="#negocio">Datos del negocio en el equipo</a></li>
-      <li><a href="#terceros">Proveedores y transferencias</a></li>
-      <li><a href="#seguridad">Seguridad</a></li>
-      <li><a href="#conservacion">Conservación y borrado</a></li>
-      <li><a href="#derechos">Derechos ARCO</a></li>
-      <li><a href="#marcas">Marcas y logotipos</a></li>
-      <li><a href="#productos">Productos</a></li>
-      <li><a href="#cambios">Cambios a este aviso</a></li>
-    </ol>
-
-    <h2 id="responsable">1. Responsable</h2>
-    <p><strong>gK1wi Developers</strong>, a cargo de <span class="fill">[NOMBRE COMPLETO DEL RESPONSABLE]</span>, con domicilio en
-      <span class="fill">[DOMICILIO]</span>, es responsable del tratamiento de los datos personales descritos en este aviso,
-      conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
-    <p>Contacto para cualquier tema de privacidad: <span class="fill">[CORREO DE CONTACTO]</span>.</p>
-
-    <h2 id="principios">2. Cómo trabajamos</h2>
-    <div class="card">
-      <p>Nuestros sistemas guardan la información de cada negocio <strong>en sus propios equipos, cifrada</strong>.
-        gK1wi Developers <strong>no recibe, no consulta y no almacena</strong> las ventas, menús, clientes ni empleados
-        de los negocios que usan nuestro software. A nuestros servidores solo llega lo indispensable para validar la licencia.</p>
-      <p>No vendemos datos, no mostramos publicidad y no usamos herramientas de rastreo.</p>
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="/" class="brand" aria-label="gK1wi Developers"><span class="brand-logo"><span id="gkLogo" class="logoShape"></span></span><span class="bt">Developers</span></a>
+    <ul>
+      <li><a href="/#servicios" data-i18n="nav.svc">Servicios</a></li>
+      <li><a href="/#proceso" data-i18n="nav.proc">Proceso</a></li>
+      <li><a href="/#contacto" data-i18n="nav.contact">Contacto</a></li>
+    </ul>
+    <div class="tools">
+      <button class="theme lang" id="lang" type="button" aria-label="Switch to English">EN</button>
+      <button class="theme" id="theme" type="button" aria-label="Cambiar entre modo claro y oscuro"><i></i></button>
+      <a class="btn solid sm" href="/#contacto" data-i18n="nav.quote">Cotizar</a>
     </div>
+  </div>
+</header>
 
-    <h2 id="licencias">3. Datos que tratamos para las licencias</h2>
-    <p>Para activar y validar la licencia, el sistema envía a nuestro servidor de licencias
-      (<strong>licencias.gk1wi.com</strong>) únicamente:</p>
-    <ul>
-      <li>La <strong>clave de licencia</strong> y el código del producto.</li>
-      <li>Un <strong>identificador del equipo</strong>: una huella cifrada (no reversible) calculada a partir de componentes
-        del equipo. No se envían números de serie ni nombres del equipo en texto legible.</li>
-      <li>Una <strong>clave pública</strong> del equipo, para comprobar que las solicitudes vienen de él.</li>
-      <li>La <strong>versión</strong> del sistema y la <strong>fecha y hora</strong> de cada validación.</li>
-      <li>La <strong>dirección IP</strong> desde la que se conecta, que el servidor recibe técnicamente en cualquier conexión
-        por Internet y usa para seguridad (bloquear abusos).</li>
-    </ul>
-    <p>Además conservamos los datos de contacto que el cliente nos da al contratar (nombre del negocio, persona de
-      contacto, teléfono o correo) para administrar su licencia, darle soporte y avisarle de cambios en el servicio.</p>
-    <p><strong>Finalidades:</strong> activar y renovar licencias, evitar el uso no autorizado del software, dar soporte
-      y cumplir obligaciones legales. Ninguna de estas finalidades es publicitaria. No tratamos datos personales sensibles.</p>
+<main>
+  <article class="doc">
+    <div data-lang="es">
+<p class="kicker">Legal</p>
+<h1>Aviso de privacidad</h1>
+<p class="updated">Última actualización: 3 de noviembre de 2026</p>
+<ol class="toc">
+<li><a href="#es-1">Responsable</a></li><li><a href="#es-2">Cómo trabajamos</a></li><li><a href="#es-3">Datos para las licencias</a></li>
+<li><a href="#es-4">Datos del negocio en su equipo</a></li><li><a href="#es-5">Proveedores y transferencias</a></li><li><a href="#es-6">Seguridad</a></li>
+<li><a href="#es-7">Conservación y borrado</a></li><li><a href="#es-8">Derechos ARCO</a></li><li><a href="#es-9">Marcas y logotipos</a></li>
+<li><a href="#es-10">Productos</a></li><li><a href="#es-11">Cambios a este aviso</a></li>
+</ol>
 
-    <h2 id="negocio">4. Datos del negocio dentro del equipo</h2>
-    <p>Lo que el negocio registra en el sistema (ventas, cobros, menú, nombres de usuario de sus empleados, dispositivos
-      autorizados y bitácora de operaciones) se guarda <strong>solo en la computadora principal del negocio</strong>,
-      en una base de datos cifrada cuya llave está protegida por el propio equipo. Respecto de esa información, el
-      responsable es el propio negocio; gK1wi Developers no tiene acceso a ella.</p>
-    <p>Las contraseñas se guardan transformadas con un algoritmo de un solo sentido: nadie, ni nosotros, puede leerlas.</p>
+<h2 id="es-1"><span class="n">01</span>Responsable</h2>
+<p><strong>gK1wi Developers</strong>, a cargo de <strong>Irving Pardo Canales</strong>, con domicilio en <span class="fill">[DOMICILIO]</span>, es responsable del tratamiento de los datos personales descritos en este aviso, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
+<p>Contacto para cualquier tema de privacidad: <a class="inl" href="mailto:developers@gk1wi.com">developers@gk1wi.com</a>.</p>
 
-    <h2 id="terceros">5. Proveedores y transferencias</h2>
-    <p>Nuestro servidor de licencias funciona con proveedores de infraestructura en la nube (Render para el servidor y
-      Neon para la base de datos), que pueden ubicarse fuera de México y tratan los datos de la sección 3 solo por
-      nuestra cuenta, para prestarnos ese servicio. Usamos Telegram únicamente para recibir avisos internos cuando se
-      activa una licencia (nombre del negocio, producto e identificador del equipo). Los productos distribuidos por la Microsoft Store se descargan y
-      actualizan a través de Microsoft, conforme a sus propias políticas.</p>
-    <p>No transferimos datos personales a terceros para fines propios de ellos. Solo los entregaríamos a una autoridad
-      cuando una ley o una orden válida lo exija.</p>
+<h2 id="es-2"><span class="n">02</span>Cómo trabajamos</h2>
+<div class="note">
+<p>Nuestros sistemas guardan la información de cada negocio <strong>en sus propios equipos, cifrada</strong>. gK1wi Developers <strong>no recibe, no consulta y no almacena</strong> las ventas, menús, clientes ni empleados de los negocios que usan nuestro software. A nuestros servidores solo llega lo indispensable para validar la licencia.</p>
+<p>No vendemos datos, no mostramos publicidad y no usamos herramientas de rastreo.</p>
+</div>
 
-    <h2 id="seguridad">6. Seguridad</h2>
-    <ul>
-      <li>Comunicaciones con el servidor de licencias cifradas (HTTPS) y firmadas por el equipo.</li>
-      <li>En el negocio: base de datos cifrada, llaves protegidas por el hardware del equipo (TPM) cuando está
-        disponible, conexión cifrada entre la computadora principal y los celulares, y acceso por usuario y contraseña
-        con bloqueo ante intentos fallidos.</li>
-      <li>Acceso a nuestro panel de licencias restringido y con verificación en dos pasos.</li>
-    </ul>
+<h2 id="es-3"><span class="n">03</span>Datos que tratamos para las licencias</h2>
+<p>Para activar y validar la licencia, el sistema envía a nuestro servidor de licencias (<strong>licencias.gk1wi.com</strong>) únicamente:</p>
+<ul>
+<li>La <strong>clave de licencia</strong> y el código del producto.</li>
+<li>Un <strong>identificador del equipo</strong>: una huella cifrada (no reversible) calculada a partir de componentes del equipo. No se envían números de serie ni nombres del equipo en texto legible.</li>
+<li>Una <strong>clave pública</strong> del equipo, para comprobar que las solicitudes vienen de él.</li>
+<li>La <strong>versión</strong> del sistema y la <strong>fecha y hora</strong> de cada validación.</li>
+<li>La <strong>dirección IP</strong> desde la que se conecta, que el servidor recibe técnicamente en cualquier conexión por Internet y usa para seguridad (bloquear abusos).</li>
+</ul>
+<p>Además conservamos los datos de contacto que el cliente nos da al contratar (nombre del negocio, persona de contacto, teléfono o correo) para administrar su licencia, darle soporte y avisarle de cambios en el servicio.</p>
+<p><strong>Finalidades:</strong> activar y renovar licencias, evitar el uso no autorizado del software, dar soporte y cumplir obligaciones legales. Ninguna es publicitaria. No tratamos datos personales sensibles.</p>
 
-    <h2 id="conservacion">7. Conservación y borrado</h2>
-    <p>Los datos de la licencia se conservan mientras la licencia esté vigente y el tiempo que exijan las obligaciones
-      legales y contables; después se eliminan. Al <strong>desinstalar</strong> un producto distribuido por la Microsoft
-      Store, Windows borra por completo la información del sistema guardada en ese equipo.</p>
+<h2 id="es-4"><span class="n">04</span>Datos del negocio dentro de su equipo</h2>
+<p>Lo que el negocio registra en el sistema (ventas, cobros, menú, nombres de usuario de sus empleados, dispositivos autorizados y bitácora de operaciones) se guarda <strong>solo en la computadora principal del negocio</strong>, en una base de datos cifrada cuya llave está protegida por el propio equipo. Respecto de esa información, el responsable es el propio negocio; gK1wi Developers no tiene acceso a ella.</p>
+<p>Las contraseñas se guardan transformadas con un algoritmo de un solo sentido: nadie, ni nosotros, puede leerlas.</p>
 
-    <h2 id="derechos">8. Derechos ARCO</h2>
-    <p>Puedes solicitar el <strong>acceso</strong>, la <strong>rectificación</strong>, la <strong>cancelación</strong>
-      o la <strong>oposición</strong> al tratamiento de tus datos, así como revocar tu consentimiento, escribiendo a
-      <span class="fill">[CORREO DE CONTACTO]</span> con tu nombre, el producto, la clave de licencia (si aplica) y lo que
-      solicitas. Te responderemos dentro de los plazos que marca la ley.</p>
-    <p>Si se trata de información registrada dentro del sistema de un negocio (por ejemplo, tu usuario como empleado),
-      el responsable de esa información es el negocio: dirígete a él.</p>
+<h2 id="es-5"><span class="n">05</span>Proveedores y transferencias</h2>
+<p>Nuestro servidor de licencias funciona con proveedores de infraestructura en la nube (Render para el servidor y Neon para la base de datos), que pueden ubicarse fuera de México y tratan los datos de la sección 03 solo por nuestra cuenta, para prestarnos ese servicio. Usamos Telegram únicamente para recibir avisos internos cuando se activa una licencia (nombre del negocio, producto e identificador del equipo). Los productos distribuidos por la Microsoft Store se descargan y actualizan a través de Microsoft, conforme a sus propias políticas.</p>
+<p>No transferimos datos personales a terceros para fines propios de ellos. Solo los entregaríamos a una autoridad cuando una ley o una orden válida lo exija.</p>
 
-    <h2 id="marcas">9. Marcas y logotipos</h2>
-    <p>Los nombres comerciales, marcas y logotipos de cada negocio que aparecen en nuestros sistemas (pantallas, tickets
-      impresos y app de meseros) son propiedad de sus titulares y se usan <strong>con su autorización</strong>,
-      únicamente para operar el sistema de ese negocio. gK1wi Developers no adquiere ningún derecho sobre ellos ni los
-      utiliza con otro fin.</p>
+<h2 id="es-6"><span class="n">06</span>Seguridad</h2>
+<ul>
+<li>Comunicaciones con el servidor de licencias cifradas (HTTPS) y firmadas por el equipo.</li>
+<li>En el negocio: base de datos cifrada, llaves protegidas por el hardware del equipo (TPM) cuando está disponible, conexión cifrada entre la computadora principal y los celulares, y acceso por usuario y contraseña con bloqueo ante intentos fallidos.</li>
+<li>Acceso a nuestro panel de licencias restringido y con verificación en dos pasos.</li>
+</ul>
 
-    <h2 id="productos">10. Productos</h2>
-    <h3>ChilaPOS</h3>
-    <ul>
-      <li>Punto de venta para restaurantes que funciona en la computadora principal del negocio y en los celulares de los
-        meseros conectados a su red local.</li>
-      <li>Envía a gK1wi Developers solo los datos de licencia de la sección 3. Las ventas, el menú y los usuarios no salen
-        de la computadora del negocio.</li>
-      <li>Puede consultar en nuestro servidor la información de contacto de soporte que se muestra en el sistema; esa
-        consulta no envía datos del negocio.</li>
-    </ul>
+<h2 id="es-7"><span class="n">07</span>Conservación y borrado</h2>
+<p>Los datos de la licencia se conservan mientras la licencia esté vigente y el tiempo que exijan las obligaciones legales y contables; después se eliminan. Al <strong>desinstalar</strong> un producto distribuido por la Microsoft Store, Windows borra por completo la información del sistema guardada en ese equipo.</p>
 
-    <h2 id="cambios">11. Cambios a este aviso</h2>
-    <p>Cualquier cambio se publicará en esta misma página con su fecha de actualización. Si un cambio implica tratar
-      datos para una finalidad distinta, lo informaremos y pediremos el consentimiento cuando la ley lo requiera.</p>
-  </div></main>
-  <footer><div class="wrap">© 2026 gK1wi Developers · <a href="/privacidad/">Aviso de privacidad</a></div></footer>
+<h2 id="es-8"><span class="n">08</span>Derechos ARCO</h2>
+<p>Puedes solicitar el <strong>acceso</strong>, la <strong>rectificación</strong>, la <strong>cancelación</strong> o la <strong>oposición</strong> al tratamiento de tus datos, así como revocar tu consentimiento, escribiendo a <a class="inl" href="mailto:developers@gk1wi.com">developers@gk1wi.com</a> con tu nombre, el producto, la clave de licencia (si aplica) y lo que solicitas. Te responderemos dentro de los plazos que marca la ley.</p>
+<p>Si se trata de información registrada dentro del sistema de un negocio (por ejemplo, tu usuario como empleado), el responsable de esa información es el negocio: dirígete a él.</p>
+
+<h2 id="es-9"><span class="n">09</span>Marcas y logotipos</h2>
+<p>Los nombres comerciales, marcas y logotipos de cada negocio que aparecen en nuestros sistemas (pantallas, tickets impresos y app de meseros) son propiedad de sus titulares y se usan <strong>con su autorización</strong>, únicamente para operar el sistema de ese negocio. gK1wi Developers no adquiere ningún derecho sobre ellos ni los utiliza con otro fin.</p>
+
+<h2 id="es-10"><span class="n">10</span>Productos</h2>
+<h3>ChilaPOS</h3>
+<ul>
+<li>Punto de venta para restaurantes que funciona en la computadora principal del negocio y en los celulares de los meseros conectados a su red local.</li>
+<li>Envía a gK1wi Developers solo los datos de licencia de la sección 03. Las ventas, el menú y los usuarios no salen de la computadora del negocio.</li>
+<li>Puede consultar en nuestro servidor la información de contacto de soporte que se muestra en el sistema; esa consulta no envía datos del negocio.</li>
+</ul>
+
+<h2 id="es-11"><span class="n">11</span>Cambios a este aviso</h2>
+<p>Cualquier cambio se publicará en esta misma página con su fecha de actualización. Si un cambio implica tratar datos para una finalidad distinta, lo informaremos y pediremos el consentimiento cuando la ley lo requiera.</p>
+</div>
+    <div data-lang="en">
+<p class="kicker">Legal</p>
+<h1>Privacy notice</h1>
+<p class="updated">Last updated: November 3, 2026</p>
+<ol class="toc">
+<li><a href="#en-1">Data controller</a></li><li><a href="#en-2">How we work</a></li><li><a href="#en-3">Licensing data</a></li>
+<li><a href="#en-4">Business data on its own computer</a></li><li><a href="#en-5">Providers and transfers</a></li><li><a href="#en-6">Security</a></li>
+<li><a href="#en-7">Retention and deletion</a></li><li><a href="#en-8">Your rights (ARCO)</a></li><li><a href="#en-9">Trademarks and logos</a></li>
+<li><a href="#en-10">Products</a></li><li><a href="#en-11">Changes to this notice</a></li>
+</ol>
+
+<h2 id="en-1"><span class="n">01</span>Data controller</h2>
+<p><strong>gK1wi Developers</strong>, run by <strong>Irving Pardo Canales</strong>, located at <span class="fill">[ADDRESS]</span>, is responsible for processing the personal data described in this notice, in accordance with Mexico's Federal Law on the Protection of Personal Data Held by Private Parties.</p>
+<p>Privacy contact: <a class="inl" href="mailto:developers@gk1wi.com">developers@gk1wi.com</a>.</p>
+
+<h2 id="en-2"><span class="n">02</span>How we work</h2>
+<div class="note">
+<p>Our systems keep each business's information <strong>on its own computers, encrypted</strong>. gK1wi Developers <strong>does not receive, access or store</strong> the sales, menus, customers or employees of the businesses that use our software. Only what is strictly needed to validate the license reaches our servers.</p>
+<p>We do not sell data, show ads or use tracking tools.</p>
+</div>
+
+<h2 id="en-3"><span class="n">03</span>Data we process for licensing</h2>
+<p>To activate and validate a license, the system sends our licensing server (<strong>licencias.gk1wi.com</strong>) only:</p>
+<ul>
+<li>The <strong>license key</strong> and product code.</li>
+<li>A <strong>device identifier</strong>: an encrypted, non-reversible fingerprint derived from hardware components. No serial numbers or readable device names are sent.</li>
+<li>A device <strong>public key</strong>, used to verify that requests come from that device.</li>
+<li>The system <strong>version</strong> and the <strong>date and time</strong> of each validation.</li>
+<li>The <strong>IP address</strong> it connects from, which any Internet server technically receives and which we use for security (blocking abuse).</li>
+</ul>
+<p>We also keep the contact details customers give us when they sign up (business name, contact person, phone or email) to manage their license, provide support and notify them of service changes.</p>
+<p><strong>Purposes:</strong> activating and renewing licenses, preventing unauthorized use of the software, providing support and meeting legal obligations. None are advertising purposes. We do not process sensitive personal data.</p>
+
+<h2 id="en-4"><span class="n">04</span>Business data on its own computer</h2>
+<p>What a business records in the system (sales, payments, menu, employee usernames, authorized devices and activity log) is stored <strong>only on the business's main computer</strong>, in an encrypted database whose key is protected by that computer. The business is responsible for that information; gK1wi Developers has no access to it.</p>
+<p>Passwords are stored using a one-way algorithm: no one, including us, can read them.</p>
+
+<h2 id="en-5"><span class="n">05</span>Providers and transfers</h2>
+<p>Our licensing server runs on cloud infrastructure providers (Render for the server and Neon for the database), which may be located outside Mexico and process the data in section 03 only on our behalf to provide that service. We use Telegram solely to receive internal alerts when a license is activated (business name, product and device identifier). Products distributed through the Microsoft Store are downloaded and updated through Microsoft, under its own policies.</p>
+<p>We do not transfer personal data to third parties for their own purposes. We would only disclose it to an authority when required by law or a valid order.</p>
+
+<h2 id="en-6"><span class="n">06</span>Security</h2>
+<ul>
+<li>Communications with the licensing server are encrypted (HTTPS) and signed by the device.</li>
+<li>At the business: encrypted database, keys protected by the computer's hardware (TPM) when available, encrypted connection between the main computer and phones, and username/password access with lockout after failed attempts.</li>
+<li>Access to our licensing dashboard is restricted and protected with two-step verification.</li>
+</ul>
+
+<h2 id="en-7"><span class="n">07</span>Retention and deletion</h2>
+<p>License data is kept while the license is active and for as long as legal and accounting obligations require; it is then deleted. When a product distributed through the Microsoft Store is <strong>uninstalled</strong>, Windows completely deletes the system's information stored on that computer.</p>
+
+<h2 id="en-8"><span class="n">08</span>Your rights (ARCO)</h2>
+<p>You may request <strong>access</strong>, <strong>rectification</strong>, <strong>cancellation</strong> or <strong>objection</strong> to the processing of your data, and withdraw your consent, by writing to <a class="inl" href="mailto:developers@gk1wi.com">developers@gk1wi.com</a> with your name, the product, the license key (if applicable) and your request. We will respond within the time limits set by law.</p>
+<p>For information recorded inside a business's system (for example, your employee user account), the business is responsible for it: please contact the business.</p>
+
+<h2 id="en-9"><span class="n">09</span>Trademarks and logos</h2>
+<p>The trade names, trademarks and logos of each business shown in our systems (screens, printed receipts and the waiter app) belong to their owners and are used <strong>with their authorization</strong>, solely to operate that business's system. gK1wi Developers acquires no rights over them and does not use them for any other purpose.</p>
+
+<h2 id="en-10"><span class="n">10</span>Products</h2>
+<h3>ChilaPOS</h3>
+<ul>
+<li>Point of sale for restaurants that runs on the business's main computer and on the waiters' phones connected to its local network.</li>
+<li>Sends gK1wi Developers only the licensing data in section 03. Sales, menu and users never leave the business's computer.</li>
+<li>It may fetch from our server the support contact information shown in the system; that request sends no business data.</li>
+</ul>
+
+<h2 id="en-11"><span class="n">11</span>Changes to this notice</h2>
+<p>Any change will be published on this page with its update date. If a change involves processing data for a different purpose, we will let you know and ask for consent when the law requires it.</p>
+</div>
+  </article>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr"></span> gK1wi Developers. Irving Pardo Canales.</span>
+    <a href="/privacy/" data-i18n="foot.priv">Aviso de privacidad</a>
+  </div>
+</footer>
+
+<script>
+const T = {
+  es: { title: "Aviso de privacidad | gK1wi Developers", desc: "Aviso de privacidad de gK1wi Developers y de sus productos, incluido ChilaPOS.",
+        aria: { lang: "Switch to English", theme: "Cambiar entre modo claro y oscuro" },
+        t: { "nav.svc": "Servicios", "nav.proc": "Proceso", "nav.contact": "Contacto", "nav.quote": "Cotizar", "foot.priv": "Aviso de privacidad" } },
+  en: { title: "Privacy notice | gK1wi Developers", desc: "Privacy notice for gK1wi Developers and its products, including ChilaPOS.",
+        aria: { lang: "Cambiar a español", theme: "Switch between light and dark mode" },
+        t: { "nav.svc": "Services", "nav.proc": "Process", "nav.contact": "Contact", "nav.quote": "Quote", "foot.priv": "Privacy notice" } }
+};
+const $ = id => document.getElementById(id);
+$("yr").textContent = new Date().getFullYear();
+
+/* Mismo criterio que la página principal: botón ES/EN, idioma del navegador o zona horaria */
+function detectLang() {
+  try { const s = localStorage.getItem("gk-lang"); if (s === "es" || s === "en") return s; } catch (e) {}
+  const first = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
+  if (first.startsWith("es")) return "es";
+  if (first.startsWith("en")) return "en";
+  const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || "");
+  return /^America\/(Mexico_City|Cancun|Merida|Monterrey|Chihuahua|Ciudad_Juarez|Hermosillo|Mazatlan|Tijuana|Matamoros|Ojinaga|Bahia_Banderas)$/.test(tz) ? "es" : "en";
+}
+let lang = detectLang();
+function applyLang(next, save) {
+  lang = next; const L = T[lang];
+  document.documentElement.lang = lang;
+  document.title = L.title;
+  document.querySelector("meta[name=description]").content = L.desc;
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = L.t[el.dataset.i18n]; });
+  $("lang").textContent = lang === "es" ? "EN" : "ES";
+  $("lang").setAttribute("aria-label", L.aria.lang);
+  $("theme").setAttribute("aria-label", L.aria.theme);
+  if (save) try { localStorage.setItem("gk-lang", lang); } catch (e) {}
+}
+$("lang").addEventListener("click", () => applyLang(lang === "es" ? "en" : "es", true));
+$("theme").addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  document.querySelector("meta[name=theme-color]").content = next === "dark" ? "#000000" : "#f3f4f5";
+  try { localStorage.setItem("gk-theme", next); } catch (e) {}
+});
+if (document.documentElement.dataset.theme === "light") document.querySelector("meta[name=theme-color]").content = "#f3f4f5";
+applyLang(lang, false);
+
+/* Barra de avance y borde del encabezado al desplazarse */
+const bar = $("bar"), hdr = $("hdr");
+function onScroll() {
+  const h = document.documentElement.scrollHeight - innerHeight;
+  bar.style.transform = "scaleX(" + (h > 0 ? scrollY / h : 0) + ")";
+  hdr.classList.toggle("scrolled", scrollY > 8);
+}
+addEventListener("scroll", onScroll, { passive: true }); onScroll();
+</script>
 </body>
 </html>
