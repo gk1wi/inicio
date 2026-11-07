@@ -73,6 +73,46 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
 @keyframes fade{to{opacity:1}}
 @media(max-width:980px){.hero .wrap{grid-template-columns:1fr}.hero{min-height:auto}}
 
+
+/* hero vivo */
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+.hero{position:relative;overflow:hidden;isolation:isolate}
+.hero>.wrap{position:relative;z-index:1}
+.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-bg .dots,.hero-bg .spot{position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--fg) 16%,transparent) 1px,transparent 1.5px);background-size:26px 26px;-webkit-mask-image:radial-gradient(ellipse 70% 65% at 65% 45%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 70% 65% at 65% 45%,#000 20%,transparent 75%)}
+.hero-bg .spot{background-image:radial-gradient(color-mix(in srgb,var(--fg) 55%,transparent) 1px,transparent 1.6px);-webkit-mask-image:radial-gradient(260px circle at var(--sx,70%) var(--sy,40%),#000,transparent 70%);mask-image:radial-gradient(260px circle at var(--sx,70%) var(--sy,40%),#000,transparent 70%);opacity:.9}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);will-change:transform}
+.orb.o1{width:46vw;height:46vw;max-width:640px;max-height:640px;right:-8%;top:-14%;background:color-mix(in srgb,var(--fg) 13%,transparent);animation:orbA 20s ease-in-out infinite alternate}
+.orb.o2{width:34vw;height:34vw;max-width:480px;max-height:480px;right:18%;bottom:-18%;background:color-mix(in srgb,var(--live) 26%,transparent);animation:orbB 24s ease-in-out infinite alternate}
+.orb.o3{width:26vw;height:26vw;max-width:380px;max-height:380px;left:-8%;top:20%;background:color-mix(in srgb,var(--fg) 7%,transparent);animation:orbA 28s ease-in-out infinite alternate-reverse}
+[data-theme=light] .orb.o1{background:color-mix(in srgb,#9aa3ad 30%,transparent)}
+@keyframes orbA{to{transform:translate(-6%,8%) scale(1.12)}}
+@keyframes orbB{to{transform:translate(10%,-10%) scale(.9)}}
+.avail{display:inline-flex;align-items:center;gap:.6rem;padding:.42rem .95rem .42rem .75rem;margin-bottom:1.6rem;border:1px solid var(--line2);border-radius:99px;font-size:.84rem;color:var(--mute);background:color-mix(in srgb,var(--panel) 70%,transparent);backdrop-filter:blur(8px);opacity:0;animation:fade .8s ease .2s forwards}
+.avail b{color:var(--fg);font-weight:500}
+.shine{font-style:normal;background:linear-gradient(100deg,var(--fg) 0 38%,var(--live) 48%,#fff 52%,var(--fg) 62% 100%);background-size:250% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s var(--ease) 1.4s infinite}
+[data-theme=light] .shine{background-image:linear-gradient(100deg,var(--fg) 0 38%,var(--live) 50%,var(--fg) 62% 100%)}
+@keyframes shine{0%{background-position:100% 0}45%,100%{background-position:0 0}}
+.proof{display:flex;flex-wrap:wrap;gap:clamp(1.4rem,3vw,2.6rem);margin-top:2.6rem;padding-top:1.6rem;border-top:1px solid var(--line);max-width:34rem;opacity:0;animation:fade .9s ease .8s forwards}
+.proof b{display:block;font-family:var(--d);font-weight:600;font-size:clamp(1.7rem,3vw,2.3rem);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.proof small{display:block;margin-top:.35rem;font-size:.84rem;color:var(--mute);max-width:13ch;line-height:1.35}
+.demo{position:relative}
+.stage{position:relative;isolation:isolate;transform-style:preserve-3d;transition:transform .6s var(--ease)}
+.stage::before,.stage::after{content:"";position:absolute;inset:-1px;border-radius:21px;z-index:-1;background:conic-gradient(from var(--ang),transparent 0 62%,color-mix(in srgb,var(--fg) 70%,transparent) 76%,var(--live) 84%,transparent 94%);animation:spin 7s linear infinite}
+.stage::after{inset:6px;filter:blur(28px);opacity:.45}
+@keyframes spin{to{--ang:360deg}}
+.float{position:absolute;z-index:3;display:flex;align-items:center;gap:.55rem;padding:.6rem .9rem;border-radius:14px;border:1px solid var(--line2);background:color-mix(in srgb,var(--panel) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-size:.82rem;white-space:nowrap;box-shadow:0 18px 40px -18px rgba(0,0,0,.55);animation:bob 6s ease-in-out infinite}
+.float small{display:block;color:var(--mute);font-size:.72rem;line-height:1.2}
+.float b{font-weight:500;display:block;line-height:1.25}
+.float .ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--fg);color:var(--bg);flex:none}
+.float .ic svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.float.f1{right:-.4rem;top:-.35rem}
+.float.f2{right:1.2rem;bottom:-1.6rem;animation-delay:-3s}
+.float.f2 .ic{background:var(--live);color:#04140b}
+@keyframes bob{50%{transform:translateY(-8px)}}
+@media(max-width:620px){.float{display:none}.proof small{max-width:11ch}}
+@media(prefers-reduced-motion:reduce){.orb,.stage::before,.stage::after,.float,.shine{animation:none!important}.avail,.proof{opacity:1}}
+
 /* demo POS */
 .demo{opacity:0;transform:translateY(24px) scale(.985);animation:demoIn 1.1s var(--ease) .45s forwards}
 @keyframes demoIn{to{opacity:1;transform:none}}
@@ -303,18 +343,25 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
 </header>
 
 <main id="inicio">
-  <section class="hero">
+  <section class="hero" id="hero">
+    <div class="hero-bg" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><div class="dots"></div><div class="spot"></div></div>
     <div class="wrap">
       <div>
+        <span class="avail"><span class="live" aria-hidden="true"></span><span data-i18n-html="hero.avail"><b>Disponible</b> para nuevos proyectos</span></span>
         <h1>
           <span class="ln"><span data-i18n="hero.l1">Software</span></span>
-          <span class="ln"><span data-i18n="hero.l2">sin límites,</span></span>
+          <span class="ln"><span><em class="shine" data-i18n="hero.l2">sin límites,</em></span></span>
           <span class="ln dim"><span data-i18n="hero.l3">para el mundo.</span></span>
         </h1>
         <p class="lead" data-i18n-html="hero.lead"><b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.</p>
         <div class="cta">
           <a class="btn solid" href="#contacto" data-i18n="hero.cta1">Cotiza tu proyecto</a>
           <a class="btn" href="#servicios" data-i18n="hero.cta2">Ver servicios</a>
+        </div>
+        <div class="proof">
+          <div><b data-to="9">9</b><small data-i18n="pf1">áreas de software</small></div>
+          <div><b data-to="100" data-suf="%">100%</b><small data-i18n="pf2">código propio, sin plantillas</small></div>
+          <div><b data-to="2">2</b><small data-i18n="pf3">idiomas, cualquier país</small></div>
         </div>
       </div>
 
@@ -324,7 +371,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
           <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="1" data-i18n="tab.cloud">Nube</button>
           <i class="dtab-ind" id="dtabInd" aria-hidden="true"></i>
         </div>
-        <div class="stage">
+        <div class="float f1" aria-hidden="true"><span class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><span><small data-i18n="fl1.s">Licencia</small><b data-i18n="fl1.b">Protegida y activa</b></span></div>
+        <div class="float f2" aria-hidden="true"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span><small data-i18n="fl2.s">Respaldo en la nube</small><b data-i18n="fl2.b">Sincronizado</b></span></div>
+        <div class="stage" id="stage">
           <div class="pane on" role="tabpanel">
             <div class="pos" id="pos">
           <div class="pos-top"><span class="live" aria-hidden="true"></span><b data-i18n="pos.reg">Caja 1</b><span class="mute" data-i18n="pos.table">Mesa 4</span><span class="clock" id="clock"></span></div>
@@ -478,7 +527,7 @@ const I18N = {
       "nav.svc":"Servicios","nav.global":"Global","nav.proc":"Proceso","nav.contact":"Contacto","nav.quote":"Cotizar",
       "aria.lang":"Switch to English","aria.theme":"Cambiar entre modo claro y oscuro","aria.menu":"Productos","aria.qr":"Código QR de esta página",
       "aria.tabs":"Demos",
-      "hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el mundo.",
+      "hero.avail":"<b>Disponible</b> para nuevos proyectos","pf1":"áreas de software","pf2":"código propio, sin plantillas","pf3":"idiomas, cualquier país","fl1.s":"Licencia","fl1.b":"Protegida y activa","fl2.s":"Respaldo en la nube","fl2.b":"Sincronizado","hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el mundo.",
       "hero.lead":"<b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.",
       "hero.cta1":"Cotiza tu proyecto","hero.cta2":"Ver servicios",
       "tab.pos":"Punto de venta","tab.cloud":"Nube",
@@ -550,7 +599,7 @@ const I18N = {
       "nav.svc":"Services","nav.global":"Global","nav.proc":"Process","nav.contact":"Contact","nav.quote":"Quote",
       "aria.lang":"Cambiar a español","aria.theme":"Switch between light and dark mode","aria.menu":"Products","aria.qr":"QR code for this page",
       "aria.tabs":"Demos",
-      "hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the world.",
+      "hero.avail":"<b>Available</b> for new projects","pf1":"software areas","pf2":"original code, no templates","pf3":"languages, any country","fl1.s":"License","fl1.b":"Protected and active","fl2.s":"Cloud backup","fl2.b":"In sync","hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the world.",
       "hero.lead":"<b>gK1wi Developers</b> is a software development studio: desktop, mobile, web, cloud, AI, media and games. From concept to launch, working directly with the person who writes the code.",
       "hero.cta1":"Get a quote","hero.cta2":"See services",
       "tab.pos":"Point of sale","tab.cloud":"Cloud",
@@ -939,6 +988,28 @@ function buildGlobal() {
   $("strip").innerHTML = items + items;
   $("clocks").innerHTML = L.clocks.map(c => `<div class="clk"><small>${c.c}</small><b data-tz="${c.z}"></b></div>`).join("");
 }
+
+
+/* ---------- hero vivo ---------- */
+(() => {
+  const hero = $("hero"), stage = $("stage");
+  if (matchMedia("(hover:hover)").matches && !calm) {
+    let raf = 0, ev = null;
+    hero.addEventListener("pointermove", e => { ev = e; if (!raf) raf = requestAnimationFrame(() => {
+      raf = 0; const r = hero.getBoundingClientRect();
+      hero.style.setProperty("--sx", (ev.clientX - r.left) + "px"); hero.style.setProperty("--sy", (ev.clientY - r.top) + "px");
+      const s = stage.getBoundingClientRect(), x = (ev.clientX - s.left) / s.width - .5, y = (ev.clientY - s.top) / s.height - .5;
+      const near = Math.abs(x) < .9 && Math.abs(y) < .9;
+      stage.style.transform = near ? `perspective(1200px) rotateY(${x * 5}deg) rotateX(${-y * 4}deg)` : "";
+    }); });
+    hero.addEventListener("pointerleave", () => { stage.style.transform = ""; });
+  }
+  if (!calm) setTimeout(() => document.querySelectorAll(".proof b").forEach(b => {
+    const to = +b.dataset.to, suf = b.dataset.suf || "", t0 = performance.now(), ms = 1400;
+    const step = now => { const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 4); b.textContent = Math.round(to * e) + suf; if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }), 800);
+})();
 
 /* ---------- arranque ---------- */
 applyLang(lang, false);
