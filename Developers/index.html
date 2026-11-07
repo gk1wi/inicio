@@ -79,8 +79,6 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
 .hero{position:relative;overflow:hidden;isolation:isolate}
 .hero>.wrap{position:relative;z-index:1}
 .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
-.hero-bg .dots,.hero-bg .spot{position:absolute;inset:0;background-image:radial-gradient(color-mix(in srgb,var(--fg) 16%,transparent) 1px,transparent 1.5px);background-size:26px 26px;-webkit-mask-image:radial-gradient(ellipse 70% 65% at 65% 45%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 70% 65% at 65% 45%,#000 20%,transparent 75%)}
-.hero-bg .spot{background-image:radial-gradient(color-mix(in srgb,var(--fg) 55%,transparent) 1px,transparent 1.6px);-webkit-mask-image:radial-gradient(260px circle at var(--sx,70%) var(--sy,40%),#000,transparent 70%);mask-image:radial-gradient(260px circle at var(--sx,70%) var(--sy,40%),#000,transparent 70%);opacity:.9}
 .orb{position:absolute;border-radius:50%;filter:blur(90px);will-change:transform}
 .orb.o1{width:46vw;height:46vw;max-width:640px;max-height:640px;right:-8%;top:-14%;background:color-mix(in srgb,var(--fg) 13%,transparent);animation:orbA 20s ease-in-out infinite alternate}
 .orb.o2{width:34vw;height:34vw;max-width:480px;max-height:480px;right:18%;bottom:-18%;background:color-mix(in srgb,var(--live) 26%,transparent);animation:orbB 24s ease-in-out infinite alternate}
@@ -112,6 +110,38 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
 @keyframes bob{50%{transform:translateY(-8px)}}
 @media(max-width:620px){.float{display:none}.proof small{max-width:11ch}}
 @media(prefers-reduced-motion:reduce){.orb,.stage::before,.stage::after,.float,.shine{animation:none!important}.avail,.proof{opacity:1}}
+
+
+/* espacio */
+#stars{position:absolute;inset:0;width:100%;height:100%}
+.planet{position:absolute;border-radius:50%;will-change:transform;transition:translate 1.2s var(--ease)}
+.planet.big{width:clamp(380px,46vw,700px);aspect-ratio:1;right:clamp(-260px,-14vw,-120px);bottom:clamp(-420px,-26vw,-220px);
+  background:radial-gradient(circle at 32% 28%,#3a3d42 0%,#1b1c20 38%,#0a0a0c 62%,#000 78%);
+  box-shadow:inset -40px -50px 90px rgba(0,0,0,.85),inset 18px 14px 40px rgba(237,237,234,.08),0 0 80px 10px color-mix(in srgb,var(--live) 22%,transparent),0 0 220px 40px color-mix(in srgb,var(--live) 10%,transparent);overflow:hidden;opacity:0;animation:planetIn 2.2s var(--ease) .3s forwards}
+.planet.big .surf{position:absolute;inset:0;border-radius:50%;opacity:.55;mix-blend-mode:screen;
+  background:repeating-linear-gradient(172deg,transparent 0 22px,rgba(237,237,234,.05) 22px 30px,transparent 30px 58px,rgba(111,211,161,.05) 58px 64px);
+  background-size:100% 400%;animation:spinSurf 60s linear infinite;
+  -webkit-mask-image:radial-gradient(circle at 35% 30%,#000 25%,transparent 72%);mask-image:radial-gradient(circle at 35% 30%,#000 25%,transparent 72%)}
+.planet.big .atmo{position:absolute;inset:-2px;border-radius:50%;background:radial-gradient(circle at 30% 25%,transparent 55%,color-mix(in srgb,var(--live) 45%,transparent) 68%,transparent 71%);opacity:.7}
+@keyframes spinSurf{to{background-position:0 100%}}
+@keyframes planetIn{from{opacity:0;transform:translateY(60px) scale(.96)}to{opacity:1}}
+.orbit{position:absolute;width:clamp(520px,62vw,940px);aspect-ratio:1;right:clamp(-340px,-22vw,-200px);bottom:clamp(-500px,-34vw,-300px);border-radius:50%;border:1px dashed color-mix(in srgb,var(--fg) 9%,transparent);animation:orbit 46s linear infinite;opacity:0;animation-name:orbit,fadeO;animation-duration:46s,2s;animation-timing-function:linear,ease;animation-delay:0s,1s;animation-fill-mode:none,forwards;animation-iteration-count:infinite,1}
+.moon{position:absolute;top:50%;left:-9px;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2f2ee,#8e8e93 55%,#2a2a2e);box-shadow:0 0 18px rgba(237,237,234,.35)}
+@keyframes orbit{to{transform:rotate(360deg)}}
+@keyframes fadeO{to{opacity:1}}
+.planet.ringed{width:clamp(54px,6vw,86px);aspect-ratio:1;left:46%;top:15%;animation:floatP 14s ease-in-out infinite;opacity:.95}
+.planet.ringed .ball{position:absolute;inset:0;border-radius:50%;z-index:1;background:radial-gradient(circle at 34% 30%,#d9d9d4,#6d6e73 45%,#1a1a1d 75%);box-shadow:inset -8px -10px 18px rgba(0,0,0,.7),0 0 30px rgba(237,237,234,.15)}
+.planet.ringed .ring{position:absolute;left:-55%;right:-55%;top:38%;height:24%;border-radius:50%;border:2px solid rgba(237,237,234,.55);box-shadow:0 0 12px rgba(237,237,234,.2);transform:rotate(-18deg)}
+.planet.ringed .ring.back{z-index:0}
+.planet.ringed .ring.front{z-index:2;-webkit-mask-image:linear-gradient(transparent 50%,#000 50%);mask-image:linear-gradient(transparent 50%,#000 50%)}
+@keyframes floatP{50%{transform:translate(10px,-14px) rotate(4deg)}}
+[data-theme=light] .planet.big{background:radial-gradient(circle at 32% 28%,#ffffff 0%,#dfe2e6 40%,#b9bec5 70%,#9aa0a8 85%);box-shadow:inset -40px -50px 90px rgba(40,50,60,.35),0 0 80px 10px color-mix(in srgb,var(--live) 18%,transparent),0 0 200px 40px color-mix(in srgb,var(--live) 8%,transparent)}
+[data-theme=light] .planet.big .surf{mix-blend-mode:multiply;opacity:.4}
+[data-theme=light] .planet.ringed .ball{background:radial-gradient(circle at 34% 30%,#fff,#c3c6cb 50%,#8d929a 80%);box-shadow:inset -8px -10px 18px rgba(40,50,60,.35)}
+[data-theme=light] .planet.ringed .ring{border-color:rgba(10,10,11,.4);box-shadow:none}
+[data-theme=light] .moon{background:radial-gradient(circle at 35% 30%,#fff,#9aa0a8 60%,#5a5f66);box-shadow:none}
+@media(max-width:980px){.planet.ringed{left:auto;right:8%;top:8%}.planet.big{bottom:-34%;right:-40%}.orbit{display:none}}
+@media(prefers-reduced-motion:reduce){.planet,.orbit,.surf{animation:none!important;opacity:1!important}}
 
 /* demo POS */
 .demo{opacity:0;transform:translateY(24px) scale(.985);animation:demoIn 1.1s var(--ease) .45s forwards}
@@ -344,7 +374,13 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
 
 <main id="inicio">
   <section class="hero" id="hero">
-    <div class="hero-bg" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><div class="dots"></div><div class="spot"></div></div>
+    <div class="hero-bg" aria-hidden="true">
+      <i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i>
+      <canvas id="stars"></canvas>
+      <div class="planet big" id="pBig"><i class="surf"></i><i class="atmo"></i></div>
+      <div class="orbit"><i class="moon"></i></div>
+      <div class="planet ringed" id="pRing"><i class="ring back"></i><i class="ball"></i><i class="ring front"></i></div>
+    </div>
     <div class="wrap">
       <div>
         <span class="avail"><span class="live" aria-hidden="true"></span><span data-i18n-html="hero.avail"><b>Disponible</b> para nuevos proyectos</span></span>
@@ -989,6 +1025,60 @@ function buildGlobal() {
   $("clocks").innerHTML = L.clocks.map(c => `<div class="clk"><small>${c.c}</small><b data-tz="${c.z}"></b></div>`).join("");
 }
 
+
+
+/* ---------- estrellas ---------- */
+(() => {
+  const cv = $("stars"), ctx = cv.getContext("2d"), hero = $("hero");
+  let W = 0, H = 0, S = [], shoot = null, nextShoot = 0, mx = 0, my = 0, tx = 0, ty = 0, vis = true, col = "237,237,234";
+  const readCol = () => { const c = getComputedStyle(document.documentElement).getPropertyValue("--fg").trim();
+    const m = c.match(/^#(..)(..)(..)$/); col = m ? m.slice(1).map(x => parseInt(x, 16)).join(",") : "237,237,234"; };
+  function size() {
+    const dpr = Math.min(2, devicePixelRatio || 1); W = hero.offsetWidth; H = hero.offsetHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(W * H / 2600);
+    S = Array.from({ length: n }, () => { const z = Math.random();
+      return { x: Math.random() * W, y: Math.random() * H, z, r: z < .92 ? .35 + z * .65 : .9 + (z - .92) * 8, a: .25 + z * .6, t: Math.random() * 6.28, sp: .4 + Math.random() * 1.6 }; });
+    if (calm) draw(0);
+  }
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    tx += (mx - tx) * .05; ty += (my - ty) * .05;
+    for (const s of S) {
+      const tw = calm ? 1 : .55 + .45 * Math.sin(now / 1000 * s.sp + s.t);
+      let x = s.x + tx * s.z * 22, y = s.y + ty * s.z * 16 - (calm ? 0 : (now / 1000 * s.z * 3) % H);
+      if (y < 0) y += H; x = ((x % W) + W) % W;
+      ctx.globalAlpha = s.a * tw; ctx.fillStyle = `rgb(${col})`;
+      ctx.beginPath(); ctx.arc(x, y, s.r, 0, 6.283); ctx.fill();
+      if (s.r > 1) { const R = s.r * 5, g = ctx.createRadialGradient(x, y, 0, x, y, R);
+        g.addColorStop(0, `rgba(${col},${.35 * tw})`); g.addColorStop(1, `rgba(${col},0)`);
+        ctx.globalAlpha = s.a; ctx.fillStyle = g; ctx.fillRect(x - R, y - R, R * 2, R * 2);
+        ctx.globalAlpha = s.a * tw * .5; ctx.fillStyle = `rgb(${col})`; ctx.fillRect(x - R * .9, y - .35, R * 1.8, .7); ctx.fillRect(x - .35, y - R * .9, .7, R * 1.8); }
+    }
+    if (!calm) {
+      if (!shoot && now > nextShoot) { const fromL = Math.random() < .5;
+        shoot = { x: fromL ? Math.random() * W * .5 : W * .5 + Math.random() * W * .5, y: Math.random() * H * .35, vx: (fromL ? 1 : -1) * (7 + Math.random() * 4), vy: 3 + Math.random() * 2, life: 0 }; }
+      if (shoot) {
+        shoot.x += shoot.vx; shoot.y += shoot.vy; shoot.life++;
+        const k = Math.min(1, shoot.life / 8) * Math.max(0, 1 - shoot.life / 70);
+        const g = ctx.createLinearGradient(shoot.x, shoot.y, shoot.x - shoot.vx * 14, shoot.y - shoot.vy * 14);
+        g.addColorStop(0, `rgba(${col},${.9 * k})`); g.addColorStop(1, `rgba(${col},0)`);
+        ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(shoot.x, shoot.y); ctx.lineTo(shoot.x - shoot.vx * 14, shoot.y - shoot.vy * 14); ctx.stroke();
+        if (shoot.life > 70) { shoot = null; nextShoot = now + 3500 + Math.random() * 5000; }
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  function loop(now) { if (vis && !document.hidden) draw(now); requestAnimationFrame(loop); }
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; }).observe(hero);
+  hero.addEventListener("pointermove", e => { const r = hero.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5;
+    if (!calm) { $("pBig").style.translate = `${-mx * 18}px ${-my * 14}px`; $("pRing").style.translate = `${mx * 30}px ${my * 24}px`; } });
+  new MutationObserver(() => { readCol(); if (calm) draw(0); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  addEventListener("resize", size);
+  readCol(); size(); nextShoot = performance.now() + 2500;
+  if (!calm) requestAnimationFrame(loop);
+})();
 
 /* ---------- hero vivo ---------- */
 (() => {
