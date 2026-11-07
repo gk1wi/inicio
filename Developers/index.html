@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>gK1wi Developers | Software a la medida</title>
-<meta name="description" content="gK1wi Developers diseña y programa sistemas, apps y sitios a la medida para negocios. Trabajas directo con quien escribe el código: Irving Pardo Canales.">
+<title>gK1wi Developers | Desarrollo de software</title>
+<meta name="description" content="gK1wi Developers es un estudio de desarrollo de software: apps de escritorio y móviles, plataformas web y en la nube, sistemas empresariales, IA, multimedia y videojuegos, para clientes en cualquier país.">
 <meta name="theme-color" content="#000000">
-<meta property="og:title" content="gK1wi Developers | Software a la medida">
-<meta property="og:description" content="Sistemas, apps y sitios hechos para tu negocio, no al revés.">
+<meta property="og:title" content="gK1wi Developers | Desarrollo de software">
+<meta property="og:description" content="Software sin límites, para el mundo. Escritorio, móvil, web, nube, IA, multimedia y videojuegos.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23000'/><text x='50' y='67' font-size='52' font-family='Arial' font-weight='800' fill='%23fff' text-anchor='middle'>gK</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -123,6 +123,111 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
   .item{padding:.6rem .7rem}.item b{font-size:.86rem;padding-right:1rem}.item em{top:.35rem;right:.35rem;min-width:1.15rem;height:1.15rem;font-size:.65rem}
 }
 
+/* vitrina con pestañas */
+.dtabs{position:relative;display:inline-flex;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--panel);margin-bottom:.9rem;max-width:100%}
+.dtabs button{position:relative;z-index:1;padding:.5rem 1rem;font-size:.86rem;color:var(--mute);border-radius:999px;white-space:nowrap;transition:color .35s}
+.dtabs button:hover{color:var(--fg)}
+.dtabs button[aria-selected=true]{color:var(--bg)}
+.dtab-ind{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:999px;background:var(--fg);transition:transform .55s var(--ease),width .55s var(--ease)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr)}
+.pane{grid-area:1/1;min-width:0;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(12px) scale(.985);transition:opacity .45s var(--ease),transform .6s var(--ease),visibility 0s .6s}
+.pane.on{opacity:1;visibility:visible;transform:none;transition:opacity .5s var(--ease) .05s,transform .6s var(--ease),visibility 0s}
+.pane>.pos{flex:1;display:flex;flex-direction:column}
+#pos .pos-body{flex:1}
+@media(max-width:420px){.dtabs button{padding:.45rem .75rem;font-size:.8rem}}
+
+/* reproductor */
+.screen{position:relative;flex:1;min-height:190px;margin:1rem 1rem 0;border-radius:14px;overflow:hidden;background:#050506;isolation:isolate;cursor:pointer}
+.art{position:absolute;inset:-8%;background-size:cover;will-change:transform}
+.art.swap{animation:artIn .7s var(--ease)}
+@keyframes artIn{from{opacity:0;transform:scale(1.06)}}
+.screen.playing .art{animation:drift 16s ease-in-out infinite alternate}
+@keyframes drift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.08) translate(-3%,2%)}}
+.screen::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.78));z-index:1}
+.scr-info{position:absolute;left:1rem;right:1rem;bottom:.85rem;z-index:2;color:#ededea}
+.scr-info small{display:flex;align-items:center;gap:.5rem;font-family:var(--m);font-size:.72rem;opacity:.72;margin-bottom:.15rem}
+.scr-info b{display:block;font-family:var(--d);font-size:clamp(1.1rem,2.4vw,1.4rem);letter-spacing:-.02em;font-weight:600;line-height:1.15}
+.eq{display:inline-flex;align-items:flex-end;gap:2px;height:10px}
+.eq i{width:2px;height:30%;background:#ededea;border-radius:1px}
+.screen.playing .eq i{animation:eq .9s ease-in-out infinite alternate}
+.eq i:nth-child(2){animation-delay:-.3s!important}.eq i:nth-child(3){animation-delay:-.6s!important}
+@keyframes eq{from{height:25%}to{height:100%}}
+.bigplay{position:absolute;inset:0;margin:auto;width:62px;height:62px;border-radius:50%;background:rgba(237,237,234,.94);display:grid;place-items:center;z-index:2;transition:opacity .35s,transform .45s var(--ease)}
+.bigplay i{width:17px;height:19px;margin-left:4px;background:#000;clip-path:polygon(0 0,100% 50%,0 100%)}
+.screen:hover .bigplay{transform:scale(1.06)}
+.screen.playing .bigplay{opacity:0;transform:scale(.7);pointer-events:none}
+.pctl{padding:.7rem 1rem .2rem}
+.ptrack{position:relative;height:18px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+.ptrack::before{content:"";position:absolute;left:0;right:0;height:3px;border-radius:3px;background:var(--line2)}
+.ptrack i{position:absolute;left:0;height:3px;border-radius:3px;background:var(--fg)}
+.ptrack b{position:absolute;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--fg);transform:scale(.8);transition:transform .2s}
+.ptrack:hover b,.ptrack.drag b{transform:scale(1.15)}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.2rem}
+.ptime,.audio{white-space:nowrap}.ptime{font-family:var(--m);font-size:.76rem;color:var(--mute);min-width:6.8rem;font-variant-numeric:tabular-nums}
+.pbtns{display:flex;gap:.25rem;align-items:center}
+.pbtns button{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;transition:background .2s,transform .15s}
+.pbtns button:hover{background:var(--panel2)}
+.pbtns button:active{transform:scale(.9)}
+.pbtns svg{width:15px;height:15px;fill:currentColor}
+.pbtns .pp{width:44px;height:44px;background:var(--fg);color:var(--bg)}
+.pbtns .pp:hover{background:var(--fg)}
+.i-pause,#player.playing .i-play{display:none}
+#player.playing .i-pause{display:block}
+.audio{font-size:.76rem;padding:.38rem .7rem;border:1px solid var(--line2);border-radius:99px;min-width:6.8rem;text-align:center;transition:border-color .2s}
+.audio:hover{border-color:var(--fg)}
+.eps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;padding:.55rem 1rem 1rem}
+.ep{position:relative;text-align:left;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--panel2);transition:border-color .25s,transform .25s var(--ease)}
+.ep:hover{transform:translateY(-2px)}
+.ep.on{border-color:var(--fg)}
+.ep .th{display:block;position:relative;aspect-ratio:16/9;background-size:cover;background-position:center}
+.ep .bar{position:absolute;left:0;bottom:0;height:3px;background:#ededea}
+.ep small{display:block;padding:.32rem .5rem;font-size:.7rem;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep.on small{color:var(--fg)}
+@media(max-width:520px){.ptime,.audio{min-width:0}.ptime .tot{display:none}.eps{grid-template-columns:repeat(2,minmax(0,1fr))}.screen{min-height:170px}}
+
+/* nube */
+.term{flex:1;padding:1rem 1.1rem;font-family:var(--m);font-size:.8rem;line-height:1.8;min-height:170px;overflow:hidden}
+.term div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:slideIn .35s var(--ease)}
+.term .c{color:var(--fg)}.term .m{color:var(--mute)}.term .ok{color:var(--live)}
+.cur{display:inline-block;width:.55em;height:1.05em;margin-left:1px;background:var(--fg);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.regions{border-top:1px solid var(--line);padding:.55rem 1.1rem}
+.rg{display:grid;grid-template-columns:8px minmax(0,7.5rem) 1fr 3.4rem;gap:.75rem;align-items:center;padding:.3rem 0;font-size:.84rem}
+.rg .dot{width:8px;height:8px;border-radius:50%;background:var(--line2);transition:background .4s}
+.rg.up .dot{background:var(--live)}
+.rg .lb{height:4px;border-radius:9px;background:var(--panel2);overflow:hidden}
+.rg .lb i{display:block;height:100%;width:0;background:var(--fg);border-radius:inherit;transition:width .9s var(--ease)}
+.rg em{font-style:normal;font-family:var(--m);font-size:.74rem;color:var(--mute);text-align:right;font-variant-numeric:tabular-nums}
+#cloud .pos-foot .btn{flex:none}
+#cloud .pos-foot .btn[disabled]{opacity:.4;pointer-events:none}
+
+/* franja de plataformas */
+.strip{border-block:1px solid var(--line);overflow:hidden;padding:1.15rem 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.strip-in{display:flex;width:max-content;animation:marq 42s linear infinite}
+.strip:hover .strip-in{animation-play-state:paused}
+.strip span{display:flex;align-items:center;font-family:var(--d);font-size:clamp(1.35rem,3vw,2.1rem);font-weight:600;letter-spacing:-.035em;color:var(--mute);white-space:nowrap;transition:color .3s}
+.strip span:hover{color:var(--fg)}
+.strip span::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--line2);margin:0 1.6rem}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* global */
+.clocks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);margin-bottom:clamp(2rem,4vw,3rem)}
+.clk{padding:1.1rem 0;border-bottom:1px solid var(--line)}
+.clk+.clk{padding-left:1.2rem;border-left:1px solid var(--line)}
+.clk small{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--mute)}
+.clk small::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--live)}
+.clk b{display:block;font-family:var(--d);font-weight:600;font-size:clamp(1.7rem,3.6vw,2.6rem);letter-spacing:-.04em;margin-top:.2rem;font-variant-numeric:tabular-nums}
+.gl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+.gcard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:1.5rem;min-height:230px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;transition:transform .45s var(--ease),border-color .3s}
+.gcard:hover{transform:translateY(-4px);border-color:var(--line2)}
+.gcard small{font-family:var(--m);font-size:.75rem;color:var(--mute);letter-spacing:.06em}
+.gcard h3{font-size:1.55rem;margin-bottom:.5rem}
+.gcard p{color:var(--mute);font-size:.95rem}
+@media(max-width:980px){.gl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.clocks{grid-template-columns:repeat(2,minmax(0,1fr))}.clk:nth-child(3){padding-left:0;border-left:0}}
+@media(max-width:520px){.gl{grid-template-columns:1fr}.gcard{min-height:0;gap:2rem}}
+@media(prefers-reduced-motion:reduce){.strip-in{animation:none!important}}
+
 /* secciones */
 section{padding:clamp(5rem,10vw,8.5rem) 0}
 .head{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:end;margin-bottom:clamp(2.5rem,5vw,3.8rem)}
@@ -234,6 +339,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
     <a href="#inicio" class="brand" id="brand" aria-label="gK1wi Developers"><span class="brand-logo" id="gkLogoWrap"><span id="gkLogo" class="logoShape"></span></span><span class="bt">Developers</span></a>
     <ul>
       <li><a href="#servicios" data-i18n="nav.svc">Servicios</a></li>
+      <li><a href="#global" data-i18n="nav.global">Global</a></li>
       <li><a href="#proceso" data-i18n="nav.proc">Proceso</a></li>
       <li><a href="#contacto" data-i18n="nav.contact">Contacto</a></li>
     </ul>
@@ -250,19 +356,27 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
     <div class="wrap">
       <div>
         <h1>
-          <span class="ln"><span data-i18n="hero.l1">Software hecho</span></span>
-          <span class="ln"><span data-i18n="hero.l2">para tu negocio,</span></span>
-          <span class="ln dim"><span data-i18n="hero.l3">no al revés.</span></span>
+          <span class="ln"><span data-i18n="hero.l1">Software</span></span>
+          <span class="ln"><span data-i18n="hero.l2">sin límites,</span></span>
+          <span class="ln dim"><span data-i18n="hero.l3">para el mundo.</span></span>
         </h1>
-        <p class="lead" data-i18n-html="hero.lead"><b>gK1wi Developers</b> diseña y programa sistemas, apps y sitios que tu equipo usa todos los días. Trabajas directo con quien escribe el código: Irving Pardo Canales.</p>
+        <p class="lead" data-i18n-html="hero.lead"><b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.</p>
         <div class="cta">
           <a class="btn solid" href="#contacto" data-i18n="hero.cta1">Cotiza tu proyecto</a>
           <a class="btn" href="#servicios" data-i18n="hero.cta2">Ver servicios</a>
         </div>
       </div>
 
-      <div class="demo">
-        <div class="pos" id="pos">
+      <div class="demo" id="demo">
+        <div class="dtabs" id="dtabs" role="tablist" data-i18n-aria="aria.tabs" aria-label="Demos">
+          <button type="button" role="tab" aria-selected="true" data-tab="0" data-i18n="tab.pos">Punto de venta</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="1" data-i18n="tab.play">Reproductor</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="2" data-i18n="tab.cloud">Nube</button>
+          <i class="dtab-ind" id="dtabInd" aria-hidden="true"></i>
+        </div>
+        <div class="stage">
+          <div class="pane on" role="tabpanel">
+            <div class="pos" id="pos">
           <div class="pos-top"><span class="live" aria-hidden="true"></span><b data-i18n="pos.reg">Caja 1</b><span class="mute" data-i18n="pos.table">Mesa 4</span><span class="clock" id="clock"></span></div>
           <div class="pos-body">
             <div class="menu" id="menu" role="group" data-i18n-aria="aria.menu" aria-label="Productos"></div>
@@ -279,10 +393,50 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
           </div>
           <div class="toast" id="toast" role="status"></div>
         </div>
-        <p class="demo-note" data-i18n="demo.note">Es una demo real. Toca los productos y cobra.</p>
+          </div>
+          <div class="pane" role="tabpanel" inert>
+            <div class="pos" id="player">
+              <div class="pos-top"><span class="live" aria-hidden="true"></span><b data-i18n="pl.app">Reproductor</b><span class="mute">4K · HDR</span><span class="clock"></span></div>
+              <div class="screen" id="screen" role="button" tabindex="0" data-i18n-aria="aria.play" aria-label="Reproducir o pausar">
+                <div class="art" id="plArt"></div>
+                <button class="bigplay" type="button" tabindex="-1" aria-hidden="true"><i></i></button>
+                <div class="scr-info"><small><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="plSeries"></span></small><b id="plTitle"></b></div>
+              </div>
+              <div class="pctl">
+                <div class="ptrack" id="plTrack" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" data-i18n-aria="aria.seek" aria-label="Progreso"><i id="plFill"></i><b id="plKnob"></b></div>
+                <div class="prow">
+                  <span class="ptime" id="plTime">00:00 / 24:00</span>
+                  <div class="pbtns">
+                    <button type="button" id="plPrev" data-i18n-aria="aria.prev" aria-label="Episodio anterior"><svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg></button>
+                    <button type="button" class="pp" id="plPlay" data-i18n-aria="aria.play" aria-label="Reproducir o pausar"><svg class="i-play" viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg><svg class="i-pause" viewBox="0 0 16 16"><path d="M3.5 2h3v12h-3zM9.5 2h3v12h-3z"/></svg></button>
+                    <button type="button" id="plNext" data-i18n-aria="aria.next" aria-label="Episodio siguiente"><svg viewBox="0 0 16 16"><path d="M11 2h2v12h-2zM2 2v12l8-6z"/></svg></button>
+                  </div>
+                  <button type="button" class="audio" id="plAudio"></button>
+                </div>
+              </div>
+              <div class="eps" id="plEps"></div>
+              <div class="toast" id="plToast" role="status"></div>
+            </div>
+          </div>
+          <div class="pane" role="tabpanel" inert>
+            <div class="pos" id="cloud">
+              <div class="pos-top"><span class="live" aria-hidden="true"></span><b>gk deploy</b><span class="mute" data-i18n="cl.env">Producción</span><span class="clock"></span></div>
+              <div class="term" id="term" aria-live="polite"></div>
+              <div class="regions" id="regions"></div>
+              <div class="pos-foot">
+                <div><small data-i18n="cl.req">Solicitudes / min</small><b id="clReq"></b></div>
+                <svg class="spark" viewBox="0 0 200 38" preserveAspectRatio="none" aria-hidden="true"><path class="area" id="clSparkA"/><path id="clSparkL"/></svg>
+                <button class="btn sm" type="button" id="clRun" data-i18n="cl.run">Desplegar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-note" data-i18n="demo.note">Demos reales: cobra, reproduce y despliega.</p>
       </div>
     </div>
   </section>
+
+  <div class="strip" aria-hidden="true"><div class="strip-in" id="strip"></div></div>
 
   <section id="servicios">
     <div class="wrap">
@@ -291,6 +445,19 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
         <p data-i18n="svc.p">Toca un servicio para ver qué incluye. Si tu negocio lo usa en una pantalla, lo construimos de principio a fin.</p>
       </div>
       <div class="svc" id="svc"></div>
+    </div>
+  </section>
+
+  <section id="global">
+    <div class="wrap">
+      <div class="head"><h2 data-i18n="gl.h">Hecho en México. Para el mundo.</h2><p data-i18n="gl.p">Trabajamos de forma remota con clientes de cualquier país y publicamos tu software donde están tus usuarios.</p></div>
+      <div class="clocks" id="clocks"></div>
+      <div class="gl">
+        <div class="gcard"><small>01</small><div><h3 data-i18n="g1.h">Bilingüe</h3><p data-i18n="g1.p">Interfaz, documentación y soporte en español e inglés, listos para más idiomas.</p></div></div>
+        <div class="gcard"><small>02</small><div><h3 data-i18n="g2.h">Remoto</h3><p data-i18n="g2.p">Llamadas en tu zona horaria y avances que pruebas desde donde estés.</p></div></div>
+        <div class="gcard"><small>03</small><div><h3 data-i18n="g3.h">En cualquier tienda</h3><p data-i18n="g3.p">Microsoft Store, App Store, Google Play, la web o tus propios servidores.</p></div></div>
+        <div class="gcard"><small>04</small><div><h3 data-i18n="g4.h">Código protegido</h3><p data-i18n="g4.p">Licencias por equipo, cifrado y contratos claros sobre la propiedad de cada proyecto.</p></div></div>
+      </div>
     </div>
   </section>
 
@@ -357,7 +524,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
 <footer>
   <div class="wrap">
     <span>© <span id="yr"></span> gK1wi Developers. Irving Pardo Canales.</span>
-    <span><a href="/privacy/" data-i18n="foot.priv">Aviso de privacidad</a> · <span data-i18n="foot">Hecho con flow 🍃 v2.2</span></span>
+    <span><a href="/privacy/" data-i18n="foot.priv">Privacidad y legal</a> · <span data-i18n="foot">Hecho con flow 🍃 v3.0</span></span>
   </div>
 </footer>
 
@@ -379,22 +546,30 @@ const CONFIG = {
 const I18N = {
   es: {
     locale: "es-MX", currency: "MXN", baseSales: 8420,
-    title: "gK1wi Developers | Software a la medida",
-    desc: "gK1wi Developers diseña y programa sistemas, apps y sitios a la medida para negocios. Trabajas directo con quien escribe el código: Irving Pardo Canales.",
+    title: "gK1wi Developers | Desarrollo de software",
+    desc: "gK1wi Developers es un estudio de desarrollo de software: apps de escritorio y móviles, plataformas web y en la nube, sistemas empresariales, IA, multimedia y videojuegos, para clientes en cualquier país.",
     t: {
-      "nav.svc":"Servicios","nav.proc":"Proceso","nav.contact":"Contacto","nav.quote":"Cotizar",
+      "nav.svc":"Servicios","nav.global":"Global","nav.proc":"Proceso","nav.contact":"Contacto","nav.quote":"Cotizar",
       "aria.lang":"Switch to English","aria.theme":"Cambiar entre modo claro y oscuro","aria.menu":"Productos","aria.qr":"Código QR de esta página",
-      "hero.l1":"Software hecho","hero.l2":"para tu negocio,","hero.l3":"no al revés.",
-      "hero.lead":"<b>gK1wi Developers</b> diseña y programa sistemas, apps y sitios que tu equipo usa todos los días. Trabajas directo con quien escribe el código: Irving Pardo Canales.",
+      "aria.tabs":"Demos","aria.play":"Reproducir o pausar","aria.seek":"Progreso del episodio","aria.prev":"Episodio anterior","aria.next":"Episodio siguiente",
+      "hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el mundo.",
+      "hero.lead":"<b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.",
       "hero.cta1":"Cotiza tu proyecto","hero.cta2":"Ver servicios",
+      "tab.pos":"Punto de venta","tab.play":"Reproductor","tab.cloud":"Nube",
       "pos.reg":"Caja 1","pos.table":"Mesa 4","pos.order":"Orden","pos.total":"Total","pos.pay":"Cobrar","pos.sales":"Ventas de hoy",
-      "demo.note":"Es una demo real. Toca los productos y cobra.",
-      "svc.h":"Lo que necesitas, en cualquier pantalla.","svc.p":"Toca un servicio para ver qué incluye. Si tu negocio lo usa en una pantalla, lo construimos de principio a fin.",
+      "pl.app":"Reproductor","cl.env":"Producción","cl.req":"Solicitudes / min","cl.run":"Desplegar",
+      "demo.note":"Demos reales: cobra, reproduce y despliega.",
+      "svc.h":"Todo lo que abarca el software.","svc.p":"Toca un área para ver qué incluye. Si corre en una pantalla, un servidor o la nube, lo diseñamos y lo construimos.",
+      "gl.h":"Hecho en México. Para el mundo.","gl.p":"Trabajamos de forma remota con clientes de cualquier país y publicamos tu software donde están tus usuarios.",
+      "g1.h":"Bilingüe","g1.p":"Interfaz, documentación y soporte en español e inglés, listos para más idiomas.",
+      "g2.h":"Remoto","g2.p":"Llamadas en tu zona horaria y avances que pruebas desde donde estés.",
+      "g3.h":"En cualquier tienda","g3.p":"Microsoft Store, App Store, Google Play, la web o tus propios servidores.",
+      "g4.h":"Código protegido","g4.p":"Licencias por equipo, cifrado y contratos claros sobre la propiedad de cada proyecto.",
       "proc.h":"De la idea al lanzamiento.","proc.p":"Un proceso claro, con comunicación directa y avances que puedes probar en cada entrega.",
-      "s1.h":"Conversamos","s1.p":"Entendemos tu negocio, tus objetivos y el problema que hay que resolver.",
+      "s1.h":"Conversamos","s1.p":"Entendemos tu idea, tus usuarios y el problema que hay que resolver.",
       "s2.h":"Diseñamos","s2.p":"Definimos alcance, tiempos y costo, con una propuesta visual antes de programar.",
-      "s3.h":"Desarrollamos","s3.p":"Construimos por etapas. En cada entrega pruebas el avance en tu propio equipo.",
-      "s4.h":"Lanzamos","s4.p":"Instalamos, capacitamos a tu equipo y damos soporte después del lanzamiento.",
+      "s3.h":"Desarrollamos","s3.p":"Construimos por etapas. En cada entrega pruebas el avance en tus propios dispositivos.",
+      "s4.h":"Lanzamos","s4.p":"Publicamos en tiendas, en la nube o en tus equipos, y seguimos dando soporte.",
       "style.h":"Código con actitud.","style.p":"Nuestro estilo viene de la cancha, la tabla, el ring y el control. Se nota en cada proyecto.",
       "b1.h":"Cancha.","b1.p":"Equipo, ritmo y cierre fuerte en cada entrega.",
       "b2.h":"Tabla.","b2.p":"Estilo propio y soluciones que no se ven como las demás.",
@@ -403,10 +578,10 @@ const I18N = {
       "contact.h":"Hablemos de tu proyecto.","contact.copied":"Correo copiado",
       "q.h":"Cotiza en 3 toques.","q.p":"Elige lo que necesitas y te armamos el mensaje listo para enviar.",
       "q.type":"¿Qué quieres construir?","q.when":"¿Para cuándo lo necesitas?",
-      "f.name":"Tu nombre","f.more":"Cuéntanos un poco más (opcional)","f.ph":"Ej. Una app para controlar inventario en 2 sucursales",
+      "f.name":"Tu nombre","f.more":"Cuéntanos un poco más (opcional)","f.ph":"Ej. Una app para iOS y Android con panel web",
       "send.wa":"Enviar por WhatsApp","send.mail":"Enviar por correo",
       "m.tel":"Teléfono","m.wa":"Escríbeme","m.social":"Redes","m.contact":"Contacto","m.save":"Guardar en mi teléfono",
-      "qr.p":"Escanea para abrir esta página en otro teléfono.","qr.btn":"Descargar QR","foot":"Hecho con flow 🍃 v2.2","foot.priv":"Aviso de privacidad"
+      "qr.p":"Escanea para abrir esta página en otro teléfono.","qr.btn":"Descargar QR","foot":"Hecho con flow 🍃 v3.0","foot.priv":"Privacidad y legal"
     },
     empty: "Toca un producto para agregarlo.",
     items: n => n + (n === 1 ? " producto" : " productos"),
@@ -417,37 +592,62 @@ const I18N = {
     msg: (nombre, tipos, cuando, extra) => `Hola Irving${nombre ? ", soy " + nombre : ""}. Quiero cotizar: ${tipos}.` + (cuando ? `\nPara cuándo: ${cuando}.` : "") + (extra ? `\n\n${extra}` : ""),
     subject: "Cotización - gK1wi Developers",
     role: "Fundador y desarrollador principal",
-    tipos: ["Sistema / punto de venta","App móvil","App de escritorio","Sitio web","Tienda en línea","Automatización","Bot con IA","Videojuego","Otro"],
+    tipos: ["Software empresarial / POS","App de escritorio","App móvil","Web / SaaS","Backend / API","IA / automatización","Videojuego","Multimedia","Otro"],
     cuando: ["Lo antes posible","En 1 a 3 meses","Solo estoy explorando"],
     productos: [{n:"Chilaquiles",p:95},{n:"Café de olla",p:35},{n:"Paleta de mango",p:28},{n:"Agua de jamaica",p:30},{n:"Enchiladas",p:110},{n:"Pan dulce",p:22}],
+    stack: ["Windows","macOS","iOS","Android","Web","Nube","IA","APIs","Videojuegos","Multimedia","Automatización","Seguridad"],
+    clocks: [{c:"Ciudad de México",z:"America/Mexico_City"},{c:"Nueva York",z:"America/New_York"},{c:"Madrid",z:"Europe/Madrid"},{c:"Tokio",z:"Asia/Tokyo"}],
+    player: {
+      series: "Horizonte · T1", ep: n => `Episodio ${n}`,
+      titles: ["El primer paso","Ciudad de cristal","Señal perdida","Todo en orden"],
+      audio: ["Japonés","Español","Inglés"], audioT: a => `Audio: ${a}`,
+      next: t => `Siguiente: ${t}`, resume: "Continúas donde te quedaste"
+    },
+    cloud: {
+      cmd: "gk deploy --global",
+      steps: ["Compilando… listo en 2.1 s","148 pruebas aprobadas","Firmando y protegiendo el código","Publicando en 4 regiones"],
+      done: v => `v3.0.${v} en línea en todo el mundo`,
+      idle: v => `v3.0.${v} en línea · todo en orden`,
+      regions: ["Norteamérica","Sudamérica","Europa","Asia"]
+    },
     servicios: [
-      { t:"Sistemas a la medida", d:"Punto de venta, inventarios, reservaciones y paneles administrativos.", ej:"Caja, app de meseros y reportes de ventas en tiempo real.", inc:["Punto de venta","Inventario","Reportes","Usuarios y permisos","Licencias"] },
-      { t:"Apps móviles y de escritorio", d:"Android, iOS y Windows, pensadas para usarse todo el día.", ej:"Una app instalable que funciona sin internet y se sincroniza al reconectar.", inc:["Android","iOS","Windows","Apps instalables (PWA)","Modo sin conexión"] },
-      { t:"Sitios y tiendas web", d:"Páginas rápidas, responsivas y listas para aparecer en Google.", ej:"Una página que carga en menos de un segundo y convierte visitas en mensajes.", inc:["Landing pages","Tiendas en línea","Dominio y correo","SEO básico","Hosting"] },
-      { t:"Automatización", d:"Conectamos tus herramientas para eliminar trabajo manual y errores.", ej:"Publicar contenido o mover datos entre sistemas cada hora, sin tocar nada.", inc:["Integraciones con APIs","Tareas programadas","Hojas de cálculo","Notificaciones"] },
-      { t:"Bots y herramientas con IA", d:"Asistentes que atienden, responden y venden por ti.", ej:"Un bot de WhatsApp que contesta precios y horarios y te pasa los clientes listos.", inc:["WhatsApp","Telegram","Discord","Alertas","IA local o en la nube"] },
-      { t:"Videojuegos e interactivos", d:"Juegos y experiencias para web, escritorio y streaming.", ej:"Minijuegos de marca, overlays animados y experiencias interactivas para eventos.", inc:["Juegos web","Overlays para stream","Animación","Rendimiento"] },
-      { t:"Mantenimiento y soporte", d:"Actualizaciones, correcciones y mejoras para que tu software crezca contigo.", ej:"Un solo contacto que conoce tu sistema y responde cuando lo necesitas.", inc:["Correcciones","Nuevas funciones","Respaldos","Monitoreo"] }
+      { t:"Software empresarial", d:"Sistemas a la medida para operar, vender y decidir.", ej:"Punto de venta, inventario y reportes en tiempo real para varias sucursales.", inc:["Punto de venta","ERP y CRM","Inventarios","Reportes","Usuarios y permisos"] },
+      { t:"Apps de escritorio", d:"Software nativo para Windows y macOS, rápido y estable.", ej:"Un reproductor multimedia nativo, con aceleración por hardware y progreso guardado.", inc:["Windows (.NET / WinUI)","macOS","Microsoft Store","Instaladores","Modo sin conexión"] },
+      { t:"Apps móviles", d:"iOS y Android, nativas o multiplataforma.", ej:"Una app que funciona sin internet y se sincroniza al reconectar.", inc:["iOS (SwiftUI)","Android","Apps instalables (PWA)","Notificaciones","App Store y Google Play"] },
+      { t:"Web, SaaS y nube", d:"Plataformas web, paneles y productos por suscripción.", ej:"Un panel en la nube que administra clientes, licencias y pagos desde cualquier lugar.", inc:["Sitios y landing pages","Tiendas en línea","SaaS","Paneles administrativos","Dominios y hosting"] },
+      { t:"Backend y APIs", d:"La infraestructura que conecta todo, segura y escalable.", ej:"Una API que sincroniza datos entre apps, sucursales y servicios externos.", inc:["APIs REST","Bases de datos","Autenticación","Integraciones","Servidores y despliegue"] },
+      { t:"IA y automatización", d:"Asistentes, bots y procesos que trabajan solos.", ej:"Un bot que atiende clientes y publica contenido cada hora sin que toques nada.", inc:["IA local o en la nube","Bots (WhatsApp, Telegram, Discord)","Tareas programadas","Análisis de datos","Alertas"] },
+      { t:"Multimedia y videojuegos", d:"Juegos, reproductores y experiencias interactivas.", ej:"Un juego instalable, overlays para streaming o un reproductor de video premium.", inc:["Juegos web y PC","Reproductores","Video y audio","Animación","Streaming"] },
+      { t:"Seguridad y licenciamiento", d:"Protege tu software, tus datos y tus ingresos.", ej:"Licencias atadas a cada equipo, activación remota y código protegido contra copia.", inc:["Licencias por equipo","Cifrado","Verificación en dos pasos","Ofuscación de código","Auditoría"] },
+      { t:"Soporte y evolución", d:"Mantenimiento, mejoras y nuevas versiones.", ej:"Un solo contacto que conoce tu sistema y responde cuando lo necesitas.", inc:["Correcciones","Nuevas funciones","Respaldos","Monitoreo","Actualizaciones"] }
     ]
   },
   en: {
     locale: "en-US", currency: "USD", baseSales: 1240,
-    title: "gK1wi Developers | Custom software",
-    desc: "gK1wi Developers designs and builds custom systems, apps and websites for businesses. You work directly with the person who writes the code: Irving Pardo Canales.",
+    title: "gK1wi Developers | Software development",
+    desc: "gK1wi Developers is a software development studio: desktop and mobile apps, web and cloud platforms, business systems, AI, media and games, for clients in any country.",
     t: {
-      "nav.svc":"Services","nav.proc":"Process","nav.contact":"Contact","nav.quote":"Quote",
+      "nav.svc":"Services","nav.global":"Global","nav.proc":"Process","nav.contact":"Contact","nav.quote":"Quote",
       "aria.lang":"Cambiar a español","aria.theme":"Switch between light and dark mode","aria.menu":"Products","aria.qr":"QR code for this page",
-      "hero.l1":"Software built","hero.l2":"for your business,","hero.l3":"not the other way around.",
-      "hero.lead":"<b>gK1wi Developers</b> designs and builds systems, apps and websites your team uses every day. You work directly with the person who writes the code: Irving Pardo Canales.",
+      "aria.tabs":"Demos","aria.play":"Play or pause","aria.seek":"Episode progress","aria.prev":"Previous episode","aria.next":"Next episode",
+      "hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the world.",
+      "hero.lead":"<b>gK1wi Developers</b> is a software development studio: desktop, mobile, web, cloud, AI, media and games. From concept to launch, working directly with the person who writes the code.",
       "hero.cta1":"Get a quote","hero.cta2":"See services",
+      "tab.pos":"Point of sale","tab.play":"Media player","tab.cloud":"Cloud",
       "pos.reg":"Register 1","pos.table":"Table 4","pos.order":"Order","pos.total":"Total","pos.pay":"Charge","pos.sales":"Today's sales",
-      "demo.note":"This is a live demo. Tap the products and charge.",
-      "svc.h":"What you need, on any screen.","svc.p":"Tap a service to see what's included. If your business uses it on a screen, we build it end to end.",
+      "pl.app":"Player","cl.env":"Production","cl.req":"Requests / min","cl.run":"Deploy",
+      "demo.note":"Live demos: charge, play and deploy.",
+      "svc.h":"Everything software covers.","svc.p":"Tap an area to see what's included. If it runs on a screen, a server or the cloud, we design and build it.",
+      "gl.h":"Made in Mexico. Built for the world.","gl.p":"We work remotely with clients in any country and ship your software wherever your users are.",
+      "g1.h":"Bilingual","g1.p":"Interface, documentation and support in English and Spanish, ready for more languages.",
+      "g2.h":"Remote","g2.p":"Calls in your time zone and progress you can test from wherever you are.",
+      "g3.h":"On any store","g3.p":"Microsoft Store, App Store, Google Play, the web or your own servers.",
+      "g4.h":"Protected code","g4.p":"Per-device licensing, encryption and clear contracts on who owns what.",
       "proc.h":"From idea to launch.","proc.p":"A clear process, with direct communication and progress you can test at every delivery.",
-      "s1.h":"We talk","s1.p":"We get to know your business, your goals and the problem to solve.",
+      "s1.h":"We talk","s1.p":"We get to know your idea, your users and the problem to solve.",
       "s2.h":"We design","s2.p":"We define scope, timeline and cost, with a visual proposal before writing code.",
       "s3.h":"We build","s3.p":"We build in stages. At every delivery you test the progress on your own devices.",
-      "s4.h":"We launch","s4.p":"We install, train your team and keep supporting you after launch.",
+      "s4.h":"We launch","s4.p":"We ship to app stores, the cloud or your own machines, and keep supporting you.",
       "style.h":"Code with attitude.","style.p":"Our style comes from the court, the board, the ring and the controller. You can see it in every project.",
       "b1.h":"Court.","b1.p":"Teamwork, rhythm and a strong finish on every delivery.",
       "b2.h":"Board.","b2.p":"Our own style and solutions that don't look like everyone else's.",
@@ -456,10 +656,10 @@ const I18N = {
       "contact.h":"Let's talk about your project.","contact.copied":"Email copied",
       "q.h":"Get a quote in 3 taps.","q.p":"Pick what you need and we'll write the message for you, ready to send.",
       "q.type":"What do you want to build?","q.when":"When do you need it?",
-      "f.name":"Your name","f.more":"Tell us a bit more (optional)","f.ph":"E.g. An app to track inventory across 2 locations",
+      "f.name":"Your name","f.more":"Tell us a bit more (optional)","f.ph":"E.g. An iOS and Android app with a web dashboard",
       "send.wa":"Send via WhatsApp","send.mail":"Send via email",
       "m.tel":"Phone","m.wa":"Message me","m.social":"Social","m.contact":"Contact","m.save":"Save to my phone",
-      "qr.p":"Scan to open this page on another phone.","qr.btn":"Download QR","foot":"Made with flow 🍃 v2.2","foot.priv":"Privacy notice"
+      "qr.p":"Scan to open this page on another phone.","qr.btn":"Download QR","foot":"Made with flow 🍃 v3.0","foot.priv":"Privacy & legal"
     },
     empty: "Tap a product to add it.",
     items: n => n + (n === 1 ? " item" : " items"),
@@ -470,20 +670,38 @@ const I18N = {
     msg: (nombre, tipos, cuando, extra) => `Hi Irving${nombre ? ", I'm " + nombre : ""}. I'd like a quote for: ${tipos}.` + (cuando ? `\nTimeline: ${cuando}.` : "") + (extra ? `\n\n${extra}` : ""),
     subject: "Quote request - gK1wi Developers",
     role: "Founder and lead developer",
-    tipos: ["System / point of sale","Mobile app","Desktop app","Website","Online store","Automation","AI bot","Video game","Other"],
+    tipos: ["Business software / POS","Desktop app","Mobile app","Web / SaaS","Backend / API","AI / automation","Video game","Media","Other"],
     cuando: ["As soon as possible","In 1 to 3 months","Just exploring"],
     productos: [{n:"Chilaquiles",p:12},{n:"Mexican coffee",p:3.5},{n:"Mango ice pop",p:4},{n:"Hibiscus drink",p:3.5},{n:"Enchiladas",p:14},{n:"Sweet bread",p:3}],
+    stack: ["Windows","macOS","iOS","Android","Web","Cloud","AI","APIs","Games","Media","Automation","Security"],
+    clocks: [{c:"Mexico City",z:"America/Mexico_City"},{c:"New York",z:"America/New_York"},{c:"Madrid",z:"Europe/Madrid"},{c:"Tokyo",z:"Asia/Tokyo"}],
+    player: {
+      series: "Horizon · S1", ep: n => `Episode ${n}`,
+      titles: ["The first step","Glass city","Lost signal","All in order"],
+      audio: ["Japanese","Spanish","English"], audioT: a => `Audio: ${a}`,
+      next: t => `Up next: ${t}`, resume: "Picking up where you left off"
+    },
+    cloud: {
+      cmd: "gk deploy --global",
+      steps: ["Building… done in 2.1 s","148 tests passed","Signing and protecting the code","Shipping to 4 regions"],
+      done: v => `v3.0.${v} live worldwide`,
+      idle: v => `v3.0.${v} live · all systems normal`,
+      regions: ["North America","South America","Europe","Asia"]
+    },
     servicios: [
-      { t:"Custom systems", d:"Point of sale, inventory, reservations and admin dashboards.", ej:"A register, a waiter app and real-time sales reports.", inc:["Point of sale","Inventory","Reports","Users and permissions","Licensing"] },
-      { t:"Mobile and desktop apps", d:"Android, iOS and Windows, built for all-day use.", ej:"An installable app that works offline and syncs when it reconnects.", inc:["Android","iOS","Windows","Installable apps (PWA)","Offline mode"] },
-      { t:"Websites and online stores", d:"Fast, responsive pages ready to show up on Google.", ej:"A page that loads in under a second and turns visits into messages.", inc:["Landing pages","Online stores","Domain and email","Basic SEO","Hosting"] },
-      { t:"Automation", d:"We connect your tools to cut manual work and errors.", ej:"Publishing content or moving data between systems every hour, hands-free.", inc:["API integrations","Scheduled tasks","Spreadsheets","Notifications"] },
-      { t:"AI bots and tools", d:"Assistants that answer, follow up and sell for you.", ej:"A WhatsApp bot that answers prices and hours and hands you customers ready to buy.", inc:["WhatsApp","Telegram","Discord","Alerts","Local or cloud AI"] },
-      { t:"Games and interactive", d:"Games and experiences for web, desktop and streaming.", ej:"Branded mini games, animated overlays and interactive experiences for events.", inc:["Web games","Stream overlays","Animation","Performance"] },
-      { t:"Maintenance and support", d:"Updates, fixes and improvements so your software grows with you.", ej:"One contact who knows your system and responds when you need it.", inc:["Fixes","New features","Backups","Monitoring"] }
+      { t:"Business software", d:"Custom systems to run, sell and decide.", ej:"Point of sale, inventory and real-time reports across several locations.", inc:["Point of sale","ERP and CRM","Inventory","Reports","Users and permissions"] },
+      { t:"Desktop apps", d:"Native software for Windows and macOS, fast and stable.", ej:"A native media player with hardware acceleration and saved progress.", inc:["Windows (.NET / WinUI)","macOS","Microsoft Store","Installers","Offline mode"] },
+      { t:"Mobile apps", d:"iOS and Android, native or cross-platform.", ej:"An app that works offline and syncs when it reconnects.", inc:["iOS (SwiftUI)","Android","Installable apps (PWA)","Notifications","App Store and Google Play"] },
+      { t:"Web, SaaS and cloud", d:"Web platforms, dashboards and subscription products.", ej:"A cloud dashboard that manages customers, licenses and payments from anywhere.", inc:["Websites and landing pages","Online stores","SaaS","Admin dashboards","Domains and hosting"] },
+      { t:"Backend and APIs", d:"The infrastructure that connects everything, secure and scalable.", ej:"An API that syncs data across apps, locations and external services.", inc:["REST APIs","Databases","Authentication","Integrations","Servers and deployment"] },
+      { t:"AI and automation", d:"Assistants, bots and processes that run on their own.", ej:"A bot that answers customers and publishes content every hour, hands-free.", inc:["Local or cloud AI","Bots (WhatsApp, Telegram, Discord)","Scheduled tasks","Data analysis","Alerts"] },
+      { t:"Media and games", d:"Games, players and interactive experiences.", ej:"An installable game, streaming overlays or a premium video player.", inc:["Web and PC games","Media players","Video and audio","Animation","Streaming"] },
+      { t:"Security and licensing", d:"Protect your software, your data and your revenue.", ej:"Licenses bound to each device, remote activation and copy-protected code.", inc:["Per-device licensing","Encryption","Two-step verification","Code obfuscation","Auditing"] },
+      { t:"Support and growth", d:"Maintenance, improvements and new versions.", ej:"One contact who knows your system and responds when you need it.", inc:["Fixes","New features","Backups","Monitoring","Updates"] }
     ]
   }
 };
+
 /* ================================================ */
 
 const $ = id => document.getElementById(id);
@@ -520,7 +738,7 @@ function applyLang(next, save) {
   $("lang").textContent = lang === "es" ? "EN" : "ES";
   $("lnkWa").href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(L.waHello);
   $("hint").textContent = "";
-  buildMenu(); buildServices(); buildChips(); tickClock();
+  buildMenu(); buildServices(); buildChips(); buildPlayer(); buildCloud(); buildGlobal(); moveInd(); tickClock();
   if (save) try { localStorage.setItem("gk-lang", lang); } catch (e) {}
 }
 $("lang").addEventListener("click", () => applyLang(lang === "es" ? "en" : "es", true));
@@ -528,7 +746,7 @@ $("lang").addEventListener("click", () => applyLang(lang === "es" ? "en" : "es",
 /* ---------- demo POS ---------- */
 const order = new Map();      // índice de producto -> cantidad
 let ordNo = 1042, sales = 0, sparkData = [], lastTouch = 0, demoVisible = true;
-new IntersectionObserver(es => { demoVisible = es[0].isIntersecting; }).observe($("pos"));
+new IntersectionObserver(es => { demoVisible = es[0].isIntersecting; }).observe($("demo"));
 const SPARK = [.37, .46, .43, .57, .62, .59, .72, .82, .78, .88, 1];
 
 function buildMenu() {
@@ -595,7 +813,11 @@ function drawSpark() {
   $("sparkA").setAttribute("d", d + " L200 38 L0 38 Z");
 }
 function tickClock() {
-  $("clock").textContent = new Date().toLocaleTimeString(L.locale, { hour: "numeric", minute: "2-digit" });
+  const now = new Date(), t = now.toLocaleTimeString(L.locale, { hour: "numeric", minute: "2-digit" });
+  document.querySelectorAll(".clock").forEach(c => c.textContent = t);
+  document.querySelectorAll("[data-tz]").forEach(c => {
+    try { c.textContent = now.toLocaleTimeString(L.locale, { hour: "numeric", minute: "2-digit", timeZone: c.dataset.tz }); } catch (e) {}
+  });
 }
 setInterval(tickClock, 15000);
 
@@ -611,21 +833,21 @@ async function autoplay() {
   const busy = () => performance.now() - lastTouch < 9000;
   await wait(2600);
   while (true) {
-    if (busy() || document.hidden || !demoVisible) { await wait(1500); continue; }
+    if (busy() || document.hidden || !demoVisible || tab !== 0) { await wait(1500); continue; }
     if (order.size) { order.clear(); renderTicket(); }
     const picks = [...L.productos.keys()].sort(() => Math.random() - .5).slice(0, 2 + Math.floor(Math.random() * 2));
-    for (const i of picks) { if (busy()) break; press(i); await wait(650); if (Math.random() < .3) { press(i); await wait(500); } }
-    if (busy()) continue;
-    await wait(700); pay(); await wait(3400);
+    for (const i of picks) { if (busy() || tab !== 0) break; press(i); await wait(650); if (Math.random() < .3) { press(i); await wait(500); } }
+    if (busy() || tab !== 0) continue;
+    await wait(700); if (tab === 0) pay(); await wait(3400);
   }
 }
 
 /* brillo que sigue al cursor en la demo */
-if (matchMedia("(hover:hover)").matches) $("pos").addEventListener("pointermove", e => {
+if (matchMedia("(hover:hover)").matches) document.querySelectorAll(".pos").forEach(el => el.addEventListener("pointermove", e => {
   const r = e.currentTarget.getBoundingClientRect();
   e.currentTarget.style.setProperty("--mx", (e.clientX - r.left) + "px");
   e.currentTarget.style.setProperty("--my", (e.clientY - r.top) + "px");
-});
+}));
 
 /* ---------- servicios (acordeón) ---------- */
 function buildServices() {
@@ -703,9 +925,196 @@ $("theme").addEventListener("click", () => {
   try { localStorage.setItem("gk-theme", next); } catch (e) {}
 });
 
+/* ---------- vitrina: pestañas ---------- */
+let tab = 0, tabSince = performance.now(), holdUntil = 0;
+const tabBtns = [...document.querySelectorAll("#dtabs [role=tab]")], panes = [...document.querySelectorAll(".pane")];
+function moveInd() {
+  const b = tabBtns[tab], ind = $("dtabInd");
+  ind.style.width = b.offsetWidth + "px";
+  ind.style.transform = `translateX(${b.offsetLeft}px)`;
+}
+function setTab(i, user) {
+  if (i === tab) return;
+  const prev = tab; tab = i; tabSince = performance.now();
+  tabBtns.forEach((b, k) => { b.setAttribute("aria-selected", k === i); b.tabIndex = k === i ? 0 : -1; });
+  panes.forEach((p, k) => { p.classList.toggle("on", k === i); p.inert = k !== i; });
+  moveInd();
+  if (prev === 1) plPause();
+  if (i === 1 && !user && !calm) setTimeout(() => { if (tab === 1) plPlay(); }, 450);
+  if (i === 2) deploy();
+}
+const hold = () => { holdUntil = performance.now() + 25000; };
+$("dtabs").addEventListener("click", e => { const b = e.target.closest("[role=tab]"); if (b) { hold(); setTab(+b.dataset.tab, true); } });
+$("dtabs").addEventListener("keydown", e => {
+  const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (!d) return;
+  e.preventDefault(); hold(); setTab((tab + d + 3) % 3, true); tabBtns[tab].focus();
+});
+$("demo").addEventListener("pointerdown", () => { touched(); hold(); });
+addEventListener("resize", moveInd);
+const TAB_MS = [16000, 13000, 11000];
+setInterval(() => {
+  if (calm || document.hidden || !demoVisible || performance.now() < holdUntil) return;
+  if (performance.now() - tabSince > TAB_MS[tab]) setTab((tab + 1) % 3, false);
+}, 500);
+
+const toastTs = {};
+function toastIn(id, msg) {
+  const t = $(id); t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastTs[id]); toastTs[id] = setTimeout(() => t.classList.remove("on"), 2200);
+}
+function sparkPath(data, idL, idA) {
+  const min = Math.min(...data) * .9, max = Math.max(...data), n = data.length;
+  const d = data.map((v, i) => (i ? "L" : "M") + (i / (n - 1) * 200).toFixed(1) + " " + (36 - (v - min) / (max - min || 1) * 32).toFixed(1)).join(" ");
+  $(idL).setAttribute("d", d); $(idA).setAttribute("d", d + " L200 38 L0 38 Z");
+}
+
+/* ---------- demo: reproductor ---------- */
+const EP_LEN = 24 * 60, SPEED = 32;
+const ARTS = [[24,32,78,62,135],[72,26,22,72,205],[50,58,86,18,160],[28,74,66,30,110]];
+let plEp = 1, plOn = false, plAud = 0, plRaf = 0, plLast = 0;
+const plProg = [EP_LEN, EP_LEN * .62, 0, 0];
+const art = i => { const a = ARTS[i];
+  return `radial-gradient(circle at ${a[0]}% ${a[1]}%,rgba(237,237,234,.5),transparent 36%),radial-gradient(circle at ${a[2]}% ${a[3]}%,rgba(111,211,161,.16),transparent 48%),radial-gradient(ellipse at 50% 120%,rgba(237,237,234,.14),transparent 60%),linear-gradient(${a[4]}deg,#232328,#050506 72%)`; };
+const fmtT = s => { s = Math.floor(s); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
+
+function buildPlayer() {
+  const P = L.player;
+  $("plEps").innerHTML = P.titles.map((t, i) => `<button class="ep" type="button" data-i="${i}"><span class="th" style="background-image:${art(i)}"><span class="bar"></span></span><small>${i + 1}. ${t}</small></button>`).join("");
+  plShow(false);
+}
+function plShow(swap) {
+  const P = L.player;
+  $("plSeries").textContent = P.series + " · " + P.ep(plEp + 1);
+  $("plTitle").textContent = P.titles[plEp];
+  $("plArt").style.backgroundImage = art(plEp);
+  if (swap) { const a = $("plArt"); a.classList.remove("swap"); void a.offsetWidth; a.classList.add("swap"); }
+  $("plAudio").textContent = "♪ " + P.audio[plAud];
+  document.querySelectorAll(".ep").forEach((b, i) => b.classList.toggle("on", i === plEp));
+  plDraw();
+}
+function plDraw() {
+  const k = plProg[plEp] / EP_LEN * 100;
+  $("plFill").style.width = k + "%"; $("plKnob").style.left = k + "%";
+  $("plTrack").setAttribute("aria-valuenow", Math.round(k));
+  $("plTime").innerHTML = fmtT(plProg[plEp]) + '<span class="tot"> / ' + fmtT(EP_LEN) + "</span>";
+  document.querySelectorAll(".ep .bar").forEach((b, i) => b.style.width = (plProg[i] / EP_LEN * 100) + "%");
+}
+function plTick(now) {
+  if (!plOn) return;
+  const dt = Math.min(.1, (now - plLast) / 1000); plLast = now;
+  plProg[plEp] = Math.min(EP_LEN, plProg[plEp] + dt * SPEED);
+  plDraw();
+  if (plProg[plEp] >= EP_LEN) plGo(plEp + 1, true);
+  plRaf = requestAnimationFrame(plTick);
+}
+function plPlay() {
+  if (plOn) return; plOn = true;
+  $("screen").classList.add("playing"); $("player").classList.add("playing");
+  plLast = performance.now(); plRaf = requestAnimationFrame(plTick);
+}
+function plPause() {
+  plOn = false; cancelAnimationFrame(plRaf);
+  $("screen").classList.remove("playing"); $("player").classList.remove("playing");
+}
+function plGo(i, auto) {
+  i = (i + 4) % 4; if (i === plEp) return;
+  plEp = i; if (plProg[i] >= EP_LEN) plProg[i] = 0;
+  plShow(true);
+  toastIn("plToast", auto ? L.player.next(L.player.titles[i]) : (plProg[i] > 0 ? L.player.resume : L.player.ep(i + 1)));
+}
+$("screen").addEventListener("click", () => plOn ? plPause() : plPlay());
+$("screen").addEventListener("keydown", e => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); plOn ? plPause() : plPlay(); } });
+$("plPlay").addEventListener("click", () => plOn ? plPause() : plPlay());
+$("plPrev").addEventListener("click", () => plGo(plEp - 1));
+$("plNext").addEventListener("click", () => plGo(plEp + 1));
+$("plEps").addEventListener("click", e => { const b = e.target.closest(".ep"); if (b) { plGo(+b.dataset.i); plPlay(); } });
+$("plAudio").addEventListener("click", () => {
+  plAud = (plAud + 1) % L.player.audio.length;
+  $("plAudio").textContent = "♪ " + L.player.audio[plAud];
+  toastIn("plToast", L.player.audioT(L.player.audio[plAud]));
+});
+(() => {
+  const tr = $("plTrack");
+  const seek = e => { const r = tr.getBoundingClientRect(); plProg[plEp] = Math.max(0, Math.min(.999, (e.clientX - r.left) / r.width)) * EP_LEN; plDraw(); };
+  tr.addEventListener("pointerdown", e => { tr.setPointerCapture(e.pointerId); tr.classList.add("drag"); seek(e); });
+  tr.addEventListener("pointermove", e => { if (tr.classList.contains("drag")) seek(e); });
+  tr.addEventListener("pointerup", () => tr.classList.remove("drag"));
+  tr.addEventListener("pointercancel", () => tr.classList.remove("drag"));
+  tr.addEventListener("keydown", e => {
+    const d = e.key === "ArrowRight" ? 30 : e.key === "ArrowLeft" ? -30 : 0; if (!d) return;
+    e.preventDefault(); plProg[plEp] = Math.max(0, Math.min(EP_LEN - 1, plProg[plEp] + d)); plDraw();
+  });
+})();
+
+/* ---------- demo: nube ---------- */
+const RG_BASE = [34, 118, 92, 158];
+let depRun = 0, depBusy = false, ver = 41, reqNow = 12480;
+const reqData = [.62, .7, .66, .78, .74, .83, .8, .9, .86, .95, 1].map(k => k * reqNow);
+function buildCloud() {
+  $("regions").innerHTML = L.cloud.regions.map(r => `<div class="rg up"><i class="dot"></i><span>${r}</span><span class="lb"><i></i></span><em>— ms</em></div>`).join("");
+  if (!depBusy) {
+    $("term").innerHTML = "";
+    const a = document.createElement("div"); a.className = "ok"; a.textContent = "✓ " + L.cloud.idle(ver);
+    const b = document.createElement("div"); b.className = "c"; b.innerHTML = '$ <span class="cur"></span>';
+    $("term").append(a, b);
+  }
+  rgUpdate(); reqDraw();
+}
+function rgUpdate() {
+  document.querySelectorAll(".rg").forEach((r, i) => {
+    const up = r.classList.contains("up"), ms = Math.round(RG_BASE[i] + (Math.random() - .5) * 14);
+    r.querySelector("em").textContent = up ? ms + " ms" : "— ms";
+    r.querySelector(".lb i").style.width = up ? Math.max(12, 100 - ms / 2) + "%" : "0%";
+  });
+}
+function reqDraw() {
+  $("clReq").textContent = Math.round(reqNow).toLocaleString(L.locale);
+  sparkPath(reqData, "clSparkL", "clSparkA");
+}
+setInterval(() => {
+  if (tab !== 2 || !demoVisible || document.hidden) return;
+  rgUpdate();
+  reqNow = Math.max(9000, reqNow + (Math.random() - .42) * 700);
+  reqData.push(reqNow); if (reqData.length > 14) reqData.shift();
+  reqDraw();
+}, 1400);
+async function deploy() {
+  const id = ++depRun, C = L.cloud, term = $("term");
+  const w = ms => new Promise(r => setTimeout(r, calm ? 0 : ms)), alive = () => id === depRun && tab === 2;
+  const line = (cls, txt) => { const d = document.createElement("div"); d.className = cls; d.textContent = txt; term.appendChild(d); while (term.children.length > 7) term.firstChild.remove(); return d; };
+  depBusy = true; ver++; term.innerHTML = ""; $("clRun").disabled = true;
+  document.querySelectorAll(".rg").forEach(r => r.classList.remove("up")); rgUpdate();
+  const cmd = line("c", "$ "), txt = document.createElement("span"), cur = document.createElement("span");
+  cur.className = "cur"; cmd.append(txt, cur);
+  await w(350);
+  for (const ch of C.cmd) { if (!alive()) return depEnd(id); txt.textContent += ch; await w(38); }
+  cur.remove();
+  for (const s of C.steps) { await w(520 + Math.random() * 300); if (!alive()) return depEnd(id); line("m", "› " + s); }
+  const rows = [...document.querySelectorAll(".rg")];
+  for (const r of rows) { await w(260); if (!alive()) return depEnd(id); r.classList.add("up"); rgUpdate(); }
+  await w(300); if (!alive()) return depEnd(id);
+  line("ok", "✓ " + C.done(ver));
+  const p = line("c", "$ "); p.innerHTML = '$ <span class="cur"></span>';
+  depEnd(id);
+}
+function depEnd(id) {
+  if (id !== depRun) return;
+  depBusy = false; $("clRun").disabled = false;
+  document.querySelectorAll(".rg").forEach(r => r.classList.add("up")); rgUpdate();
+}
+$("clRun").addEventListener("click", deploy);
+
+/* ---------- franja y relojes ---------- */
+function buildGlobal() {
+  const items = L.stack.map(s => `<span>${s}</span>`).join("");
+  $("strip").innerHTML = items + items;
+  $("clocks").innerHTML = L.clocks.map(c => `<div class="clk"><small>${c.c}</small><b data-tz="${c.z}"></b></div>`).join("");
+}
+
 /* ---------- arranque ---------- */
 applyLang(lang, false);
 if (!calm) autoplay();
+if (document.fonts) document.fonts.ready.then(moveInd);
 
 /* ---------- scroll ---------- */
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .3 });
