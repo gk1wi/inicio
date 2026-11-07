@@ -7,7 +7,7 @@
 <meta name="description" content="gK1wi Developers es un estudio de desarrollo de software: apps de escritorio y móviles, plataformas web y en la nube, sistemas empresariales, IA, multimedia y videojuegos, para clientes en cualquier país.">
 <meta name="theme-color" content="#000000">
 <meta property="og:title" content="gK1wi Developers | Desarrollo de software">
-<meta property="og:description" content="Software sin límites, para el mundo. Escritorio, móvil, web, nube, IA, multimedia y videojuegos.">
+<meta property="og:description" content="Software sin límites, para el universo. Escritorio, móvil, web, nube, IA, multimedia y videojuegos.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23000'/><text x='50' y='67' font-size='52' font-family='Arial' font-weight='800' fill='%23fff' text-anchor='middle'>gK</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,9 +91,6 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
 .shine{font-style:normal;background:linear-gradient(100deg,var(--fg) 0 38%,var(--live) 48%,#fff 52%,var(--fg) 62% 100%);background-size:250% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s var(--ease) 1.4s infinite}
 [data-theme=light] .shine{background-image:linear-gradient(100deg,var(--fg) 0 38%,var(--live) 50%,var(--fg) 62% 100%)}
 @keyframes shine{0%{background-position:100% 0}45%,100%{background-position:0 0}}
-.proof{display:flex;flex-wrap:wrap;gap:clamp(1.4rem,3vw,2.6rem);margin-top:2.6rem;padding-top:1.6rem;border-top:1px solid var(--line);max-width:34rem;opacity:0;animation:fade .9s ease .8s forwards}
-.proof b{display:block;font-family:var(--d);font-weight:600;font-size:clamp(1.7rem,3vw,2.3rem);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
-.proof small{display:block;margin-top:.35rem;font-size:.84rem;color:var(--mute);max-width:13ch;line-height:1.35}
 .demo{position:relative}
 .stage{position:relative;isolation:isolate;transform-style:preserve-3d;transition:transform .6s var(--ease)}
 .stage::before,.stage::after{content:"";position:absolute;inset:-1px;border-radius:21px;z-index:-1;background:conic-gradient(from var(--ang),transparent 0 62%,color-mix(in srgb,var(--fg) 70%,transparent) 76%,var(--live) 84%,transparent 94%);animation:spin 7s linear infinite}
@@ -108,12 +105,45 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
 .float.f2{right:1.2rem;bottom:-1.6rem;animation-delay:-3s}
 .float.f2 .ic{background:var(--live);color:#04140b}
 @keyframes bob{50%{transform:translateY(-8px)}}
-@media(max-width:620px){.float{display:none}.proof small{max-width:11ch}}
-@media(prefers-reduced-motion:reduce){.orb,.stage::before,.stage::after,.float,.shine{animation:none!important}.avail,.proof{opacity:1}}
+@media(max-width:620px){.float{display:none}}
+
 
 
 /* espacio */
-#stars{position:absolute;inset:0;width:100%;height:100%}
+#stars{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
+header{z-index:80}main,footer{position:relative;z-index:1}
+section{position:relative}
+section>.wrap{position:relative;z-index:1}
+.sky{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.sky .p{position:absolute;border-radius:50%;will-change:transform}
+.p-moon{width:clamp(90px,10vw,150px);aspect-ratio:1;right:5%;top:3%;
+  background:radial-gradient(circle at 62% 58%,rgba(0,0,0,.35) 0 7%,transparent 8%),radial-gradient(circle at 38% 66%,rgba(0,0,0,.3) 0 5%,transparent 6%),radial-gradient(circle at 55% 30%,rgba(0,0,0,.28) 0 4%,transparent 5%),radial-gradient(circle at 34% 30%,#e4e4df,#8b8c91 45%,#2a2a2e 75%,#0d0d0f);
+  box-shadow:inset -14px -16px 30px rgba(0,0,0,.75),0 0 60px rgba(237,237,234,.12)}
+.p-gas{width:clamp(220px,26vw,380px);aspect-ratio:1;left:-8%;top:18%;overflow:hidden;
+  background:repeating-linear-gradient(168deg,rgba(237,237,234,.07) 0 10px,transparent 10px 26px,rgba(111,211,161,.08) 26px 32px,transparent 32px 50px),radial-gradient(circle at 70% 30%,#3b3e44,#17181b 50%,#050506 78%);
+  box-shadow:inset 30px -30px 70px rgba(0,0,0,.85),0 0 90px color-mix(in srgb,var(--live) 18%,transparent)}
+.p-small{width:34px;aspect-ratio:1;left:42%;top:14%;background:radial-gradient(circle at 35% 30%,#bfeed5,var(--live) 40%,#0b3a24 85%);box-shadow:0 0 26px color-mix(in srgb,var(--live) 50%,transparent)}
+.p-ring{width:clamp(60px,6vw,96px);aspect-ratio:1;right:12%;top:7%}
+.p-ring .ball{position:absolute;inset:0;border-radius:50%;z-index:1;background:radial-gradient(circle at 34% 30%,#d9d9d4,#6d6e73 45%,#1a1a1d 75%);box-shadow:inset -8px -10px 18px rgba(0,0,0,.7)}
+.p-ring .ring{position:absolute;left:-60%;right:-60%;top:38%;height:24%;border-radius:50%;border:2px solid rgba(237,237,234,.5);transform:rotate(14deg)}
+.p-ring .ring.front{z-index:2;-webkit-mask-image:linear-gradient(transparent 50%,#000 50%);mask-image:linear-gradient(transparent 50%,#000 50%)}
+.nebula{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none}
+.nb1{width:50vw;height:30vw;left:20%;top:10%;background:color-mix(in srgb,var(--live) 12%,transparent)}
+.nb2{width:40vw;height:40vw;right:-10%;top:-10%;background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.horizon{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 34% 30% at 50% 45%,rgba(237,237,234,.06),transparent 70%),radial-gradient(ellipse 90% 150% at 50% 112%,#1c1e22 0,#0b0c0e 57%,color-mix(in srgb,var(--live) 85%,transparent) 58.4%,color-mix(in srgb,var(--live) 28%,transparent) 60.5%,color-mix(in srgb,var(--live) 8%,transparent) 66%,transparent 75%)}
+footer{overflow:hidden;border-top:0!important;padding-top:clamp(8rem,13vw,11rem)!important}
+footer .wrap{position:relative;z-index:1}
+.rocket{position:absolute;width:26px;left:-60px;top:30%;opacity:.9;animation:fly 22s linear infinite}
+.rocket svg{width:100%;fill:var(--fg)}
+.rocket::after{content:"";position:absolute;left:-46px;top:46%;width:48px;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--live) 80%,transparent))}
+@keyframes fly{0%{transform:translate(0,0) rotate(-12deg)}100%{transform:translate(calc(100vw + 120px),-18vh) rotate(-12deg)}}
+[data-theme=light] .p-moon,[data-theme=light] .p-ring .ball{background:radial-gradient(circle at 34% 30%,#fff,#c3c6cb 50%,#8d929a 80%);box-shadow:inset -10px -12px 22px rgba(40,50,60,.35)}
+[data-theme=light] .p-gas{background:repeating-linear-gradient(168deg,rgba(10,10,11,.05) 0 10px,transparent 10px 26px,rgba(27,154,95,.08) 26px 32px,transparent 32px 50px),radial-gradient(circle at 70% 30%,#fff,#d5d8dc 50%,#a9aeb5 80%);box-shadow:inset 30px -30px 70px rgba(40,50,60,.3),0 0 90px color-mix(in srgb,var(--live) 14%,transparent)}
+[data-theme=light] .p-ring .ring{border-color:rgba(10,10,11,.35)}
+[data-theme=light] .horizon{background:radial-gradient(ellipse 90% 150% at 50% 112%,#e9ecef 0,#cfd3d8 57%,color-mix(in srgb,var(--live) 85%,transparent) 58.4%,color-mix(in srgb,var(--live) 22%,transparent) 61%,transparent 74%)}
+@media(max-width:700px){.horizon{background-size:260% 100%;background-position:50% 0;background-repeat:no-repeat}.p-gas{left:-30%;opacity:.6}.p-small{display:none}.p-moon{opacity:.7}}
+@media(prefers-reduced-motion:reduce){.rocket{display:none}}
 .planet{position:absolute;border-radius:50%;will-change:transform;transition:translate 1.2s var(--ease)}
 .planet.big{width:clamp(380px,46vw,700px);aspect-ratio:1;right:clamp(-260px,-14vw,-120px);bottom:clamp(-420px,-26vw,-220px);
   background:radial-gradient(circle at 32% 28%,#3a3d42 0%,#1b1c20 38%,#0a0a0c 62%,#000 78%);
@@ -352,6 +382,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
 </style>
 </head>
 <body>
+<canvas id="stars" aria-hidden="true"></canvas>
 <script>try{const t=localStorage.getItem('gk-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <div id="bar" aria-hidden="true"></div>
 
@@ -376,7 +407,6 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
   <section class="hero" id="hero">
     <div class="hero-bg" aria-hidden="true">
       <i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i>
-      <canvas id="stars"></canvas>
       <div class="planet big" id="pBig"><i class="surf"></i><i class="atmo"></i></div>
       <div class="orbit"><i class="moon"></i></div>
       <div class="planet ringed" id="pRing"><i class="ring back"></i><i class="ball"></i><i class="ring front"></i></div>
@@ -387,17 +417,12 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
         <h1>
           <span class="ln"><span data-i18n="hero.l1">Software</span></span>
           <span class="ln"><span><em class="shine" data-i18n="hero.l2">sin límites,</em></span></span>
-          <span class="ln dim"><span data-i18n="hero.l3">para el mundo.</span></span>
+          <span class="ln dim"><span data-i18n="hero.l3">para el universo.</span></span>
         </h1>
         <p class="lead" data-i18n-html="hero.lead"><b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.</p>
         <div class="cta">
           <a class="btn solid" href="#contacto" data-i18n="hero.cta1">Cotiza tu proyecto</a>
           <a class="btn" href="#servicios" data-i18n="hero.cta2">Ver servicios</a>
-        </div>
-        <div class="proof">
-          <div><b data-to="9">9</b><small data-i18n="pf1">áreas de software</small></div>
-          <div><b data-to="100" data-suf="%">100%</b><small data-i18n="pf2">código propio, sin plantillas</small></div>
-          <div><b data-to="2">2</b><small data-i18n="pf3">idiomas, cualquier país</small></div>
         </div>
       </div>
 
@@ -450,6 +475,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
   <div class="strip" aria-hidden="true"><div class="strip-in" id="strip"></div></div>
 
   <section id="servicios">
+    <div class="sky" aria-hidden="true"><i class="nebula nb2"></i><i class="p p-moon" data-par=".18"></i></div>
     <div class="wrap">
       <div class="head">
         <h2 data-i18n="svc.h">Lo que necesitas, en cualquier pantalla.</h2>
@@ -460,6 +486,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
   </section>
 
   <section id="global">
+    <div class="sky" aria-hidden="true"><i class="nebula nb1"></i><i class="p p-small" data-par=".35"></i><div class="p p-ring" data-par=".22"><i class="ring"></i><i class="ball"></i><i class="ring front"></i></div></div>
     <div class="wrap">
       <div class="head"><h2 data-i18n="gl.h">Hecho en México. Para el mundo.</h2><p data-i18n="gl.p">Trabajamos de forma remota con clientes de cualquier país y publicamos tu software donde están tus usuarios.</p></div>
       <div class="clocks" id="clocks"></div>
@@ -473,6 +500,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
   </section>
 
   <section id="proceso">
+    <div class="sky" aria-hidden="true"><span class="rocket"><svg viewBox="0 0 64 24"><path d="M2 12 12 4h30c10 0 18 4 20 8-2 4-10 8-20 8H12zM14 4 8 0h10l6 4zM14 20l-6 4h10l6-4z"/><circle cx="44" cy="12" r="3" fill="#000"/></svg></span></div>
     <div class="wrap">
       <div class="head"><h2 data-i18n="proc.h">De la idea al lanzamiento.</h2><p data-i18n="proc.p">Un proceso claro, con comunicación directa y avances que puedes probar en cada entrega.</p></div>
       <div class="steps">
@@ -485,6 +513,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
   </section>
 
   <section id="estilo">
+    <div class="sky" aria-hidden="true"><i class="p p-gas" data-par=".15"></i></div>
     <div class="wrap">
       <div class="head"><h2 data-i18n="style.h">Código con actitud.</h2><p data-i18n="style.p">Nuestro estilo viene de la cancha, la tabla, el ring y el control. Se nota en cada proyecto.</p></div>
       <div class="big" id="big">
@@ -497,6 +526,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
   </section>
 
   <section id="contacto">
+    <div class="sky" aria-hidden="true"><i class="nebula nb1" style="left:auto;right:-10%;top:30%"></i></div>
     <div class="wrap">
       <h2 data-i18n="contact.h">Hablemos de tu proyecto.</h2>
       <div><a class="mail" id="bigMail" href="#"></a><span class="copied" id="copied" data-i18n="contact.copied">Correo copiado</span></div>
@@ -533,6 +563,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
 </main>
 
 <footer>
+  <i class="horizon" aria-hidden="true"></i>
   <div class="wrap">
     <span>© <span id="yr"></span> gK1wi Developers. Irving Pardo Canales.</span>
     <span><a href="/privacy/" data-i18n="foot.priv">Privacidad y legal</a> · <span data-i18n="foot">Hecho con flow 🍃 v3.0</span></span>
@@ -563,7 +594,7 @@ const I18N = {
       "nav.svc":"Servicios","nav.global":"Global","nav.proc":"Proceso","nav.contact":"Contacto","nav.quote":"Cotizar",
       "aria.lang":"Switch to English","aria.theme":"Cambiar entre modo claro y oscuro","aria.menu":"Productos","aria.qr":"Código QR de esta página",
       "aria.tabs":"Demos",
-      "hero.avail":"<b>Disponible</b> para nuevos proyectos","pf1":"áreas de software","pf2":"código propio, sin plantillas","pf3":"idiomas, cualquier país","fl1.s":"Licencia","fl1.b":"Protegida y activa","fl2.s":"Respaldo en la nube","fl2.b":"Sincronizado","hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el mundo.",
+      "hero.avail":"<b>Disponible</b> para nuevos proyectos","fl1.s":"Licencia","fl1.b":"Protegida y activa","fl2.s":"Respaldo en la nube","fl2.b":"Sincronizado","hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el universo.",
       "hero.lead":"<b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.",
       "hero.cta1":"Cotiza tu proyecto","hero.cta2":"Ver servicios",
       "tab.pos":"Punto de venta","tab.cloud":"Nube",
@@ -635,7 +666,7 @@ const I18N = {
       "nav.svc":"Services","nav.global":"Global","nav.proc":"Process","nav.contact":"Contact","nav.quote":"Quote",
       "aria.lang":"Cambiar a español","aria.theme":"Switch between light and dark mode","aria.menu":"Products","aria.qr":"QR code for this page",
       "aria.tabs":"Demos",
-      "hero.avail":"<b>Available</b> for new projects","pf1":"software areas","pf2":"original code, no templates","pf3":"languages, any country","fl1.s":"License","fl1.b":"Protected and active","fl2.s":"Cloud backup","fl2.b":"In sync","hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the world.",
+      "hero.avail":"<b>Available</b> for new projects","fl1.s":"License","fl1.b":"Protected and active","fl2.s":"Cloud backup","fl2.b":"In sync","hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the universe.",
       "hero.lead":"<b>gK1wi Developers</b> is a software development studio: desktop, mobile, web, cloud, AI, media and games. From concept to launch, working directly with the person who writes the code.",
       "hero.cta1":"Get a quote","hero.cta2":"See services",
       "tab.pos":"Point of sale","tab.cloud":"Cloud",
@@ -1027,27 +1058,28 @@ function buildGlobal() {
 
 
 
-/* ---------- estrellas ---------- */
+/* ---------- estrellas (toda la página) ---------- */
 (() => {
   const cv = $("stars"), ctx = cv.getContext("2d"), hero = $("hero");
-  let W = 0, H = 0, S = [], shoot = null, nextShoot = 0, mx = 0, my = 0, tx = 0, ty = 0, vis = true, col = "237,237,234";
+  let W = 0, H = 0, S = [], shoot = null, nextShoot = 0, mx = 0, my = 0, tx = 0, ty = 0, sy = 0, col = "237,237,234";
   const readCol = () => { const c = getComputedStyle(document.documentElement).getPropertyValue("--fg").trim();
     const m = c.match(/^#(..)(..)(..)$/); col = m ? m.slice(1).map(x => parseInt(x, 16)).join(",") : "237,237,234"; };
   function size() {
-    const dpr = Math.min(2, devicePixelRatio || 1); W = hero.offsetWidth; H = hero.offsetHeight;
+    const dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
     cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const n = Math.round(W * H / 2600);
+    const n = Math.round(W * H / 2400);
     S = Array.from({ length: n }, () => { const z = Math.random();
       return { x: Math.random() * W, y: Math.random() * H, z, r: z < .92 ? .35 + z * .65 : .9 + (z - .92) * 8, a: .25 + z * .6, t: Math.random() * 6.28, sp: .4 + Math.random() * 1.6 }; });
-    if (calm) draw(0);
+    draw(performance.now());
   }
   function draw(now) {
     ctx.clearRect(0, 0, W, H);
     tx += (mx - tx) * .05; ty += (my - ty) * .05;
+    const t = calm ? 0 : now / 1000;
     for (const s of S) {
-      const tw = calm ? 1 : .55 + .45 * Math.sin(now / 1000 * s.sp + s.t);
-      let x = s.x + tx * s.z * 22, y = s.y + ty * s.z * 16 - (calm ? 0 : (now / 1000 * s.z * 3) % H);
-      if (y < 0) y += H; x = ((x % W) + W) % W;
+      const tw = calm ? 1 : .55 + .45 * Math.sin(t * s.sp + s.t);
+      let x = s.x + tx * s.z * 22, y = s.y + ty * s.z * 16 - t * s.z * 3 - sy * (.04 + s.z * .22);
+      x = ((x % W) + W) % W; y = ((y % H) + H) % H;
       ctx.globalAlpha = s.a * tw; ctx.fillStyle = `rgb(${col})`;
       ctx.beginPath(); ctx.arc(x, y, s.r, 0, 6.283); ctx.fill();
       if (s.r > 1) { const R = s.r * 5, g = ctx.createRadialGradient(x, y, 0, x, y, R);
@@ -1057,7 +1089,7 @@ function buildGlobal() {
     }
     if (!calm) {
       if (!shoot && now > nextShoot) { const fromL = Math.random() < .5;
-        shoot = { x: fromL ? Math.random() * W * .5 : W * .5 + Math.random() * W * .5, y: Math.random() * H * .35, vx: (fromL ? 1 : -1) * (7 + Math.random() * 4), vy: 3 + Math.random() * 2, life: 0 }; }
+        shoot = { x: fromL ? Math.random() * W * .5 : W * .5 + Math.random() * W * .5, y: Math.random() * H * .4, vx: (fromL ? 1 : -1) * (7 + Math.random() * 4), vy: 3 + Math.random() * 2, life: 0 }; }
       if (shoot) {
         shoot.x += shoot.vx; shoot.y += shoot.vy; shoot.life++;
         const k = Math.min(1, shoot.life / 8) * Math.max(0, 1 - shoot.life / 70);
@@ -1065,19 +1097,25 @@ function buildGlobal() {
         g.addColorStop(0, `rgba(${col},${.9 * k})`); g.addColorStop(1, `rgba(${col},0)`);
         ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 1.6; ctx.lineCap = "round";
         ctx.beginPath(); ctx.moveTo(shoot.x, shoot.y); ctx.lineTo(shoot.x - shoot.vx * 14, shoot.y - shoot.vy * 14); ctx.stroke();
-        if (shoot.life > 70) { shoot = null; nextShoot = now + 3500 + Math.random() * 5000; }
+        if (shoot.life > 70) { shoot = null; nextShoot = now + 3000 + Math.random() * 5000; }
       }
     }
     ctx.globalAlpha = 1;
   }
-  function loop(now) { if (vis && !document.hidden) draw(now); requestAnimationFrame(loop); }
-  new IntersectionObserver(es => { vis = es[0].isIntersecting; }).observe(hero);
-  hero.addEventListener("pointermove", e => { const r = hero.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5;
-    if (!calm) { $("pBig").style.translate = `${-mx * 18}px ${-my * 14}px`; $("pRing").style.translate = `${mx * 30}px ${my * 24}px`; } });
-  new MutationObserver(() => { readCol(); if (calm) draw(0); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  const par = [...document.querySelectorAll("[data-par]")];
+  function parallax() {
+    const vh = innerHeight;
+    par.forEach(el => { const r = el.parentElement.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > vh + 200) return;
+      el.style.translate = `0 ${((r.top + r.height / 2) - vh / 2) * -(+el.dataset.par)}px`; });
+  }
+  function loop(now) { if (!document.hidden) { sy = scrollY; draw(now); parallax(); } requestAnimationFrame(loop); }
+  addEventListener("pointermove", e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+  hero.addEventListener("pointermove", () => { if (!calm) { $("pBig").style.translate = `${-mx * 18}px ${-my * 14}px`; $("pRing").style.translate = `${mx * 30}px ${my * 24}px`; } });
+  new MutationObserver(() => { readCol(); draw(performance.now()); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   addEventListener("resize", size);
   readCol(); size(); nextShoot = performance.now() + 2500;
-  if (!calm) requestAnimationFrame(loop);
+  if (!calm) requestAnimationFrame(loop); else addEventListener("scroll", () => { sy = scrollY; draw(0); }, { passive: true });
 })();
 
 /* ---------- hero vivo ---------- */
@@ -1094,11 +1132,6 @@ function buildGlobal() {
     }); });
     hero.addEventListener("pointerleave", () => { stage.style.transform = ""; });
   }
-  if (!calm) setTimeout(() => document.querySelectorAll(".proof b").forEach(b => {
-    const to = +b.dataset.to, suf = b.dataset.suf || "", t0 = performance.now(), ms = 1400;
-    const step = now => { const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 4); b.textContent = Math.round(to * e) + suf; if (k < 1) requestAnimationFrame(step); };
-    requestAnimationFrame(step);
-  }), 800);
 })();
 
 /* ---------- arranque ---------- */
