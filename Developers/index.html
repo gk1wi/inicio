@@ -86,8 +86,6 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
 [data-theme=light] .orb.o1{background:color-mix(in srgb,#9aa3ad 30%,transparent)}
 @keyframes orbA{to{transform:translate(-6%,8%) scale(1.12)}}
 @keyframes orbB{to{transform:translate(10%,-10%) scale(.9)}}
-.avail{display:inline-flex;align-items:center;gap:.6rem;padding:.42rem .95rem .42rem .75rem;margin-bottom:1.6rem;border:1px solid var(--line2);border-radius:99px;font-size:.84rem;color:var(--mute);background:color-mix(in srgb,var(--panel) 70%,transparent);backdrop-filter:blur(8px);opacity:0;animation:fade .8s ease .2s forwards}
-.avail b{color:var(--fg);font-weight:500}
 .shine{font-style:normal;background:linear-gradient(100deg,var(--fg) 0 38%,var(--live) 48%,#fff 52%,var(--fg) 62% 100%);background-size:250% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s var(--ease) 1.4s infinite}
 [data-theme=light] .shine{background-image:linear-gradient(100deg,var(--fg) 0 38%,var(--live) 50%,var(--fg) 62% 100%)}
 @keyframes shine{0%{background-position:100% 0}45%,100%{background-position:0 0}}
@@ -413,7 +411,6 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
     </div>
     <div class="wrap">
       <div>
-        <span class="avail"><span class="live" aria-hidden="true"></span><span data-i18n-html="hero.avail"><b>Disponible</b> para nuevos proyectos</span></span>
         <h1>
           <span class="ln"><span data-i18n="hero.l1">Software</span></span>
           <span class="ln"><span><em class="shine" data-i18n="hero.l2">sin límites,</em></span></span>
@@ -594,7 +591,7 @@ const I18N = {
       "nav.svc":"Servicios","nav.global":"Global","nav.proc":"Proceso","nav.contact":"Contacto","nav.quote":"Cotizar",
       "aria.lang":"Switch to English","aria.theme":"Cambiar entre modo claro y oscuro","aria.menu":"Productos","aria.qr":"Código QR de esta página",
       "aria.tabs":"Demos",
-      "hero.avail":"<b>Disponible</b> para nuevos proyectos","fl1.s":"Licencia","fl1.b":"Protegida y activa","fl2.s":"Respaldo en la nube","fl2.b":"Sincronizado","hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el universo.",
+      "fl1.s":"Licencia","fl1.b":"Protegida y activa","fl2.s":"Respaldo en la nube","fl2.b":"Sincronizado","hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el universo.",
       "hero.lead":"<b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.",
       "hero.cta1":"Cotiza tu proyecto","hero.cta2":"Ver servicios",
       "tab.pos":"Punto de venta","tab.cloud":"Nube",
@@ -666,7 +663,7 @@ const I18N = {
       "nav.svc":"Services","nav.global":"Global","nav.proc":"Process","nav.contact":"Contact","nav.quote":"Quote",
       "aria.lang":"Cambiar a español","aria.theme":"Switch between light and dark mode","aria.menu":"Products","aria.qr":"QR code for this page",
       "aria.tabs":"Demos",
-      "hero.avail":"<b>Available</b> for new projects","fl1.s":"License","fl1.b":"Protected and active","fl2.s":"Cloud backup","fl2.b":"In sync","hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the universe.",
+      "fl1.s":"License","fl1.b":"Protected and active","fl2.s":"Cloud backup","fl2.b":"In sync","hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the universe.",
       "hero.lead":"<b>gK1wi Developers</b> is a software development studio: desktop, mobile, web, cloud, AI, media and games. From concept to launch, working directly with the person who writes the code.",
       "hero.cta1":"Get a quote","hero.cta2":"See services",
       "tab.pos":"Point of sale","tab.cloud":"Cloud",
