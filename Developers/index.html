@@ -136,55 +136,6 @@ html[lang=en] .hero h1{font-size:clamp(2.35rem,6vw,5.4rem)}
 #pos .pos-body{flex:1}
 @media(max-width:420px){.dtabs button{padding:.45rem .75rem;font-size:.8rem}}
 
-/* reproductor */
-.screen{position:relative;flex:1;min-height:190px;margin:1rem 1rem 0;border-radius:14px;overflow:hidden;background:#050506;isolation:isolate;cursor:pointer}
-.art{position:absolute;inset:-8%;background-size:cover;will-change:transform}
-.art.swap{animation:artIn .7s var(--ease)}
-@keyframes artIn{from{opacity:0;transform:scale(1.06)}}
-.screen.playing .art{animation:drift 16s ease-in-out infinite alternate}
-@keyframes drift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.08) translate(-3%,2%)}}
-.screen::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.78));z-index:1}
-.scr-info{position:absolute;left:1rem;right:1rem;bottom:.85rem;z-index:2;color:#ededea}
-.scr-info small{display:flex;align-items:center;gap:.5rem;font-family:var(--m);font-size:.72rem;opacity:.72;margin-bottom:.15rem}
-.scr-info b{display:block;font-family:var(--d);font-size:clamp(1.1rem,2.4vw,1.4rem);letter-spacing:-.02em;font-weight:600;line-height:1.15}
-.eq{display:inline-flex;align-items:flex-end;gap:2px;height:10px}
-.eq i{width:2px;height:30%;background:#ededea;border-radius:1px}
-.screen.playing .eq i{animation:eq .9s ease-in-out infinite alternate}
-.eq i:nth-child(2){animation-delay:-.3s!important}.eq i:nth-child(3){animation-delay:-.6s!important}
-@keyframes eq{from{height:25%}to{height:100%}}
-.bigplay{position:absolute;inset:0;margin:auto;width:62px;height:62px;border-radius:50%;background:rgba(237,237,234,.94);display:grid;place-items:center;z-index:2;transition:opacity .35s,transform .45s var(--ease)}
-.bigplay i{width:17px;height:19px;margin-left:4px;background:#000;clip-path:polygon(0 0,100% 50%,0 100%)}
-.screen:hover .bigplay{transform:scale(1.06)}
-.screen.playing .bigplay{opacity:0;transform:scale(.7);pointer-events:none}
-.pctl{padding:.7rem 1rem .2rem}
-.ptrack{position:relative;height:18px;display:flex;align-items:center;cursor:pointer;touch-action:none}
-.ptrack::before{content:"";position:absolute;left:0;right:0;height:3px;border-radius:3px;background:var(--line2)}
-.ptrack i{position:absolute;left:0;height:3px;border-radius:3px;background:var(--fg)}
-.ptrack b{position:absolute;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--fg);transform:scale(.8);transition:transform .2s}
-.ptrack:hover b,.ptrack.drag b{transform:scale(1.15)}
-.prow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-top:.2rem}
-.ptime,.audio{white-space:nowrap}.ptime{font-family:var(--m);font-size:.76rem;color:var(--mute);min-width:6.8rem;font-variant-numeric:tabular-nums}
-.pbtns{display:flex;gap:.25rem;align-items:center}
-.pbtns button{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;transition:background .2s,transform .15s}
-.pbtns button:hover{background:var(--panel2)}
-.pbtns button:active{transform:scale(.9)}
-.pbtns svg{width:15px;height:15px;fill:currentColor}
-.pbtns .pp{width:44px;height:44px;background:var(--fg);color:var(--bg)}
-.pbtns .pp:hover{background:var(--fg)}
-.i-pause,#player.playing .i-play{display:none}
-#player.playing .i-pause{display:block}
-.audio{font-size:.76rem;padding:.38rem .7rem;border:1px solid var(--line2);border-radius:99px;min-width:6.8rem;text-align:center;transition:border-color .2s}
-.audio:hover{border-color:var(--fg)}
-.eps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;padding:.55rem 1rem 1rem}
-.ep{position:relative;text-align:left;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--panel2);transition:border-color .25s,transform .25s var(--ease)}
-.ep:hover{transform:translateY(-2px)}
-.ep.on{border-color:var(--fg)}
-.ep .th{display:block;position:relative;aspect-ratio:16/9;background-size:cover;background-position:center}
-.ep .bar{position:absolute;left:0;bottom:0;height:3px;background:#ededea}
-.ep small{display:block;padding:.32rem .5rem;font-size:.7rem;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ep.on small{color:var(--fg)}
-@media(max-width:520px){.ptime,.audio{min-width:0}.ptime .tot{display:none}.eps{grid-template-columns:repeat(2,minmax(0,1fr))}.screen{min-height:170px}}
-
 /* nube */
 .term{flex:1;padding:1rem 1.1rem;font-family:var(--m);font-size:.8rem;line-height:1.8;min-height:170px;overflow:hidden}
 .term div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:slideIn .35s var(--ease)}
@@ -370,8 +321,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
       <div class="demo" id="demo">
         <div class="dtabs" id="dtabs" role="tablist" data-i18n-aria="aria.tabs" aria-label="Demos">
           <button type="button" role="tab" aria-selected="true" data-tab="0" data-i18n="tab.pos">Punto de venta</button>
-          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="1" data-i18n="tab.play">Reproductor</button>
-          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="2" data-i18n="tab.cloud">Nube</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="1" data-i18n="tab.cloud">Nube</button>
           <i class="dtab-ind" id="dtabInd" aria-hidden="true"></i>
         </div>
         <div class="stage">
@@ -395,30 +345,6 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
         </div>
           </div>
           <div class="pane" role="tabpanel" inert>
-            <div class="pos" id="player">
-              <div class="pos-top"><span class="live" aria-hidden="true"></span><b data-i18n="pl.app">Reproductor</b><span class="mute">4K · HDR</span><span class="clock"></span></div>
-              <div class="screen" id="screen" role="button" tabindex="0" data-i18n-aria="aria.play" aria-label="Reproducir o pausar">
-                <div class="art" id="plArt"></div>
-                <button class="bigplay" type="button" tabindex="-1" aria-hidden="true"><i></i></button>
-                <div class="scr-info"><small><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="plSeries"></span></small><b id="plTitle"></b></div>
-              </div>
-              <div class="pctl">
-                <div class="ptrack" id="plTrack" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" data-i18n-aria="aria.seek" aria-label="Progreso"><i id="plFill"></i><b id="plKnob"></b></div>
-                <div class="prow">
-                  <span class="ptime" id="plTime">00:00 / 24:00</span>
-                  <div class="pbtns">
-                    <button type="button" id="plPrev" data-i18n-aria="aria.prev" aria-label="Episodio anterior"><svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg></button>
-                    <button type="button" class="pp" id="plPlay" data-i18n-aria="aria.play" aria-label="Reproducir o pausar"><svg class="i-play" viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg><svg class="i-pause" viewBox="0 0 16 16"><path d="M3.5 2h3v12h-3zM9.5 2h3v12h-3z"/></svg></button>
-                    <button type="button" id="plNext" data-i18n-aria="aria.next" aria-label="Episodio siguiente"><svg viewBox="0 0 16 16"><path d="M11 2h2v12h-2zM2 2v12l8-6z"/></svg></button>
-                  </div>
-                  <button type="button" class="audio" id="plAudio"></button>
-                </div>
-              </div>
-              <div class="eps" id="plEps"></div>
-              <div class="toast" id="plToast" role="status"></div>
-            </div>
-          </div>
-          <div class="pane" role="tabpanel" inert>
             <div class="pos" id="cloud">
               <div class="pos-top"><span class="live" aria-hidden="true"></span><b>gk deploy</b><span class="mute" data-i18n="cl.env">Producción</span><span class="clock"></span></div>
               <div class="term" id="term" aria-live="polite"></div>
@@ -431,7 +357,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem
             </div>
           </div>
         </div>
-        <p class="demo-note" data-i18n="demo.note">Demos reales: cobra, reproduce y despliega.</p>
+        <p class="demo-note" data-i18n="demo.note">Demos reales: cobra y despliega.</p>
       </div>
     </div>
   </section>
@@ -551,14 +477,14 @@ const I18N = {
     t: {
       "nav.svc":"Servicios","nav.global":"Global","nav.proc":"Proceso","nav.contact":"Contacto","nav.quote":"Cotizar",
       "aria.lang":"Switch to English","aria.theme":"Cambiar entre modo claro y oscuro","aria.menu":"Productos","aria.qr":"Código QR de esta página",
-      "aria.tabs":"Demos","aria.play":"Reproducir o pausar","aria.seek":"Progreso del episodio","aria.prev":"Episodio anterior","aria.next":"Episodio siguiente",
+      "aria.tabs":"Demos",
       "hero.l1":"Software","hero.l2":"sin límites,","hero.l3":"para el mundo.",
       "hero.lead":"<b>gK1wi Developers</b> es un estudio de desarrollo de software: escritorio, móvil, web, nube, IA, multimedia y videojuegos. Del concepto al lanzamiento, trabajando directo con quien escribe el código.",
       "hero.cta1":"Cotiza tu proyecto","hero.cta2":"Ver servicios",
-      "tab.pos":"Punto de venta","tab.play":"Reproductor","tab.cloud":"Nube",
+      "tab.pos":"Punto de venta","tab.cloud":"Nube",
       "pos.reg":"Caja 1","pos.table":"Mesa 4","pos.order":"Orden","pos.total":"Total","pos.pay":"Cobrar","pos.sales":"Ventas de hoy",
-      "pl.app":"Reproductor","cl.env":"Producción","cl.req":"Solicitudes / min","cl.run":"Desplegar",
-      "demo.note":"Demos reales: cobra, reproduce y despliega.",
+      "cl.env":"Producción","cl.req":"Solicitudes / min","cl.run":"Desplegar",
+      "demo.note":"Demos reales: cobra y despliega.",
       "svc.h":"Todo lo que abarca el software.","svc.p":"Toca un área para ver qué incluye. Si corre en una pantalla, un servidor o la nube, lo diseñamos y lo construimos.",
       "gl.h":"Hecho en México. Para el mundo.","gl.p":"Trabajamos de forma remota con clientes de cualquier país y publicamos tu software donde están tus usuarios.",
       "g1.h":"Bilingüe","g1.p":"Interfaz, documentación y soporte en español e inglés, listos para más idiomas.",
@@ -597,12 +523,6 @@ const I18N = {
     productos: [{n:"Chilaquiles",p:95},{n:"Café de olla",p:35},{n:"Paleta de mango",p:28},{n:"Agua de jamaica",p:30},{n:"Enchiladas",p:110},{n:"Pan dulce",p:22}],
     stack: ["Windows","macOS","iOS","Android","Web","Nube","IA","APIs","Videojuegos","Multimedia","Automatización","Seguridad"],
     clocks: [{c:"Ciudad de México",z:"America/Mexico_City"},{c:"Nueva York",z:"America/New_York"},{c:"Madrid",z:"Europe/Madrid"},{c:"Tokio",z:"Asia/Tokyo"}],
-    player: {
-      series: "Horizonte · T1", ep: n => `Episodio ${n}`,
-      titles: ["El primer paso","Ciudad de cristal","Señal perdida","Todo en orden"],
-      audio: ["Japonés","Español","Inglés"], audioT: a => `Audio: ${a}`,
-      next: t => `Siguiente: ${t}`, resume: "Continúas donde te quedaste"
-    },
     cloud: {
       cmd: "gk deploy --global",
       steps: ["Compilando… listo en 2.1 s","148 pruebas aprobadas","Firmando y protegiendo el código","Publicando en 4 regiones"],
@@ -629,14 +549,14 @@ const I18N = {
     t: {
       "nav.svc":"Services","nav.global":"Global","nav.proc":"Process","nav.contact":"Contact","nav.quote":"Quote",
       "aria.lang":"Cambiar a español","aria.theme":"Switch between light and dark mode","aria.menu":"Products","aria.qr":"QR code for this page",
-      "aria.tabs":"Demos","aria.play":"Play or pause","aria.seek":"Episode progress","aria.prev":"Previous episode","aria.next":"Next episode",
+      "aria.tabs":"Demos",
       "hero.l1":"Software","hero.l2":"without limits,","hero.l3":"for the world.",
       "hero.lead":"<b>gK1wi Developers</b> is a software development studio: desktop, mobile, web, cloud, AI, media and games. From concept to launch, working directly with the person who writes the code.",
       "hero.cta1":"Get a quote","hero.cta2":"See services",
-      "tab.pos":"Point of sale","tab.play":"Media player","tab.cloud":"Cloud",
+      "tab.pos":"Point of sale","tab.cloud":"Cloud",
       "pos.reg":"Register 1","pos.table":"Table 4","pos.order":"Order","pos.total":"Total","pos.pay":"Charge","pos.sales":"Today's sales",
-      "pl.app":"Player","cl.env":"Production","cl.req":"Requests / min","cl.run":"Deploy",
-      "demo.note":"Live demos: charge, play and deploy.",
+      "cl.env":"Production","cl.req":"Requests / min","cl.run":"Deploy",
+      "demo.note":"Live demos: charge and deploy.",
       "svc.h":"Everything software covers.","svc.p":"Tap an area to see what's included. If it runs on a screen, a server or the cloud, we design and build it.",
       "gl.h":"Made in Mexico. Built for the world.","gl.p":"We work remotely with clients in any country and ship your software wherever your users are.",
       "g1.h":"Bilingual","g1.p":"Interface, documentation and support in English and Spanish, ready for more languages.",
@@ -675,12 +595,6 @@ const I18N = {
     productos: [{n:"Chilaquiles",p:12},{n:"Mexican coffee",p:3.5},{n:"Mango ice pop",p:4},{n:"Hibiscus drink",p:3.5},{n:"Enchiladas",p:14},{n:"Sweet bread",p:3}],
     stack: ["Windows","macOS","iOS","Android","Web","Cloud","AI","APIs","Games","Media","Automation","Security"],
     clocks: [{c:"Mexico City",z:"America/Mexico_City"},{c:"New York",z:"America/New_York"},{c:"Madrid",z:"Europe/Madrid"},{c:"Tokyo",z:"Asia/Tokyo"}],
-    player: {
-      series: "Horizon · S1", ep: n => `Episode ${n}`,
-      titles: ["The first step","Glass city","Lost signal","All in order"],
-      audio: ["Japanese","Spanish","English"], audioT: a => `Audio: ${a}`,
-      next: t => `Up next: ${t}`, resume: "Picking up where you left off"
-    },
     cloud: {
       cmd: "gk deploy --global",
       steps: ["Building… done in 2.1 s","148 tests passed","Signing and protecting the code","Shipping to 4 regions"],
@@ -738,7 +652,7 @@ function applyLang(next, save) {
   $("lang").textContent = lang === "es" ? "EN" : "ES";
   $("lnkWa").href = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(L.waHello);
   $("hint").textContent = "";
-  buildMenu(); buildServices(); buildChips(); buildPlayer(); buildCloud(); buildGlobal(); moveInd(); tickClock();
+  buildMenu(); buildServices(); buildChips(); buildCloud(); buildGlobal(); moveInd(); tickClock();
   if (save) try { localStorage.setItem("gk-lang", lang); } catch (e) {}
 }
 $("lang").addEventListener("click", () => applyLang(lang === "es" ? "en" : "es", true));
@@ -935,116 +849,31 @@ function moveInd() {
 }
 function setTab(i, user) {
   if (i === tab) return;
-  const prev = tab; tab = i; tabSince = performance.now();
+  tab = i; tabSince = performance.now();
   tabBtns.forEach((b, k) => { b.setAttribute("aria-selected", k === i); b.tabIndex = k === i ? 0 : -1; });
   panes.forEach((p, k) => { p.classList.toggle("on", k === i); p.inert = k !== i; });
   moveInd();
-  if (prev === 1) plPause();
-  if (i === 1 && !user && !calm) setTimeout(() => { if (tab === 1) plPlay(); }, 450);
-  if (i === 2) deploy();
+  if (i === 1) deploy();
 }
 const hold = () => { holdUntil = performance.now() + 25000; };
 $("dtabs").addEventListener("click", e => { const b = e.target.closest("[role=tab]"); if (b) { hold(); setTab(+b.dataset.tab, true); } });
 $("dtabs").addEventListener("keydown", e => {
   const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (!d) return;
-  e.preventDefault(); hold(); setTab((tab + d + 3) % 3, true); tabBtns[tab].focus();
+  e.preventDefault(); hold(); setTab((tab + d + 2) % 2, true); tabBtns[tab].focus();
 });
 $("demo").addEventListener("pointerdown", () => { touched(); hold(); });
 addEventListener("resize", moveInd);
-const TAB_MS = [16000, 13000, 11000];
+const TAB_MS = [16000, 11000];
 setInterval(() => {
   if (calm || document.hidden || !demoVisible || performance.now() < holdUntil) return;
-  if (performance.now() - tabSince > TAB_MS[tab]) setTab((tab + 1) % 3, false);
+  if (performance.now() - tabSince > TAB_MS[tab]) setTab((tab + 1) % 2, false);
 }, 500);
 
-const toastTs = {};
-function toastIn(id, msg) {
-  const t = $(id); t.textContent = msg; t.classList.add("on");
-  clearTimeout(toastTs[id]); toastTs[id] = setTimeout(() => t.classList.remove("on"), 2200);
-}
 function sparkPath(data, idL, idA) {
   const min = Math.min(...data) * .9, max = Math.max(...data), n = data.length;
   const d = data.map((v, i) => (i ? "L" : "M") + (i / (n - 1) * 200).toFixed(1) + " " + (36 - (v - min) / (max - min || 1) * 32).toFixed(1)).join(" ");
   $(idL).setAttribute("d", d); $(idA).setAttribute("d", d + " L200 38 L0 38 Z");
 }
-
-/* ---------- demo: reproductor ---------- */
-const EP_LEN = 24 * 60, SPEED = 32;
-const ARTS = [[24,32,78,62,135],[72,26,22,72,205],[50,58,86,18,160],[28,74,66,30,110]];
-let plEp = 1, plOn = false, plAud = 0, plRaf = 0, plLast = 0;
-const plProg = [EP_LEN, EP_LEN * .62, 0, 0];
-const art = i => { const a = ARTS[i];
-  return `radial-gradient(circle at ${a[0]}% ${a[1]}%,rgba(237,237,234,.5),transparent 36%),radial-gradient(circle at ${a[2]}% ${a[3]}%,rgba(111,211,161,.16),transparent 48%),radial-gradient(ellipse at 50% 120%,rgba(237,237,234,.14),transparent 60%),linear-gradient(${a[4]}deg,#232328,#050506 72%)`; };
-const fmtT = s => { s = Math.floor(s); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); };
-
-function buildPlayer() {
-  const P = L.player;
-  $("plEps").innerHTML = P.titles.map((t, i) => `<button class="ep" type="button" data-i="${i}"><span class="th" style="background-image:${art(i)}"><span class="bar"></span></span><small>${i + 1}. ${t}</small></button>`).join("");
-  plShow(false);
-}
-function plShow(swap) {
-  const P = L.player;
-  $("plSeries").textContent = P.series + " · " + P.ep(plEp + 1);
-  $("plTitle").textContent = P.titles[plEp];
-  $("plArt").style.backgroundImage = art(plEp);
-  if (swap) { const a = $("plArt"); a.classList.remove("swap"); void a.offsetWidth; a.classList.add("swap"); }
-  $("plAudio").textContent = "♪ " + P.audio[plAud];
-  document.querySelectorAll(".ep").forEach((b, i) => b.classList.toggle("on", i === plEp));
-  plDraw();
-}
-function plDraw() {
-  const k = plProg[plEp] / EP_LEN * 100;
-  $("plFill").style.width = k + "%"; $("plKnob").style.left = k + "%";
-  $("plTrack").setAttribute("aria-valuenow", Math.round(k));
-  $("plTime").innerHTML = fmtT(plProg[plEp]) + '<span class="tot"> / ' + fmtT(EP_LEN) + "</span>";
-  document.querySelectorAll(".ep .bar").forEach((b, i) => b.style.width = (plProg[i] / EP_LEN * 100) + "%");
-}
-function plTick(now) {
-  if (!plOn) return;
-  const dt = Math.min(.1, (now - plLast) / 1000); plLast = now;
-  plProg[plEp] = Math.min(EP_LEN, plProg[plEp] + dt * SPEED);
-  plDraw();
-  if (plProg[plEp] >= EP_LEN) plGo(plEp + 1, true);
-  plRaf = requestAnimationFrame(plTick);
-}
-function plPlay() {
-  if (plOn) return; plOn = true;
-  $("screen").classList.add("playing"); $("player").classList.add("playing");
-  plLast = performance.now(); plRaf = requestAnimationFrame(plTick);
-}
-function plPause() {
-  plOn = false; cancelAnimationFrame(plRaf);
-  $("screen").classList.remove("playing"); $("player").classList.remove("playing");
-}
-function plGo(i, auto) {
-  i = (i + 4) % 4; if (i === plEp) return;
-  plEp = i; if (plProg[i] >= EP_LEN) plProg[i] = 0;
-  plShow(true);
-  toastIn("plToast", auto ? L.player.next(L.player.titles[i]) : (plProg[i] > 0 ? L.player.resume : L.player.ep(i + 1)));
-}
-$("screen").addEventListener("click", () => plOn ? plPause() : plPlay());
-$("screen").addEventListener("keydown", e => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); plOn ? plPause() : plPlay(); } });
-$("plPlay").addEventListener("click", () => plOn ? plPause() : plPlay());
-$("plPrev").addEventListener("click", () => plGo(plEp - 1));
-$("plNext").addEventListener("click", () => plGo(plEp + 1));
-$("plEps").addEventListener("click", e => { const b = e.target.closest(".ep"); if (b) { plGo(+b.dataset.i); plPlay(); } });
-$("plAudio").addEventListener("click", () => {
-  plAud = (plAud + 1) % L.player.audio.length;
-  $("plAudio").textContent = "♪ " + L.player.audio[plAud];
-  toastIn("plToast", L.player.audioT(L.player.audio[plAud]));
-});
-(() => {
-  const tr = $("plTrack");
-  const seek = e => { const r = tr.getBoundingClientRect(); plProg[plEp] = Math.max(0, Math.min(.999, (e.clientX - r.left) / r.width)) * EP_LEN; plDraw(); };
-  tr.addEventListener("pointerdown", e => { tr.setPointerCapture(e.pointerId); tr.classList.add("drag"); seek(e); });
-  tr.addEventListener("pointermove", e => { if (tr.classList.contains("drag")) seek(e); });
-  tr.addEventListener("pointerup", () => tr.classList.remove("drag"));
-  tr.addEventListener("pointercancel", () => tr.classList.remove("drag"));
-  tr.addEventListener("keydown", e => {
-    const d = e.key === "ArrowRight" ? 30 : e.key === "ArrowLeft" ? -30 : 0; if (!d) return;
-    e.preventDefault(); plProg[plEp] = Math.max(0, Math.min(EP_LEN - 1, plProg[plEp] + d)); plDraw();
-  });
-})();
 
 /* ---------- demo: nube ---------- */
 const RG_BASE = [34, 118, 92, 158];
@@ -1072,7 +901,7 @@ function reqDraw() {
   sparkPath(reqData, "clSparkL", "clSparkA");
 }
 setInterval(() => {
-  if (tab !== 2 || !demoVisible || document.hidden) return;
+  if (tab !== 1 || !demoVisible || document.hidden) return;
   rgUpdate();
   reqNow = Math.max(9000, reqNow + (Math.random() - .42) * 700);
   reqData.push(reqNow); if (reqData.length > 14) reqData.shift();
@@ -1080,7 +909,7 @@ setInterval(() => {
 }, 1400);
 async function deploy() {
   const id = ++depRun, C = L.cloud, term = $("term");
-  const w = ms => new Promise(r => setTimeout(r, calm ? 0 : ms)), alive = () => id === depRun && tab === 2;
+  const w = ms => new Promise(r => setTimeout(r, calm ? 0 : ms)), alive = () => id === depRun && tab === 1;
   const line = (cls, txt) => { const d = document.createElement("div"); d.className = cls; d.textContent = txt; term.appendChild(d); while (term.children.length > 7) term.firstChild.remove(); return d; };
   depBusy = true; ver++; term.innerHTML = ""; $("clRun").disabled = true;
   document.querySelectorAll(".rg").forEach(r => r.classList.remove("up")); rgUpdate();
